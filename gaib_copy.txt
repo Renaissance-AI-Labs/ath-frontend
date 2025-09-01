@@ -1,0 +1,190 @@
+<div class="section"><header><div class="menu-left"><a><img src="/logo/Black-horizontal.png" alt="" class="logo"></a></div><div class="menu-right"><div class="menu-pc"><a class="menu active">Deposit</a><a class="menu ">NFT</a><a class="menu ">Explore</a><a class="menu ">Portfolio</a></div><div id="dynamic-widget" class="dynamic-shadow-dom dynamic-widget__container"></div></div></header><div class="page-vaults"><div class="page-title">AID Alpha - The Final Spice</div><div class="page-text">Join GAIB AID Alpha to earn Spice rewards powered by GPU yields. Become an early bird to the first synthetic dollar backed by AI compute!</div><a href="https://gaibofficial.medium.com/the-final-spice-road-to-mainnet-d8f7c8af5823" target="_blank" rel="noopener noreferrer" style="display:inline-block"><button class="more-btn">Learn More</button></a><div class="banner"><img src="/assets/images/banner-1.png" alt="AID Alpha Banner"></div><div class="page-vaults-content"><div class="page-title">Assets</div><div class="rowbox"><div class="row2"><div class="row2-item"><div><div>TVL</div><div style="color:#f87832">$<!-- --> <!-- --><span>60,009,684</span></div></div><div><div>Users</div><div><span>78,147</span></div></div></div><div class="progressbox"><div class="progress" style="width: 100%;"></div><div class="progress2"><div class="progress2-point"><div class="point-text">50m</div></div><div class="progress2-point2" style="left: calc(100% - 12px);"><div class="point"></div><div class="progress2-point-text">100<!-- -->%<!-- --></div></div><div class="progress2-point4" style="left:calc(100% - 12px)"><div class="point"><span role="img" aria-label="check" class="anticon anticon-check"><svg viewBox="64 64 896 896" focusable="false" data-icon="check" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"></path></svg></span></div><div class="point-text">60m</div></div></div></div></div><div class="row1"><div>Your Spice Harvest</div><div><span>0</span></div></div></div><div class="row3"><div class="titlebox"><button class="all-chain-btn"><img src="/assets/images/all-chain-active.png" alt=""></button><div class="chainbox"><div class="chain "><img src="/assets/images/chain-eth.png" alt=""></div><div class="chain "><img src="/assets/images/chain-base.png" alt=""></div><div class="chain "><img src="/assets/images/chain-arb.png" alt=""></div><div class="chain "><img src="/assets/images/chain-sei.svg" alt=""></div><div class="chain "><img src="/assets/images/chain-story.png" alt=""></div><div class="chain disabled"><img src="/assets/images/chain-bsc.png" alt=""></div></div></div><div class="ant-table-wrapper tablebox home-table"><div class="ant-spin-nested-loading"><div class="ant-spin-container"><div class="ant-table ant-table-ping-right ant-table-fixed-column ant-table-scroll-horizontal ant-table-has-fix-right"><div class="ant-table-container"><div style="overflow-x:auto;overflow-y:hidden" class="ant-table-content"><table style="width:max-content;min-width:100%;table-layout:auto"><colgroup><col style="width:100px"><col style="width:80px"><col style="width:120px"><col style="width:150px"><col style="width:120px"><col style="width:100px"></colgroup><thead class="ant-table-thead"><tr><th class="ant-table-cell" style="text-align:left" scope="col">Asset<!-- --></th><th class="ant-table-cell" style="text-align:center" scope="col">Chain<!-- --></th><th class="ant-table-cell" style="text-align:center" scope="col">Deposited<!-- --></th><th class="ant-table-cell" style="text-align:center" scope="col">Rewards<!-- --></th><th class="ant-table-cell" style="text-align:center" scope="col">TVL($)<!-- --></th><th class="ant-table-cell ant-table-cell-fix-right ant-table-cell-fix-right-first" style="position:sticky;right:0;text-align:center" scope="col">Action<!-- --></th></tr></thead><tbody class="ant-table-tbody"><tr aria-hidden="true" class="ant-table-measure-row" style="height:0;font-size:0"><td style="padding:0;border:0;height:0"><div style="height:0;overflow:hidden">&nbsp;</div></td><td style="padding:0;border:0;height:0"><div style="height:0;overflow:hidden">&nbsp;</div></td><td style="padding:0;border:0;height:0"><div style="height:0;overflow:hidden">&nbsp;</div></td><td style="padding:0;border:0;height:0"><div style="height:0;overflow:hidden">&nbsp;</div></td><td style="padding:0;border:0;height:0"><div style="height:0;overflow:hidden">&nbsp;</div></td><td style="padding:0;border:0;height:0"><div style="height:0;overflow:hidden">&nbsp;</div></td></tr><tr class="ant-table-row ant-table-row-level-0" data-row-key="ethereum-AlphaUSDC"><td class="ant-table-cell" style="text-align: left;"><div class="table-td"><div class="asset-logo"><img src="/assets/images/AIDAUSDC.png" alt="AIDaUSDC token logo"><span>AIDaUSDC</span></div></div></td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="china-logo"><img src="/assets/images/chain-eth.png" alt=""></div></div></td><td class="ant-table-cell" style="text-align: center;">28,847,533 USDC</td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="asset-status"><div>10x GAIB Spice</div></div></div></td><td class="ant-table-cell" style="text-align: center;">$28,847,533</td><td class="ant-table-cell ant-table-cell-fix-right ant-table-cell-fix-right-first" style="position: sticky; right: 0px; text-align: center;"><div class="table-td"><button class="deposit-btn deposit-btn-disabled" disabled="">Deposit</button></div></td></tr><tr class="ant-table-row ant-table-row-level-0" data-row-key="ethereum-AlphaUSDT"><td class="ant-table-cell" style="text-align: left;"><div class="table-td"><div class="asset-logo"><img src="/assets/images/AIDAUSDT.png" alt="AIDaUSDT token logo"><span>AIDaUSDT</span></div></div></td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="china-logo"><img src="/assets/images/chain-eth.png" alt=""></div></div></td><td class="ant-table-cell" style="text-align: center;">14,185,479 USDT</td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="asset-status"><div>10x GAIB Spice</div></div></div></td><td class="ant-table-cell" style="text-align: center;">$14,185,479</td><td class="ant-table-cell ant-table-cell-fix-right ant-table-cell-fix-right-first" style="position: sticky; right: 0px; text-align: center;"><div class="table-td"><button class="deposit-btn deposit-btn-disabled" disabled="">Deposit</button></div></td></tr><tr class="ant-table-row ant-table-row-level-0" data-row-key="ethereum-AlphaUSR"><td class="ant-table-cell" style="text-align: left;"><div class="table-td"><div class="asset-logo"><img src="/assets/images/AIDAUSR.png" alt="AIDaUSR token logo"><span>AIDaUSR</span></div></div></td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="china-logo"><img src="/assets/images/chain-eth.png" alt=""></div></div></td><td class="ant-table-cell" style="text-align: center;">63,332 USR</td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="asset-status"><div>10x GAIB Spice</div><div>30x Resolv Points</div></div></div></td><td class="ant-table-cell" style="text-align: center;">$63,332</td><td class="ant-table-cell ant-table-cell-fix-right ant-table-cell-fix-right-first" style="position: sticky; right: 0px; text-align: center;"><div class="table-td"><button class="deposit-btn deposit-btn-disabled" disabled="">Deposit</button></div></td></tr><tr class="ant-table-row ant-table-row-level-0" data-row-key="ethereum-AlphaCUSDO"><td class="ant-table-cell" style="text-align: left;"><div class="table-td"><div class="asset-logo"><img src="/assets/images/AIDACUSDO.png" alt="AIDaCUSDO token logo"><span>AIDaCUSDO</span></div></div></td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="china-logo"><img src="/assets/images/chain-eth.png" alt=""></div></div></td><td class="ant-table-cell" style="text-align: center;">48,201 CUSDO</td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="asset-status"><div>10x GAIB Spice</div><div>3x OpenEden Points</div></div></div></td><td class="ant-table-cell" style="text-align: center;">$49,309</td><td class="ant-table-cell ant-table-cell-fix-right ant-table-cell-fix-right-first" style="position: sticky; right: 0px; text-align: center;"><div class="table-td"><button class="deposit-btn deposit-btn-disabled" disabled="">Deposit</button></div></td></tr><tr class="ant-table-row ant-table-row-level-0" data-row-key="base-AlphaUSDC"><td class="ant-table-cell" style="text-align: left;"><div class="table-td"><div class="asset-logo"><img src="/assets/images/AIDAUSDC.png" alt="AIDaUSDC token logo"><span>AIDaUSDC</span></div></div></td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="china-logo"><img src="/assets/images/chain-base.png" alt=""></div></div></td><td class="ant-table-cell" style="text-align: center;">1,046,157 USDC</td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="asset-status"><div>10x GAIB Spice</div></div></div></td><td class="ant-table-cell" style="text-align: center;">$1,046,157</td><td class="ant-table-cell ant-table-cell-fix-right ant-table-cell-fix-right-first" style="position: sticky; right: 0px; text-align: center;"><div class="table-td"><button class="deposit-btn deposit-btn-disabled" disabled="">Deposit</button></div></td></tr><tr class="ant-table-row ant-table-row-level-0" data-row-key="arbitrum-AlphaUSDC"><td class="ant-table-cell" style="text-align: left;"><div class="table-td"><div class="asset-logo"><img src="/assets/images/AIDAUSDC.png" alt="AIDaUSDC token logo"><span>AIDaUSDC</span></div></div></td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="china-logo"><img src="/assets/images/chain-arb.png" alt=""></div></div></td><td class="ant-table-cell" style="text-align: center;">307,803 USDC</td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="asset-status"><div>10x GAIB Spice</div></div></div></td><td class="ant-table-cell" style="text-align: center;">$307,803</td><td class="ant-table-cell ant-table-cell-fix-right ant-table-cell-fix-right-first" style="position: sticky; right: 0px; text-align: center;"><div class="table-td"><button class="deposit-btn deposit-btn-disabled" disabled="">Deposit</button></div></td></tr><tr class="ant-table-row ant-table-row-level-0" data-row-key="arbitrum-AlphaUSDT"><td class="ant-table-cell" style="text-align: left;"><div class="table-td"><div class="asset-logo"><img src="/assets/images/AIDAUSDT.png" alt="AIDaUSDT token logo"><span>AIDaUSDT</span></div></div></td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="china-logo"><img src="/assets/images/chain-arb.png" alt=""></div></div></td><td class="ant-table-cell" style="text-align: center;">487,276 USDT</td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="asset-status"><div>10x GAIB Spice</div></div></div></td><td class="ant-table-cell" style="text-align: center;">$487,276</td><td class="ant-table-cell ant-table-cell-fix-right ant-table-cell-fix-right-first" style="position: sticky; right: 0px; text-align: center;"><div class="table-td"><button class="deposit-btn deposit-btn-disabled" disabled="">Deposit</button></div></td></tr><tr class="ant-table-row ant-table-row-level-0" data-row-key="sei-AlphaUSDT"><td class="ant-table-cell" style="text-align: left;"><div class="table-td"><div class="asset-logo"><img src="/assets/images/AIDAUSDT.png" alt="AIDaUSDT token logo"><span>AIDaUSDT</span></div></div></td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="china-logo"><img src="/assets/images/chain-sei.svg" alt=""></div></div></td><td class="ant-table-cell" style="text-align: center;">15,010,479 USDT</td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="asset-status"><div>10x GAIB Spice</div></div></div></td><td class="ant-table-cell" style="text-align: center;">$15,010,479</td><td class="ant-table-cell ant-table-cell-fix-right ant-table-cell-fix-right-first" style="position: sticky; right: 0px; text-align: center;"><div class="table-td"><button class="deposit-btn deposit-btn-disabled" disabled="">Deposit</button></div></td></tr><tr class="ant-table-row ant-table-row-level-0" data-row-key="story-AlphaUSDC"><td class="ant-table-cell" style="text-align: left;"><div class="table-td"><div class="asset-logo"><img src="/assets/images/AIDAUSDC.png" alt="AIDaUSDC token logo"><span>AIDaUSDC</span></div></div></td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="china-logo"><img src="/assets/images/chain-story.png" alt=""></div></div></td><td class="ant-table-cell" style="text-align: center;">12,314 USDC</td><td class="ant-table-cell" style="text-align: center;"><div class="table-td"><div class="asset-status"><div>10x GAIB Spice</div></div></div></td><td class="ant-table-cell" style="text-align: center;">$12,314</td><td class="ant-table-cell ant-table-cell-fix-right ant-table-cell-fix-right-first" style="position: sticky; right: 0px; text-align: center;"><div class="table-td"><button class="deposit-btn deposit-btn-disabled" disabled="">Deposit</button></div></td></tr></tbody></table></div></div></div></div></div></div></div></div><div class="page-title">FAQs</div><div class="ant-collapse ant-collapse-icon-position-start" role="tablist"><div class="ant-collapse-item ant-collapse-item-active"><div class="ant-collapse-header" role="tab" aria-expanded="true" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="expanded" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" style="-ms-transform:rotate(90deg);transform:rotate(90deg)" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">What is AID?</span></div><div class="ant-collapse-content ant-collapse-content-active" role="tabpanel"><div class="ant-collapse-content-box"><div>AID is an AI synthetic dollar launched by GAIB, bridging AI economies with DeFi to offer sustainable yields from AI compute demand. More information about AID can be found<!-- --> <!-- --><a target="_blank" href="https://gaibofficial.medium.com/introducing-aid-the-ai-dollar-fd5e59fab1ce">here</a>.<!-- --></div></div></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">What is AID Alpha?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">Is AID a stablecoin?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">What’s the risk profile of the assets backing AID — how volatile or secure are they?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">Is AID's backing audited or verified?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">Will AID be bridged or natively minted on the supported chains?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">Which tokens can I deposit during the Alpha launch?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">What benefits do early depositors receive?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">How are reward points calculated?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">What are point multipliers?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">Can I benefit from referring to other users?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">What happens if the deposit cap is hit — do new users get excluded?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">What benefits do NFTs unlock — are they cosmetic, access-based, or yield-based?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">Is there a snapshot for Fremen Essence NFT eligibility or is it real-time?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">When will the GAIB token launch and when is the Spice snapshot?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">Are the vaults audited? Who built the contracts?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">Where are the deposited stablecoins held, and is custody decentralized?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">What is the penalty percentage for early withdrawal and how is it calculated?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">Where can I stay updated about the AID Alpha launch?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">Can I transfer my AIDaUSDT/AIDaUSDC to another wallet address?</span></div></div><div class="ant-collapse-item"><div class="ant-collapse-header" role="tab" aria-expanded="false" aria-disabled="false" tabindex="0"><div class="ant-collapse-expand-icon"><span role="img" aria-label="collapsed" class="anticon anticon-right ant-collapse-arrow"><svg viewBox="64 64 896 896" focusable="false" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"></path></svg></span></div><span class="ant-collapse-header-text">More</span></div></div></div></div><footer><div class="text">Copyright © 2025 GAIB</div><a href="https://gaib.ai/" target="_blank" rel="noopener noreferrer"><img src="/logo/White-icon.png" alt="" class="logo"></a><div class="social-links"><a href="https://x.com/gaib_ai" target="_blank" rel="noopener noreferrer"><img src="/assets/images/icon-twitter.png" alt="" class="X"></a><a href="https://t.me/gaib_ai" target="_blank" rel="noopener noreferrer"><img src="/assets/images/icon-telegram.png" alt="" class="Telegram"></a><a href="https://discord.com/invite/gaibofficial" target="_blank" rel="noopener noreferrer"><img src="/assets/images/icon-discord.png" alt="" class="Discord"></a><a href="https://gaibofficial.medium.com/" target="_blank" rel="noopener noreferrer"><img src="/assets/images/icon-medium.png" alt="" class="Medium"></a><a href="https://docs.gaib.ai/" target="_blank" rel="noopener noreferrer"><img src="/assets/images/icon-doc.png" alt="" class="Documentation"></a></div></footer></div>
+
+edia screen and (max-width: 750px) {
+    main .section {
+        min-height: calc(100vh - 50px);
+        padding: 0 0 80px;
+    }
+}
+header, main .section {
+    width: 100%;
+    position: relative;
+}
+main .section {
+    min-height: 100vh;
+    background: url(/assets/images/bg.png);
+    background-size: contain;
+    z-index: 2;
+    padding: 0 0 150px;
+}
+*, :after, :before {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+用户代理样式表
+div {
+    display: block;
+    unicode-bidi: isolate;
+}
+<style>
+.ant-app {
+    color: rgba(0, 0, 0, 0.88);
+    font-size: 14px;
+    line-height: 1.5714285714285714;
+    font-family: Clash Grotesk Medium;
+}
+<style>
+.ant-app {
+    font-family: Clash Grotesk Medium;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+body, html {
+    width: 100%;
+    height: -moz-fit-content;
+    height: fit-content;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #fff0df, #ff9423 126.56%);
+    text-rendering: optimizeLegibility;
+    transition: color .5s, background-color .5s;
+    -webkit-text-size-adjust: none;
+}
+<style>
+:root [data-dynamic-theme=light] [data-dynamic-theme-brand=bold], :root [data-dynamic-theme=light][data-dynamic-theme-brand=bold] {
+    --dynamic-footer-text-color: #fff;
+    --dynamic-footer-icon-color: rgba(247, 247, 249, .75);
+    --dynamic-footer-arrow-color: rgba(247, 247, 249, .75);
+}
+<style>
+:root [data-dynamic-theme=light] {
+    --dynamic-font-family-primary: "DM Sans", sans-serif;
+    --dynamic-font-family-numbers: "Roboto Mono", monospace, sans-serif;
+    --dynamic-base-1: #f7f7f9;
+    --dynamic-base-2: #fff;
+    --dynamic-base-3: #eeeef1;
+    --dynamic-base-4: #e7e8ed;
+    --dynamic-brand-hover-color: linear-gradient(0deg, rgba(0, 0, 0, .08), rgba(0, 0, 0, .08)), #4779ff;
+    --dynamic-brand-primary-color: #4779ff;
+    --dynamic-brand-secondary-color: rgba(71, 121, 255, .15);
+    --dynamic-success-1: #30a67b;
+    --dynamic-success-2: #e3f7ef;
+    --dynamic-border-radius: 1.5rem;
+    --dynamic-hover: rgba(22, 37, 77, .03);
+    --dynamic-info-2: rgba(71, 121, 255, .1);
+    --dynamic-error-1: #ff4646;
+    --dynamic-error-2: #ffe3e3;
+    --dynamic-alert-1: #dd8500;
+    --dynamic-alert-2: #faedd9;
+    --dynamic-footer-background-color: #fff;
+    --dynamic-footer-text-color: #383c48;
+    --dynamic-footer-icon-color: #4779ff;
+    --dynamic-loading-animation-gradient: linear-gradient(90deg, hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, .2) 20%, hsla(0, 0%, 100%, .5) 60%, hsla(0, 0%, 100%, 0));
+    --dynamic-overlay: rgba(24, 27, 34, .15);
+    --dynamic-shadow-down-1: 0 0.0625rem 0.125rem rgba(24, 39, 75, .04);
+    --dynamic-shadow-down-2: 0 0.75rem 1.25rem -0.375rem rgba(24, 39, 75, .02), 0 1rem 1.625rem -0.25rem rgba(24, 39, 75, .04);
+    --dynamic-shadow-down-3: 0 1.5rem 2rem -1.5rem rgba(0, 0, 0, .24);
+    --dynamic-shadow-up-1: 0 -0.5rem 3rem -0.5rem rgba(109, 121, 165, .16);
+    --dynamic-text-link: #0047ff;
+    --dynamic-text-primary: #383c48;
+    --dynamic-text-secondary: #7b7d86;
+    --dynamic-text-size-body-mini: 0.6875rem;
+    --dynamic-text-size-body-normal: 0.9375rem;
+    --dynamic-text-size-body-small: 0.75rem;
+    --dynamic-text-size-button-primary: 0.875rem;
+    --dynamic-text-size-button-secondary: 0.75rem;
+    --dynamic-text-size-numbers-display: 1.875rem;
+    --dynamic-text-size-numbers-big: 0.875rem;
+    --dynamic-text-size-numbers-medium: 0.75rem;
+    --dynamic-text-size-title: 1.125rem;
+    --dynamic-text-tertiary: #abacb2;
+    --dynamic-badge-background: #eeeef1;
+    --dynamic-badge-color: #7b7d86;
+    --dynamic-badge-primary-background: #e3f7ef;
+    --dynamic-badge-primary-color: #30a67b;
+    --dynamic-badge-dot-background: #4779ff;
+    --dynamic-search-bar-background: #fff;
+    --dynamic-search-bar-background-hover: #fff;
+    --dynamic-search-bar-background-focus: #fff;
+    --dynamic-search-bar-border: 0.0625rem solid #eeeef1;
+    --dynamic-search-bar-border-hover: 0.0625rem solid #e7e8ed;
+显示所有属性（另外 47 个）
+}
+<style>
+:root [data-dynamic-theme-brand=bold], :root[data-dynamic-theme-brand=bold] {
+    --dynamic-footer-text-color: #fff;
+    --dynamic-footer-icon-color: rgba(247, 247, 249, .75);
+    --dynamic-footer-arrow-color: rgba(247, 247, 249, .75);
+}
+html {
+    font-family: sans-serif;
+    line-height: 1.15;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    -ms-overflow-style: scrollbar;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+<style>
+:root {
+    --dynamic-font-family-primary: "DM Sans", sans-serif;
+    --dynamic-font-family-numbers: "Roboto Mono", monospace, sans-serif;
+    --dynamic-base-1: #f7f7f9;
+    --dynamic-base-2: #fff;
+    --dynamic-base-3: #eeeef1;
+    --dynamic-base-4: #e7e8ed;
+    --dynamic-brand-hover-color: linear-gradient(0deg, rgba(0, 0, 0, .08), rgba(0, 0, 0, .08)), #4779ff;
+    --dynamic-brand-primary-color: #4779ff;
+    --dynamic-brand-secondary-color: rgba(71, 121, 255, .15);
+    --dynamic-success-1: #30a67b;
+    --dynamic-success-2: #e3f7ef;
+    --dynamic-border-radius: 1.5rem;
+    --dynamic-hover: rgba(22, 37, 77, .03);
+    --dynamic-info-2: rgba(71, 121, 255, .1);
+    --dynamic-error-1: #ff4646;
+    --dynamic-error-2: #ffe3e3;
+    --dynamic-alert-1: #dd8500;
+    --dynamic-alert-2: #faedd9;
+    --dynamic-footer-background-color: #fff;
+    --dynamic-footer-text-color: #383c48;
+    --dynamic-footer-icon-color: #4779ff;
+    --dynamic-loading-animation-gradient: linear-gradient(90deg, hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, .2) 20%, hsla(0, 0%, 100%, .5) 60%, hsla(0, 0%, 100%, 0));
+    --dynamic-overlay: rgba(24, 27, 34, .15);
+    --dynamic-shadow-down-1: 0 0.0625rem 0.125rem rgba(24, 39, 75, .04);
+    --dynamic-shadow-down-2: 0 0.75rem 1.25rem -0.375rem rgba(24, 39, 75, .02), 0 1rem 1.625rem -0.25rem rgba(24, 39, 75, .04);
+    --dynamic-shadow-down-3: 0 1.5rem 2rem -1.5rem rgba(0, 0, 0, .24);
+    --dynamic-shadow-up-1: 0 -0.5rem 3rem -0.5rem rgba(109, 121, 165, .16);
+    --dynamic-text-link: #0047ff;
+    --dynamic-text-primary: #383c48;
+    --dynamic-text-secondary: #7b7d86;
+    --dynamic-text-size-body-mini: 0.6875rem;
+    --dynamic-text-size-body-normal: 0.9375rem;
+    --dynamic-text-size-body-small: 0.75rem;
+    --dynamic-text-size-button-primary: 0.875rem;
+    --dynamic-text-size-button-secondary: 0.75rem;
+    --dynamic-text-size-numbers-display: 1.875rem;
+    --dynamic-text-size-numbers-big: 0.875rem;
+    --dynamic-text-size-numbers-medium: 0.75rem;
+    --dynamic-text-size-title: 1.125rem;
+    --dynamic-text-tertiary: #abacb2;
+    --dynamic-badge-background: #eeeef1;
+    --dynamic-badge-color: #7b7d86;
+    --dynamic-badge-primary-background: #e3f7ef;
+    --dynamic-badge-primary-color: #30a67b;
+    --dynamic-badge-dot-background: #4779ff;
+    --dynamic-search-bar-background: #fff;
+    --dynamic-search-bar-background-hover: #fff;
+    --dynamic-search-bar-background-focus: #fff;
+    --dynamic-search-bar-border: 0.0625rem solid #eeeef1;
+    --dynamic-search-bar-border-hover: 0.0625rem solid #e7e8ed;
+显示所有属性（另外 47 个）
+}
+*, :after, :before {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+*, :after, :before {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
