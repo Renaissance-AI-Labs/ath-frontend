@@ -1,0 +1,59 @@
+{
+  "navbar": {
+    "walletAddress": "0xfDA2....63D6",
+    "languages": {
+      "en": "English",
+      "zh": "简体中文",
+      "ja": "日本語",
+      "ko": "한국어",
+      "ru": "POCCИЯ"
+    }
+  },
+  "assetCard": {
+    "title": "My Current Assets",
+    "amount": "0.00000000 Token",
+    "donateButton": "Donate to the Pool"
+  },
+  "assetDetails": {
+    "performance": "Performance",
+    "performanceValue": "0 Token",
+    "link": "Link",
+    "linkValue": "--"
+  },
+  "investmentPlan": {
+    "title": "LAF Market Maker Investment Plan",
+    "description": "After donating to the pool, enjoy daily compound interest up to 1.2% based on the donation amount, for a maximum of 30 days per cycle."
+  },
+  "transactions": {
+    "investmentList": "Investment List",
+    "redemptionList": "Redemption List",
+    "headers": {
+      "id": "ID",
+      "date": "Date",
+      "principal": "Principal",
+      "profit": "Profit",
+      "progress": "Redemption Progress",
+      "action": "Action"
+    },
+    "noData": "No data available",
+    "redeemButton": "Redeem",
+    "status": {
+        "inProgress": "In Progress",
+        "completed": "Completed",
+        "redeemed": "Redeemed"
+    }
+  },
+  "popup": {
+    "title": "Add Assets",
+    "placeholder": "Enter amount to add",
+    "maxAmount": "Max",
+    "selectDays": "Select days",
+    "daysOptions": {
+      "day_1": "1 Day, 0.3% Compound",
+      "day_15": "15 Days, 0.6% Compound",
+      "day_30": "30 Days, 1.2% Compound"
+    },
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  }
+}

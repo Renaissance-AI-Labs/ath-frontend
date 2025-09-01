@@ -1,0 +1,59 @@
+{
+  "navbar": {
+    "walletAddress": "0xfDA2....63D6",
+    "languages": {
+      "en": "English",
+      "zh": "简体中文",
+      "ja": "日本語",
+      "ko": "한국어",
+      "ru": "POCCИЯ"
+    }
+  },
+  "assetCard": {
+    "title": "我的当前资产",
+    "amount": "0.00000000 Token",
+    "donateButton": "捐赠底池"
+  },
+  "assetDetails": {
+    "performance": "业绩",
+    "performanceValue": "0 Token",
+    "link": "链接",
+    "linkValue": "--"
+  },
+  "investmentPlan": {
+    "title": "LAF做市商投资规划",
+    "description": "捐赠底池后按捐赠额，每日最高1.2%自动复利，每次最高30天。"
+  },
+  "transactions": {
+    "investmentList": "投资列表",
+    "redemptionList": "赎回列表",
+    "headers": {
+      "id": "序号",
+      "date": "日期",
+      "principal": "本金",
+      "profit": "盈利",
+      "progress": "赎回进展",
+      "action": "操作"
+    },
+    "noData": "暂无数据",
+    "redeemButton": "赎回",
+    "status": {
+        "inProgress": "进行中",
+        "completed": "已完成",
+        "redeemed": "已赎回"
+    }
+  },
+   "popup": {
+    "title": "增加资产",
+    "placeholder": "请输入增加金额",
+    "maxAmount": "最大",
+    "selectDays": "请选择天数",
+    "daysOptions": {
+      "day_1": "1 天, 复利 0.3%",
+      "day_15": "15 天, 复利 0.6%",
+      "day_30": "30 天, 复利 1.2%"
+    },
+    "cancel": "取消",
+    "confirm": "确定"
+  }
+}
