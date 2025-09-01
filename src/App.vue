@@ -17,7 +17,7 @@
     </header>
 
     <main class="container">
-        <section class="asset-card">
+        <section class="asset-card" data-aos="fade-up">
             <h2>{{ $t('assetCard.title') }}</h2>
             <div class="asset-amount">
                 <span>{{ $t('assetCard.amount') }}</span>
@@ -25,7 +25,7 @@
             <button class="donate-button" @click="isPopupVisible = true">{{ $t('assetCard.donateButton') }}</button>
         </section>
 
-        <section class="info-card asset-details">
+        <section class="info-card asset-details" data-aos="fade-up" data-aos-delay="100">
             <div class="detail-row">
                 <span>{{ $t('assetDetails.performance') }}</span>
                 <span>{{ $t('assetDetails.performanceValue') }}</span>
@@ -36,7 +36,7 @@
             </div>
         </section>
 
-        <section class="info-card investment-plan">
+        <section class="info-card investment-plan" data-aos="fade-up" data-aos-delay="200">
             <div class="card-header">
                 <div class="line"></div>
                 <h3>{{ $t('investmentPlan.title') }}</h3>
@@ -44,7 +44,7 @@
             <p>{{ $t('investmentPlan.description') }}</p>
         </section>
 
-        <section class="transactions-card">
+        <section class="transactions-card" data-aos="fade-up" data-aos-delay="300">
             <div class="tabs">
                 <div class="tab" :class="{ active: activeTab === 'investment' }" @click="activeTab = 'investment'">{{ $t('transactions.investmentList') }}</div>
                 <div class="tab" :class="{ active: activeTab === 'redemption' }" @click="activeTab = 'redemption'">{{ $t('transactions.redemptionList') }}</div>
@@ -90,9 +90,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import DonatePopup from './components/DonatePopup.vue';
+import AOS from 'aos';
 
 const { t, locale } = useI18n();
 
@@ -110,6 +111,13 @@ const languages = ref([
 const switchLanguage = (langCode) => {
     locale.value = langCode;
 };
+
+onMounted(() => {
+  AOS.init({
+    duration: 800,
+    once: true,
+  });
+});
 
 const investmentData = ref([
     { id: 1, date: '2023-10-26 10:00', principal: 1000, profit: 12 },
