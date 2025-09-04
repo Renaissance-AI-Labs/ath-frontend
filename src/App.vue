@@ -10,7 +10,7 @@
           <div class="bg-texture"></div>
       </div>
       <div class="hero-video">
-          <video class="" muted autoplay loop playsinline>
+          <video class="video-width" muted autoplay loop playsinline>
               <source src="/asset/images/video/BlackHole.mp4" type="video/mp4">
           </video>
           <div class="orther-overlay"></div>
@@ -78,11 +78,11 @@ export default {
                   loadScript('/asset/js/ScrollTrigger.min.js', () => {
                     loadScript('/asset/js/ScrollSmooth.js', () => {
                       loadScript('/asset/js/odometer.min.js', () => {
-                        // loadScript('/asset/js/main.js', () => {
-                        //   // All scripts are loaded, now we can safely assume jQuery and plugins are available.
-                        //   // We might need to manually re-initialize plugins if they don't auto-init on load.
-                        //   // For now, let's hope sequential loading is enough.
-                        // });
+                        loadScript('/asset/js/main.js', () => {
+                          // All scripts are loaded, now we can safely assume jQuery and plugins are available.
+                          // We might need to manually re-initialize plugins if they don't auto-init on load.
+                          // For now, let's hope sequential loading is enough.
+                        });
                       });
                     });
                   });
@@ -97,6 +97,9 @@ export default {
 }
 </script>
 
-<style>
-/* If you have global styles, you can add them here or in a separate CSS file imported in main.js */
+<style scoped>
+.video-width {
+  margin-left: 2px;
+  width: 98%;
+}
 </style>
