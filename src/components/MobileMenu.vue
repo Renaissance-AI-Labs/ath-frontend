@@ -32,4 +32,9 @@ export default {
 }
 </script>
 <style scoped>
+.nav-ul-mb li a {
+    color: #9da3af !important;
+}
 </style>
+
+
