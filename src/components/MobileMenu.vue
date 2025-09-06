@@ -5,8 +5,8 @@
                 <img class="lazyload" src="/asset/images/logo/logo.svg" data-src="/asset/images/logo/logo.svg" alt="LOGO">
             </div>
             <div class="btn_group">
-                <a href="login.html" class="tf-btn style-2">
-                    Get started
+                <a href="#" @click.prevent="openModal" class="tf-btn style-2">
+                    连接钱包
                 </a>
                 <span class="icon-close-popup" data-bs-dismiss="offcanvas">
                     <i class="icon-close"></i>
@@ -28,7 +28,12 @@
 </template>
 <script>
 export default {
-    name: 'MobileMenu'
+    name: 'MobileMenu',
+    methods: {
+        openModal() {
+            this.$emit('open-get-started-modal');
+        }
+    }
 }
 </script>
 <style scoped>

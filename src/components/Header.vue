@@ -52,8 +52,8 @@
                             <a href="#" class="tf-btn text-body-3 animate-btn d-none d-sm-flex">
                                 Log in
                             </a>
-                            <a href="#" class="tf-btn text-body-3 style-2 animate-btn animate-dark">
-                                Get started
+                            <a href="#" @click.prevent="openModal" class="tf-btn text-body-3 style-2 animate-btn animate-dark">
+                                连接钱包
                             </a>
                             <a href="#mobileMenu" class="btn-menu_mobile d-lg-none" data-bs-toggle="offcanvas">
                                 <i class="icon icon-menu"></i>
@@ -69,6 +69,11 @@
 <script>
 export default {
   name: 'Header',
+  methods: {
+    openModal() {
+      this.$emit('open-get-started-modal');
+    }
+  }
 }
 </script>
 
