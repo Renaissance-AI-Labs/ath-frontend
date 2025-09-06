@@ -37,22 +37,22 @@
         <div class="sect-main">
             <div class="container">
                 <div class="sect-title wow fadeInUp">
-                    <h1 class="s-title font-3">
-                        Create Smarter. Launch Faster. <br>
+                    <h1 class="s-title font-3 title-big">
+                        Athena Protocol <br>
                         <span class="text-change_wrap">
-                            <span class="text-change_rotating">Built on<span class="icon icon-gpt"></span>ChatGPT.
+                            <span class="text-change_rotating">这里没有<span class="icon icon-gpt"></span>CEO.
                             </span>
-                            <span class="text-change_rotating">Built on<span
-                                    class="icon icon-gemini"></span>Gemini.
+                            <span class="text-change_rotating">这里没有<span
+                                    class="icon icon-gemini"></span>营销团队
                             </span>
-                            <span class="text-change_rotating">Built on<span class="icon icon-cloud"></span>Claude.
-                            </span>
+                            <!-- <span class="text-change_rotating">Built on<span class="icon icon-cloud"></span>Claude.
+                            </span> -->
                         </span>
                     </h1>
                     <p class="s-sub_title">
-                        Design, generate, and build anything with a multi-model AI engine — <br
+                        只有代码、数学，以及一个由 AI 驱动的、不可阻挡的<br
                             class="d-none d-sm-block">
-                        one platform, endless possibilities.
+                            价值创造机器
                     </p>
                 </div>
             </div>
@@ -148,6 +148,15 @@ export default {
 }
 </script>
 <style scoped>
+
+.text-change_wrap {
+    margin-top: 50px;
+    font-size: 18px;
+}
+
+.title-big {
+    font-size: 48px;
+}
 </style>
 
 

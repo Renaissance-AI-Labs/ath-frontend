@@ -55,9 +55,9 @@
                             <a v-if="!walletState.isConnected" href="#" @click.prevent="openModal" class="tf-btn text-body-3 style-2 animate-btn animate-dark">
                                 连接钱包
                             </a>
-                            <span v-else class="wallet-address tf-btn text-body-3 style-2 animate-btn animate-dark">
+                            <a v-else href="#" @click.prevent="openModal" class="wallet-address tf-btn text-body-3 style-2 animate-btn animate-dark">
                                 {{ formattedAddress }}
-                            </span>
+                            </a>
                             <a href="#mobileMenu" class="btn-menu_mobile d-lg-none" data-bs-toggle="offcanvas">
                                 <i class="icon icon-menu"></i>
                             </a>
@@ -92,9 +92,6 @@ export default {
 </script>
 
 <style scoped>
-.wallet-address {
-    cursor: default;
-}
 </style>
 
 
