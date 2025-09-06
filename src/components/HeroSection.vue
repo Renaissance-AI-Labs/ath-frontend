@@ -40,7 +40,7 @@
                     <h1 class="s-title font-3 title-big">
                         Athena Protocol <br>
                         <span class="text-change_wrap">
-                            <span class="text-change_rotating">这里没有<span class="icon icon-gpt"></span>CEO.
+                            <span class="text-change_rotating">这里没有<span class="icon icon-gemini"></span>CEO.
                             </span>
                             <span class="text-change_rotating">这里没有<span
                                     class="icon icon-gemini"></span>营销团队
@@ -50,40 +50,45 @@
                         </span>
                     </h1>
                     <p class="s-sub_title">
-                        只有代码、数学，以及一个由 AI 驱动的、不可阻挡的<br
-                            class="d-none d-sm-block">
-                            价值创造机器
+                        只有代码、数学，以及一个由 AI 驱动的、不可阻挡的<br class="d-none d-sm-block">
+                             价值创造机器
                     </p>
                 </div>
             </div>
             <span class="br-line"></span>
+            <div class="container"> 
+                <div class="leave-somthing"> 
+                    <!-- ----- 保留节目 ---- -->
+                </div>
+            </div>
             <div class="container">
                 <div class="sect-content position-relative">
                     <div class="box-ask-wrap">
                         <div class="box-ask">
                             <form class="form-ask wow fadeInUp">
                                 <div class="form-content">
-                                    <input class="style-2" type="text" placeholder="Ask a follow up...">
+                                    <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px;">30000,00000,0000<span style="font-size: 16px;"> TOKEN</span></p>
 
-                                    <fieldset class="field-bottom">
+                                    <fieldset class="field-bottom button-add-pool">
                                         <div class="field_left">
-                                            <a href="#" class="btn-ip type-circle ip-add">
+                                            <!-- <a href="#" class="btn-ip type-circle ip-add">
                                                 <i class="icon icon-plus"></i>
-                                            </a>
+                                            </a> -->
                                             <a href="#" class="btn-ip ip-modern text-body-3">
-                                                <i class="icon icon-arrow-circle"></i>
-                                                GPT-4.1
-                                                <i class="icon-arrow-caret-down fs-8"></i>
+                                                <!-- <i class="icon icon-arrow-circle"></i> -->
+                                                <i class="icon icon-plus"></i>
+                                                注入底池
+                                                <!-- <i class="icon-arrow-caret-down fs-8"></i> -->
                                             </a>
                                         </div>
-                                        <div class="field_right">
+                                        <!-- <div class="field_right">
                                             <a href="#" class="btn-ip type-transparent ip-voice">
                                                 <i class="icon icon-micro"></i>
                                             </a>
                                             <button type="submit" class="btn-submit btn-ip type-circle">
                                                 <i class="icon icon-arrow-top"></i>
                                             </button>
-                                        </div>
+                                        </div> -->
                                     </fieldset>
                                 </div>
                             </form>
@@ -156,6 +161,30 @@ export default {
 
 .title-big {
     font-size: 48px;
+}
+
+.coins-title {
+    font-size: 26px;
+    font-family: 'monospace', 'BlinkMacSystemFont', sans-serif;
+    
+    /* Shimmer Effect on Text */
+    background: linear-gradient(90deg, #9F9DFB 20%, #A5DCF3 40%, #9F9DFB 60%);
+    background-size: 200% auto;
+    color: #fff;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+    to {
+        background-position: -200% center;
+    }
+}
+
+.button-add-pool {
+    justify-content: center !important;
 }
 </style>
 
