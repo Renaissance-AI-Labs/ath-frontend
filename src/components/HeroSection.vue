@@ -5,9 +5,9 @@
             <div class="container">
                 <div class="s-meta text-caption font-2">
                     <p class="s-number_order wg-counter">
-                        [ <span class="text-white">0<span class="odometer" data-number="1">0</span></span> / 09 ]
+                        [ <span class="text-white">BACK<span class="odometer" data-number="1"></span></span> TO ]
                     </p>
-                    <p class="s-label">[ <span class="text-white hacker-text_transform">HERO</span> ]</p>
+                    <p class="s-label">[ <span class="text-white hacker-text_transform">FUTURE</span> ]</p>
                 </div>
             </div>
         </div>
@@ -23,7 +23,7 @@
                             <span class="bar_center"></span>
                         </span>
                         <span class="hacker-text_transform no-delay">
-                            YOUR ALL-IN-ONE AI CREATION PLATFORM
+                            YOUR ALL-IN-ONE ATHENA PLATFORM
                         </span>
                         <span class="bar-group type-right">
                             <span class="bar_center"></span>
@@ -61,35 +61,43 @@
                     <!-- ----- 保留节目 ---- -->
                 </div>
             </div>
+            <div class="tf-brand assets-title">
+                <div class="container">
+            <h5 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content">您的资产
+                在此处诞生 温和的信任 </h5>
+                </div>
+            </div>
             <div class="container">
                 <div class="sect-content position-relative">
                     <div class="box-ask-wrap">
                         <div class="box-ask">
-                            <form class="form-ask wow fadeInUp">
-                                <div class="form-content">
-                                    <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px;">30000,00000,0000<span style="font-size: 16px;"> TOKEN</span></p>
+                            <form class="form-ask wow fadeInUp form-ask-bg">
+                                <div class="box-ask-inner">
+                                    <div class="form-content">
+                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px;">30000,00000,0000<span style="font-size: 16px;"> TOKEN</span></p>
 
-                                    <fieldset class="field-bottom button-add-pool">
-                                        <div class="field_left">
-                                            <!-- <a href="#" class="btn-ip type-circle ip-add">
-                                                <i class="icon icon-plus"></i>
-                                            </a> -->
-                                            <a href="#" class="btn-ip ip-modern text-body-3">
-                                                <!-- <i class="icon icon-arrow-circle"></i> -->
-                                                <i class="icon icon-plus"></i>
-                                                注入底池
-                                                <!-- <i class="icon-arrow-caret-down fs-8"></i> -->
-                                            </a>
-                                        </div>
-                                        <!-- <div class="field_right">
-                                            <a href="#" class="btn-ip type-transparent ip-voice">
-                                                <i class="icon icon-micro"></i>
-                                            </a>
-                                            <button type="submit" class="btn-submit btn-ip type-circle">
-                                                <i class="icon icon-arrow-top"></i>
-                                            </button>
-                                        </div> -->
-                                    </fieldset>
+                                        <fieldset class="field-bottom button-add-pool">
+                                            <div class="field_left">
+                                                <!-- <a href="#" class="btn-ip type-circle ip-add">
+                                                    <i class="icon icon-plus"></i>
+                                                </a> -->
+                                                <a href="#" class="btn-ip ip-modern text-body-3">
+                                                    <!-- <i class="icon icon-arrow-circle"></i> -->
+                                                    <i class="icon icon-plus"></i>
+                                                    注入底池
+                                                    <!-- <i class="icon-arrow-caret-down fs-8"></i> -->
+                                                </a>
+                                            </div>
+                                            <!-- <div class="field_right">
+                                                <a href="#" class="btn-ip type-transparent ip-voice">
+                                                    <i class="icon icon-micro"></i>
+                                                </a>
+                                                <button type="submit" class="btn-submit btn-ip type-circle">
+                                                    <i class="icon icon-arrow-top"></i>
+                                                </button>
+                                            </div> -->
+                                        </fieldset>
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -107,8 +115,8 @@
             <div class="tf-brand">
                 <div class="container">
                     <div class="tf-brand_inner">
-                        <h5 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp">TRUSTED
-                            BY <span class="odometer" data-number="6000">1000</span>+ HIGHLY PRODUCTIVE COMPANY</h5>
+                        <!-- <h5 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp">TRUSTED
+                            BY <span class="odometer" data-number="6000">1000</span>+ HIGHLY PRODUCTIVE COMPANY</h5> -->
                         <div class="infiniteSlide infiniteSlide_brand" data-clone="3">
                             <div class="image-brand">
                                 <img class="lazyload" src="/asset/images/brand/brand-1.png"
@@ -168,7 +176,7 @@ export default {
     font-family: 'monospace', 'BlinkMacSystemFont', sans-serif;
     
     /* Shimmer Effect on Text */
-    background: linear-gradient(90deg, #9F9DFB 20%, #A5DCF3 40%, #9F9DFB 60%);
+    background: linear-gradient(90deg, #f6faff 20%, #b3e8ff 40%, #fafbff 60%);
     background-size: 200% auto;
     color: #fff;
     background-clip: text;
@@ -185,6 +193,21 @@ export default {
 
 .button-add-pool {
     justify-content: center !important;
+}
+
+.assets-title {
+    margin-top: 40px;
+    /* margin-bottom: 10px !important; */
+}
+
+.assets-title-content {
+    font-size: 20px !important;
+    color: #fff;
+    margin-bottom: 10px !important;
+}
+
+.form-ask-bg {
+    background-color: #11111300;
 }
 </style>
 

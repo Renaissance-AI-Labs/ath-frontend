@@ -5,7 +5,7 @@
                 <div class="col-5 col-lg-3">
                     <div class="header-left">
                         <router-link to="/" class="logo-site">
-                            <img src="/asset/images/logo/logo.svg" alt="LOGO">
+                            <img src="/asset/images/logo/ATNENA_LOGO.png" alt="LOGO">
                         </router-link>
                     </div>
                 </div>
