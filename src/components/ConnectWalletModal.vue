@@ -9,21 +9,21 @@
         <div class="wallet-list">
           <ul>
             <li>
-              <a href="#">
+              <a href="#" @click.prevent="handleConnect('okx')">
                 <img src="/asset/images/wallet/okx-logo.png" alt="OKX Wallet" class="wallet-icon okx-icon">
                 <span>OKX Wallet</span>
                 <i class="icon icon-arrow-right"></i>
               </a>
             </li>
             <li>
-              <a href="#">
+              <a href="#" @click.prevent="handleConnect('metamask')">
                 <img src="/asset/images/wallet/MetaMask-icon-fox-with-margins.svg" alt="MetaMask" class="wallet-icon metamask-icon">
                 <span>MetaMask</span>
                 <i class="icon icon-arrow-right"></i>
               </a>
             </li>
             <li>
-              <a href="#">
+              <a href="#" @click.prevent="handleConnect('tp')">
                 <img src="/asset/images/wallet/tp-logo.png" alt="TokenPocket" class="wallet-icon">
                 <span>TokenPocket</span>
                 <i class="icon icon-arrow-right"></i>
@@ -40,12 +40,20 @@
 </template>
 
 <script>
+import { connectWallet } from '@/services/wallet.js';
+
 export default {
-  name: 'GetStartedModal',
+  name: 'ConnectWalletModal',
   methods: {
     close() {
       this.$emit('close');
     },
+    async handleConnect(walletType) {
+      const success = await connectWallet(walletType);
+      if (success) {
+        this.close();
+      }
+    }
   },
 };
 </script>

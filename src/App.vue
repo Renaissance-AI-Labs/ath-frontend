@@ -21,7 +21,7 @@
     </div>
     <MobileMenu @open-get-started-modal="openModal" />
     <transition name="modal">
-      <GetStartedModal v-if="isModalVisible" @close="closeModal" />
+      <ConnectWalletModal v-if="isModalVisible" @close="closeModal" />
     </transition>
   </div>
 </template>
@@ -31,7 +31,7 @@ import Header from './components/Header.vue';
 import Footer from './components/Footer.vue';
 import GoTop from './components/GoTop.vue';
 import MobileMenu from './components/MobileMenu.vue';
-import GetStartedModal from './components/GetStartedModal.vue';
+import ConnectWalletModal from './components/ConnectWalletModal.vue';
 
 export default {
   name: 'App',
@@ -40,7 +40,7 @@ export default {
     Footer,
     GoTop,
     MobileMenu,
-    GetStartedModal
+    ConnectWalletModal
   },
   data() {
     return {
