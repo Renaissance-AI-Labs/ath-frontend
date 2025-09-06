@@ -16,11 +16,11 @@
 
             </ul>
         </div>
-        <div class="canvas-footer">
+        <!-- <div class="canvas-footer">
             <a href="login.html" class="tf-btn w-100 animate-btn style-high">
                 Login
             </a>
-        </div>
+        </div> -->
     </div>
 </template>
 <script>

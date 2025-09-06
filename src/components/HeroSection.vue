@@ -204,6 +204,7 @@ export default {
     font-size: 20px !important;
     color: #fff;
     margin-bottom: 10px !important;
+    font-weight: bold !important;
 }
 
 .form-ask-bg {

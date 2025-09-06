@@ -5,9 +5,9 @@
             <div class="container">
                 <div class="s-meta text-caption font-2">
                     <p class="s-number_order wg-counter">
-                        [ <span class="text-white">0<span class="odometer" data-number="9">0</span></span> / 09 ]
+                        [ <span class="text-white">0<span class="odometer" data-number="9">4</span></span> / 04 ]
                     </p>
-                    <p class="s-label">[ <span class="text-white hacker-text_transform">FOOTER</span> ]</p>
+                    <p class="s-label">[ <span class="text-white hacker-text_transform">了解我们</span> ]</p>
                 </div>
             </div>
         </div>
@@ -32,19 +32,19 @@
                     </div>
                     <div class="footer-inner_link tf-grid-layout tf-col-2 lg-col-4">
                         <a href="index.html" class="footer-logo logo-site">
-                            <img class="lazyload" src="/asset/images/logo/logo.svg" data-src="/asset/images/logo/logo.svg"
+                            <img class="lazyload" src="/asset/images/logo/ATNENA_LOGO.png" data-src="/asset/images/logo/ATNENA_LOGO.png"
                                 alt="LOGO">
                         </a>
                         <div class="footer-col-block wow fadeInLeft mx-auto m-sm-0">
-                            <h5 class="footer-heading footer-heading-mobile font-2">Product</h5>
+                            <!-- <h5 class="footer-heading footer-heading-mobile font-2">Social</h5>
                             <div class="tf-collapse-content">
                                 <ul class="footer-menu-list">
-                                    <li><a href="#" class="link text-main-2">Features</a></li>
-                                    <li><a href="#" class="link text-main-2">Benefits</a></li>
-                                    <li><a href="#" class="link text-main-2">How to use</a></li>
-                                    <li><a href="#" class="link text-main-2">Pricing</a></li>
+                                    <li><a href="https://athena-protocol-official.gitbook.io/athena-protocol-cn/" class="link text-main-2">白皮书</a></li>
+                                    <li><a href="#" class="link text-main-2">X/Twitter</a></li>
+                                    <li><a href="#" class="link text-main-2">Telegram</a></li>
+                                    <li><a href="#" class="link text-main-2"></a></li>
                                 </ul>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="footer-col-block wow fadeInLeft">
                             <h5 class="footer-heading footer-heading-mobile font-2">Legals</h5>
@@ -59,9 +59,9 @@
                             <h5 class="footer-heading footer-heading-mobile font-2">Social</h5>
                             <div class="tf-collapse-content">
                                 <ul class="footer-menu-list">
-                                    <li><a href="#" class="link text-main-2">Twitter (X)</a></li>
-                                    <li><a href="#" class="link text-main-2">Github</a></li>
-                                    <li><a href="#" class="link text-main-2">LinkedIn</a></li>
+                                    <li><a href="https://athena-protocol-official.gitbook.io/athena-protocol-cn/" class="link text-main-2">白皮书</a></li>
+                                    <li><a href="#" class="link text-main-2">X/Twitter</a></li>
+                                    <li><a href="#" class="link text-main-2">Telegram</a></li>
                                 </ul>
                             </div>
                         </div>
