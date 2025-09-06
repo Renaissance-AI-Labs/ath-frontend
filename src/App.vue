@@ -15,11 +15,14 @@
           </video>
           <div class="orther-overlay"></div>
       </div>
-      <Header />
+      <Header @open-get-started-modal="openModal" />
       <router-view />
       <Footer />
     </div>
-    <MobileMenu />
+    <MobileMenu @open-get-started-modal="openModal" />
+    <transition name="modal">
+      <ConnectWalletModal v-if="isModalVisible" @close="closeModal" />
+    </transition>
   </div>
 </template>
 
@@ -28,6 +31,7 @@ import Header from './components/Header.vue';
 import Footer from './components/Footer.vue';
 import GoTop from './components/GoTop.vue';
 import MobileMenu from './components/MobileMenu.vue';
+import ConnectWalletModal from './components/ConnectWalletModal.vue';
 
 export default {
   name: 'App',
@@ -35,7 +39,21 @@ export default {
     Header,
     Footer,
     GoTop,
-    MobileMenu
+    MobileMenu,
+    ConnectWalletModal
+  },
+  data() {
+    return {
+      isModalVisible: false,
+    };
+  },
+  methods: {
+    openModal() {
+      this.isModalVisible = true;
+    },
+    closeModal() {
+      this.isModalVisible = false;
+    }
   },
   mounted() {
     this.$nextTick(() => {

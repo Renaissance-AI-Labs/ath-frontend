@@ -52,9 +52,12 @@
                             <a href="#" class="tf-btn text-body-3 animate-btn d-none d-sm-flex">
                                 Log in
                             </a>
-                            <a href="#" class="tf-btn text-body-3 style-2 animate-btn animate-dark">
-                                Get started
+                            <a v-if="!walletState.isConnected" href="#" @click.prevent="openModal" class="tf-btn text-body-3 style-2 animate-btn animate-dark">
+                                连接钱包
                             </a>
+                            <span v-else class="wallet-address tf-btn text-body-3 style-2 animate-btn animate-dark">
+                                {{ formattedAddress }}
+                            </span>
                             <a href="#mobileMenu" class="btn-menu_mobile d-lg-none" data-bs-toggle="offcanvas">
                                 <i class="icon icon-menu"></i>
                             </a>
@@ -67,12 +70,31 @@
 </template>
 
 <script>
+import { walletState, formatAddress } from '@/services/wallet.js';
+import { computed } from 'vue';
+
 export default {
   name: 'Header',
+  setup() {
+    const formattedAddress = computed(() => formatAddress(walletState.address));
+
+    return {
+      walletState,
+      formattedAddress,
+    };
+  },
+  methods: {
+    openModal() {
+      this.$emit('open-get-started-modal');
+    }
+  }
 }
 </script>
 
 <style scoped>
+.wallet-address {
+    cursor: default;
+}
 </style>
 
 

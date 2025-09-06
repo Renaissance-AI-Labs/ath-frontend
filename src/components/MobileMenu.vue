@@ -5,9 +5,6 @@
                 <img class="lazyload" src="/asset/images/logo/logo.svg" data-src="/asset/images/logo/logo.svg" alt="LOGO">
             </div>
             <div class="btn_group">
-                <a href="login.html" class="tf-btn style-2">
-                    Get started
-                </a>
                 <span class="icon-close-popup" data-bs-dismiss="offcanvas">
                     <i class="icon-close"></i>
                 </span>
