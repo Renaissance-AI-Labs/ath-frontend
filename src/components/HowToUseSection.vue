@@ -5,9 +5,10 @@
             <div class="container">
                 <div class="s-meta text-caption font-2">
                     <p class="s-number_order wg-counter">
-                        [ <span class="text-white">0<span class="odometer" data-number="4">0</span></span> / 09 ]
+                        [ <span class="text-white">0<span class="odometer" data-number="4">3</span></span> / 04 ]
                     </p>
-                    <p class="s-label">[ <span class="text-white hacker-text_transform">HOW TO USE</span> ]</p>
+                    <p class="s-label">[ <span class="text-white hacker-text_transform">Vault Entrance
+</span> ]</p>
                 </div>
             </div>
         </div>
@@ -23,7 +24,7 @@
                             <span class="bar_center"></span>
                         </span>
                         <span class="hacker-text_transform no-delay">
-                            HOW TO USE QORE.
+                            Rule Over All
                         </span>
                         <span class="bar-group type-right">
                             <span class="bar_center"></span>

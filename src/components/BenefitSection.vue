@@ -66,7 +66,7 @@
                             </div>
                             <div class="content">
                                 <!-- <p class="title text-main-2">您的业绩</p> -->
-                                <h5 class="title s-title font-3">您的业绩</h5>
+                                <h5 class="title s-title font-3">呼朋唤友之力</h5>
                                 <p class="sub-title text-body-3">
                                     $ 52739.3913 Token
                                 </p>
@@ -77,7 +77,7 @@
                                 <img src="/asset/images/section/ai-core.svg" alt="Icon">
                             </div>
                             <div class="content">
-                                <h5 class="title s-title font-3">您的链接</h5>
+                                <h5 class="title s-title font-3">发送契约链接</h5>
                                 <p class="sub-title text-body-3">
                                     http://localhost:5173/
                                 </p>
