@@ -132,6 +132,17 @@
                                 </div>
                             </li>
                         </ul>
+                        <div class="pagination-list">
+                          <a href="#" class="pagination-item">
+                            <span class="icon icon-CaretDoubleRight fs-20" style="transform: rotate(180deg);"></span>
+                          </a>
+                          <a href="#" class="pagination-item"><span>1</span></a>
+                          <a href="#" class="pagination-item"><span>2</span></a>
+                          <a href="#" class="pagination-item"><span>3</span></a>
+                          <a href="#" class="pagination-item">
+                            <span class="icon icon-CaretDoubleRight fs-20"></span>
+                          </a>
+                        </div>
                     </div>
                 </div>
                 <div class="position-relative has-hafl_plus">
@@ -155,8 +166,19 @@
     </section>
 </template>
 <script>
+import { ref } from 'vue';
+
 export default {
-    name: 'HowToUseSection'
+    name: 'HowToUseSection',
+    setup() {
+        const currentPage = ref(1);
+        const totalPages = ref(3); // Example total pages
+
+        return {
+            currentPage,
+            totalPages,
+        };
+    }
 }
 </script>
 <style scoped>
@@ -183,6 +205,13 @@ export default {
 
 .title-position {
     padding-top: 0px;
+}
+
+.pagination-list {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center; /* Align to the center */
+    align-items: center; /* Vertically align items */
 }
 </style>
 
