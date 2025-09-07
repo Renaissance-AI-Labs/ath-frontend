@@ -23,7 +23,7 @@
                             <span class="bar_center"></span>
                         </span>
                         <span class="hacker-text_transform no-delay">
-                            WHY QORE WORKS SMARTER.
+                            WHY ATHAI WORKS SMARTER.
                         </span>
                         <span class="bar-group type-right">
                             <span class="bar_center"></span>
@@ -37,16 +37,24 @@
         <div class="sect-main">
             <div class="container">
                 <div class="place-video">
-                    <div class="visual-object">
+                    <!-- <div class="visual-object">
                         <div class="object_img wow bounceInScale">
                             <div class="image">
-                                <img src="/asset/images/artora-img/anime-2.gif" alt="Image" class="benefit-gif gif-place">
+                                <img src="/asset/images/artora-img/anime-2.gif" alt="Image" class="benefit-gif-2 gif-place-2">
                             </div>
-                            <!-- <span class="hafl-plus start-0 top-0 rotate-top_left wow bounceInScale"></span>
-                            <span class="hafl-plus end-0 top-0 rotate-top_right wow bounceInScale"></span> -->
+                        </div>
+                    </div> -->
+                    <div class="visual-object">
+                        <div class="object_img wow bounceInScale">
+                            <div class="image" style="position: relative; width: 100%; height: 100%;">
+                                <img src="/asset/images/artora-img/anime-3.gif" alt="Image" class="benefit-gif-3 gif-place-3">
+                                <div class="gif-fade-overlay" 
+                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; background: radial-gradient(ellipse 85% 65% at center, rgba(12, 12, 14, 0) 25%, rgba(12, 12, 14, 1) 75%);">
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="sect-title wow fadeInUp">
+                    <div class="sect-title wow fadeInUp friend-title-position">
                         <h2 class="s-title font-3">
                             为您而苏醒的<br>
                             投资道路
@@ -109,12 +117,27 @@ export default {
 }
 </script>
 <style scoped>
-.benefit-gif {
+.benefit-gif-2 {
     transform: scale(1.5);
 }
 
-.gif-place {
+.gif-place-2 {
     padding-top: 0px !important;
     margin-bottom: 30px !important;
+}
+
+.benefit-gif-3 {
+    transform: scale(1.0);
+    width: 200px;
+    height: 200px;
+}
+
+.gif-place-3 {
+    padding-top: 0px !important;
+    margin-bottom: 30px !important;
+}
+
+.friend-title-position {
+    margin-top: 0px;
 }
 </style>

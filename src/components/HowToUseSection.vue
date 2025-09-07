@@ -36,13 +36,20 @@
         <span class="br-line"></span>
         <!-- == Main Section -->
         <div class="sect-main flat-animate-tab img-position">
-            <div class="s-img_item wow bounceInScale" style="position: relative;">
+            <!-- <div class="s-img_item wow bounceInScale" style="position: relative;">
                 <img class="lazyload" src="/asset/images/artora-img/slider-ai-5.jpg"
                     data-src="/asset/images/artora-img/slider-ai-5.jpg" alt="Background" style="width: 100%; height: 100%;">
                 <img src="/asset/images/artora-img/anime-1.gif" alt="Foreground Animation" 
                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.3;">
                 <div class="gif-fade-overlay" 
                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; background: radial-gradient(ellipse 85% 65% at center, rgba(12, 12, 14, 0) 25%, rgba(0, 0, 0, 90%) 75%);">
+                </div>
+            </div> -->
+            <div class="visual-object">
+                <div class="object_img wow bounceInScale">
+                    <div class="image">
+                        <img src="/asset/images/artora-img/anime-2.gif" alt="Image" class="benefit-gif-2 gif-place-2">
+                    </div>
                 </div>
             </div>
             <div class="container">
@@ -184,7 +191,7 @@ export default {
 <style scoped>
 
 .order-list {
-    margin-top: 80px; 
+    margin-top: 30px; 
     color: #fff;
 }
 
@@ -212,6 +219,15 @@ export default {
     display: flex;
     justify-content: center; /* Align to the center */
     align-items: center; /* Vertically align items */
+}
+
+.benefit-gif-2 {
+    transform: scale(1.5);
+}
+
+.gif-place-2 {
+    padding-top: 0px !important;
+    margin-bottom: 30px !important;
 }
 </style>
 
