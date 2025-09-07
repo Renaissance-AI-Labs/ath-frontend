@@ -5,7 +5,7 @@
                 <div class="col-5 col-lg-3">
                     <div class="header-left">
                         <router-link to="/" class="logo-site">
-                            <img src="/asset/images/logo/logo.svg" alt="LOGO">
+                            <img src="/asset/images/logo/ATNENA_LOGO.png" alt="LOGO">
                         </router-link>
                     </div>
                 </div>
@@ -49,15 +49,15 @@
                 <div class="col-7 col-lg-3">
                     <div class="header-right">
                         <div class="btn_group">
-                            <a href="#" class="tf-btn text-body-3 animate-btn d-none d-sm-flex">
+                            <!-- <a href="#" class="tf-btn text-body-3 animate-btn d-none d-sm-flex">
                                 Log in
-                            </a>
+                            </a> -->
                             <a v-if="!walletState.isConnected" href="#" @click.prevent="openModal" class="tf-btn text-body-3 style-2 animate-btn animate-dark">
                                 连接钱包
                             </a>
-                            <span v-else class="wallet-address tf-btn text-body-3 style-2 animate-btn animate-dark">
+                            <a v-else href="#" @click.prevent="openModal" class="wallet-address tf-btn text-body-3 style-2 animate-btn animate-dark">
                                 {{ formattedAddress }}
-                            </span>
+                            </a>
                             <a href="#mobileMenu" class="btn-menu_mobile d-lg-none" data-bs-toggle="offcanvas">
                                 <i class="icon icon-menu"></i>
                             </a>
@@ -92,8 +92,8 @@ export default {
 </script>
 
 <style scoped>
-.wallet-address {
-    cursor: default;
+.tf-btn.style-2 {
+    background-color: #161c416b;
 }
 </style>
 

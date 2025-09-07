@@ -5,6 +5,7 @@ import { ethers } from 'ethers';
 export const walletState = reactive({
   isConnected: false,
   address: null,
+  network: null, // To store the network name
 });
 
 // Utility function to format wallet address
@@ -38,15 +39,19 @@ export const connectWallet = async (walletType) => {
     // 2. Get the signer
     const signer = await provider.getSigner();
 
-    // 3. Request a signature
+    // 3. Get Network Info
+    const network = await provider.getNetwork();
+
+    // 4. Request a signature
     const message = "Welcome to the ATH platform. Please sign this message to verify your wallet.";
     await signer.signMessage(message);
 
-    // 4. Update the global state
+    // 5. Update the global state
     walletState.isConnected = true;
     walletState.address = address;
+    walletState.network = network.name; // Store network name (e.g., 'sepolia', 'mainnet')
 
-    console.log('Wallet connected:', address);
+    console.log(`Wallet connected: ${address} on network ${network.name}`);
     return true;
 
   } catch (error) {
@@ -59,4 +64,12 @@ export const connectWallet = async (walletType) => {
     }
     return false;
   }
+};
+
+// Function to disconnect the wallet
+export const disconnectWallet = () => {
+  walletState.isConnected = false;
+  walletState.address = null;
+  walletState.network = null;
+  console.log('Wallet disconnected.');
 };

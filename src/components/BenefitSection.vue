@@ -42,19 +42,19 @@
                             <div class="image">
                                 <img src="/asset/images/section/visual-object.webp" alt="Image">
                             </div>
-                            <span class="hafl-plus start-0 top-0 rotate-top_left wow bounceInScale"></span>
-                            <span class="hafl-plus end-0 top-0 rotate-top_right wow bounceInScale"></span>
+                            <!-- <span class="hafl-plus start-0 top-0 rotate-top_left wow bounceInScale"></span>
+                            <span class="hafl-plus end-0 top-0 rotate-top_right wow bounceInScale"></span> -->
                         </div>
                     </div>
                     <div class="sect-title wow fadeInUp">
                         <h2 class="s-title font-3">
-                            Built for modern teams. <br>
-                            Backed by cutting-edge AI.
+                            为您而苏醒的<br>
+                            投资道路
                         </h2>
                         <p class="s-sub_title">
-                            Qore combines powerful AI models with a unified creative workspace <br
+                            捐赠至底池的资金，将依额度每日累积， <br
                                 class="d-none d-lg-block">
-                            — built for speed, clarity, and control.
+                            — 最高享 1.2% 自动复利，周期不超过 30 天。
                         </p>
                     </div>
                 </div>
@@ -65,9 +65,10 @@
                                 <img src="/asset/images/section/platform.svg" alt="Icon">
                             </div>
                             <div class="content">
-                                <p class="title text-main-2">All-in-one platform</p>
+                                <!-- <p class="title text-main-2">您的业绩</p> -->
+                                <h5 class="title s-title font-3">呼朋唤友之力</h5>
                                 <p class="sub-title text-body-3">
-                                    No more juggling tools. Qore unifies content, design, code, and video.
+                                    $ 52739.3913 Token
                                 </p>
                             </div>
                         </div>
@@ -76,53 +77,9 @@
                                 <img src="/asset/images/section/ai-core.svg" alt="Icon">
                             </div>
                             <div class="content">
-                                <p class="title text-main-2">Multi-model AI core</p>
+                                <h5 class="title s-title font-3">发送契约链接</h5>
                                 <p class="sub-title text-body-3">
-                                    ChatGPT, Claude, Gemini — Qore picks the smartest engine for every task.
-                                </p>
-                            </div>
-                        </div>
-                        <div class="box-icon-text wow fadeInUp">
-                            <div class="icon">
-                                <img src="/asset/images/section/control.svg" alt="Icon">
-                            </div>
-                            <div class="content">
-                                <p class="title text-main-2">Prompt-level control</p>
-                                <p class="sub-title text-body-3">
-                                    Every feature is prompt-optimized, giving you control without overwhelm.
-                                </p>
-                            </div>
-                        </div>
-                        <div class="box-icon-text wow fadeInUp">
-                            <div class="icon">
-                                <img src="/asset/images/section/speed.svg" alt="Icon">
-                            </div>
-                            <div class="content">
-                                <p class="title text-main-2">Speed that scales</p>
-                                <p class="sub-title text-body-3">
-                                    From solo to teams, Qore delivers fast outputs — even under heavy loads.
-                                </p>
-                            </div>
-                        </div>
-                        <div class="box-icon-text wow fadeInUp">
-                            <div class="icon">
-                                <img src="/asset/images/section/secure.svg" alt="Icon">
-                            </div>
-                            <div class="content">
-                                <p class="title text-main-2">Secure by design</p>
-                                <p class="sub-title text-body-3">
-                                    Your content and code stay private. We never store sensitive data.
-                                </p>
-                            </div>
-                        </div>
-                        <div class="box-icon-text wow fadeInUp">
-                            <div class="icon">
-                                <img src="/asset/images/section/evolving.svg" alt="Icon">
-                            </div>
-                            <div class="content">
-                                <p class="title text-main-2">Always evolving</p>
-                                <p class="sub-title text-body-3">
-                                    Qore improves weekly with better prompts, UI, and models — for free.
+                                    http://localhost:5173/
                                 </p>
                             </div>
                         </div>

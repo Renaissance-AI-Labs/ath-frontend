@@ -5,9 +5,10 @@
             <div class="container">
                 <div class="s-meta text-caption font-2">
                     <p class="s-number_order wg-counter">
-                        [ <span class="text-white">0<span class="odometer" data-number="4">0</span></span> / 09 ]
+                        [ <span class="text-white">0<span class="odometer" data-number="4">3</span></span> / 04 ]
                     </p>
-                    <p class="s-label">[ <span class="text-white hacker-text_transform">HOW TO USE</span> ]</p>
+                    <p class="s-label">[ <span class="text-white hacker-text_transform">Vault Entrance
+</span> ]</p>
                 </div>
             </div>
         </div>
@@ -23,7 +24,7 @@
                             <span class="bar_center"></span>
                         </span>
                         <span class="hacker-text_transform no-delay">
-                            HOW TO USE QORE.
+                            Rule Over All
                         </span>
                         <span class="bar-group type-right">
                             <span class="bar_center"></span>
@@ -42,8 +43,8 @@
             <div class="container">
                 <div class="sect-title wow fadeInUp">
                     <h2 class="s-title font-3 m-0">
-                        From idea to output — <br>
-                        in just three simple steps.
+                        在这里 — <br>
+                        掌控你的财富
                     </h2>
                 </div>
                 <div class="row">
@@ -81,41 +82,48 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 offset-xl-2 col-xl-4">
+                    <div class="col-md-6 offset-xl-2 col-xl-4 order-list">
                         <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist">
                             <li class="nav-tab-item" role="presentation">
                                 <div data-bs-toggle="tab" data-bs-target="#step1" class="btn_tab active"
                                     aria-selected="true" role="tab">
-                                    <p class="number-step text-caption font-2">STEP 01</p>
-                                    <h5 class="name" data-text="Pick a goal">Pick a goal</h5>
-                                    <p class="desc">
-                                        Choose the type of content you want to create: a tagline, description,
-                                        image, video idea, and more.
-                                    </p>
+                                    <p class="number-step text-caption font-2">财富密码 01</p>
+                                    <h5 class="name" data-text="日期：2025/09/07">日期：2025/09/01</h5>
+                                    <p class="desc">本金：$ 1000</p>
+                                    <p class="desc">利息：$ 10</p>
+                                    <div class="status-box"> 
+                                        <p class="desc">状态：进行中</p>
+                                        <div class="status-box-button"> 
+                                            <button class="tf-btn text-body-3 style-2 animate-btn animate-dark">召回</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </li>
                             <li class="br-line has-dot"></li>
                             <li class="nav-tab-item" role="presentation">
                                 <div data-bs-toggle="tab" data-bs-target="#step2" class="btn_tab" aria-selected="true"
                                     role="tab">
-                                    <p class="number-step text-caption font-2">STEP 02</p>
-                                    <h5 class="name" data-text="Add a prompt">Add a prompt</h5>
-                                    <p class="desc">
-                                        Enter keywords, context, or any starting idea. Upload images or videos to
-                                        guide the result.
-                                    </p>
+                                    <p class="number-step text-caption font-2">财富密码 02</p>
+                                    <h5 class="name" data-text="日期：2025/09/07">日期：2025/09/07</h5>
+                                    <p class="desc">本金：$ 1000</p>
+                                    <p class="desc">利息：$ 10</p>
+                                    <p class="desc">状态：已赎回</p>
                                 </div>
                             </li>
                             <li class="br-line has-dot"></li>
                             <li class="nav-tab-item" role="presentation">
                                 <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true"
                                     role="tab">
-                                    <p class="number-step text-caption font-2">STEP 03</p>
-                                    <h5 class="name" data-text="Get results">Get results</h5>
-                                    <p class="desc">
-                                        Qore returns multiple outputs. Choose your favorite, refine it, or keep
-                                        exploring more options.
-                                    </p>
+                                    <p class="number-step text-caption font-2">财富密码 03</p>
+                                    <h5 class="name" data-text="日期：2025/09/07">日期：2025/09/19</h5>
+                                    <p class="desc">本金：$ 1000</p>
+                                    <p class="desc">利息：$ 10</p>
+                                    <div class="status-box"> 
+                                        <p class="desc">状态：进行中</p>
+                                        <div class="status-box-button"> 
+                                            <button class="tf-btn text-body-3 style-2 animate-btn animate-dark">召回</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </li>
                         </ul>
@@ -147,6 +155,21 @@ export default {
 }
 </script>
 <style scoped>
+
+.order-list {
+
+}
+
+.status-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tf-btn.style-2 {
+    background-color: #161c416b;
+}
 </style>
 
 
