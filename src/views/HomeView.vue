@@ -3,8 +3,9 @@
     <span class="br-line"></span>
     <HeroSection />
     <!-- <FeatureSection /> -->
-    <BenefitSection />
+    
     <HowToUseSection />
+    <BenefitSection />
     <!-- <PricingSection /> -->
     <!-- <TestimonialSection /> -->
     <!-- <FAQSection /> -->

@@ -1,7 +1,7 @@
 <template>
     <section class="section-how-to" id="howToUse">
         <!-- == Head Section -->
-        <div class="sect-header">
+        <!-- <div class="sect-header">
             <div class="container">
                 <div class="s-meta text-caption font-2">
                     <p class="s-number_order wg-counter">
@@ -12,7 +12,7 @@
                 </div>
             </div>
         </div>
-        <span class="br-line"></span>
+        <span class="br-line"></span> -->
         <!-- == Tagline Section -->
         <div class="sect-tagline">
             <div class="container">
@@ -35,20 +35,25 @@
         </div>
         <span class="br-line"></span>
         <!-- == Main Section -->
-        <div class="sect-main flat-animate-tab">
-            <div class="s-img_item wow bounceInScale">
-                <img class="lazyload" src="/asset/images/section/gradient-ring-bg.webp"
-                    data-src="/asset/images/section/gradient-ring-bg.webp" alt="Background">
+        <div class="sect-main flat-animate-tab img-position">
+            <div class="s-img_item wow bounceInScale" style="position: relative;">
+                <img class="lazyload" src="/asset/images/artora-img/slider-ai-5.jpg"
+                    data-src="/asset/images/artora-img/slider-ai-5.jpg" alt="Background" style="width: 100%; height: 100%;">
+                <img src="/asset/images/artora-img/anime-1.gif" alt="Foreground Animation" 
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.3;">
+                <div class="gif-fade-overlay" 
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; background: radial-gradient(ellipse 85% 65% at center, rgba(12, 12, 14, 0) 25%, rgba(0, 0, 0, 90%) 75%);">
+                </div>
             </div>
             <div class="container">
-                <div class="sect-title wow fadeInUp">
+                <div class="sect-title wow fadeInUp title-position">
                     <h2 class="s-title font-3 m-0">
                         在这里 — <br>
                         掌控你的财富
                     </h2>
                 </div>
                 <div class="row">
-                    <div class="col-md-6 offset-xl-1 col-xl-4">
+                    <!-- <div class="col-md-6 offset-xl-1 col-xl-4">
                         <div class="tab-content mb-md-0 sticky-top wow fadeInUp">
                             <div class="tab-pane active show" id="step1" role="tabpanel">
                                 <div class="image-how_to wow bounceInScale">
@@ -81,7 +86,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="col-md-6 offset-xl-2 col-xl-4 order-list">
                         <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist">
                             <li class="nav-tab-item" role="presentation">
@@ -157,7 +162,8 @@ export default {
 <style scoped>
 
 .order-list {
-
+    margin-top: 80px; 
+    color: #fff;
 }
 
 .status-box {
@@ -169,6 +175,14 @@ export default {
 
 .tf-btn.style-2 {
     background-color: #161c416b;
+}
+
+.img-position {
+    margin-top: 100px;
+}
+
+.title-position {
+    padding-top: 0px;
 }
 </style>
 
