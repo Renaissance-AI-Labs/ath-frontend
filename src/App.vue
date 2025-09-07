@@ -11,7 +11,7 @@
       </div>
       <div class="hero-video" v-if="$route.path === '/'">
           <video class="video-width" muted autoplay loop playsinline>
-              <source src="/asset/images/video/BlackHole.mp4" type="video/mp4">
+              <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
           </video>
           <div class="orther-overlay"></div>
       </div>
