@@ -40,7 +40,7 @@
                     <div class="visual-object">
                         <div class="object_img wow bounceInScale">
                             <div class="image">
-                                <img src="/asset/images/section/visual-object.webp" alt="Image">
+                                <img src="/asset/images/artora-img/anime-2.gif" alt="Image" class="benefit-gif gif-place">
                             </div>
                             <!-- <span class="hafl-plus start-0 top-0 rotate-top_left wow bounceInScale"></span>
                             <span class="hafl-plus end-0 top-0 rotate-top_right wow bounceInScale"></span> -->
@@ -59,7 +59,7 @@
                     </div>
                 </div>
                 <div class="position-relative">
-                    <div class="grid-box_icon tf-grid-layout sm-col-2 md-col-3">
+                    <div class="grid-box_icon tf-grid-layout sm-col-2 md-col-2">
                         <div class="box-icon-text wow fadeInUp">
                             <div class="icon">
                                 <img src="/asset/images/section/platform.svg" alt="Icon">
@@ -109,4 +109,12 @@ export default {
 }
 </script>
 <style scoped>
+.benefit-gif {
+    transform: scale(1.5);
+}
+
+.gif-place {
+    padding-top: 0px !important;
+    margin-bottom: 30px !important;
+}
 </style>
