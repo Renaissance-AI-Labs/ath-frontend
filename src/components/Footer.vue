@@ -32,8 +32,8 @@
                     </div>
                     <div class="footer-inner_link tf-grid-layout tf-col-2 lg-col-4">
                         <a href="index.html" class="footer-logo logo-site">
-                            <img class="lazyload" src="/asset/images/logo/ATNENA_LOGO.png" data-src="/asset/images/logo/ATNENA_LOGO.png"
-                                alt="LOGO">
+                            <img class="lazyload" src="/asset/images/logo/ATNENA-logo-icon.png" data-src="/asset/images/logo/ATNENA-logo-icon.png"
+                                alt="LOGO" style="width: 70px; height: 70px;">
                         </a>
                         <div class="footer-col-block wow fadeInLeft mx-auto m-sm-0">
                             <!-- <h5 class="footer-heading footer-heading-mobile font-2">Social</h5>

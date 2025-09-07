@@ -8,7 +8,7 @@
     <BenefitSection />
     <!-- <PricingSection /> -->
     <!-- <TestimonialSection /> -->
-    <!-- <FAQSection /> -->
+    <FAQSection />
     <!-- <CTASection /> -->
   </div>
 </template>
@@ -20,7 +20,7 @@ import BenefitSection from '../components/BenefitSection.vue';
 import HowToUseSection from '../components/HowToUseSection.vue';
 // import PricingSection from '../components/PricingSection.vue';
 // import TestimonialSection from '../components/TestimonialSection.vue';
-// import FAQSection from '../components/FAQSection.vue';
+import FAQSection from '../components/FAQSection.vue';
 // import CTASection from '../components/CTASection.vue';
 
 export default {
@@ -32,7 +32,7 @@ export default {
     HowToUseSection,
     // PricingSection,
     // TestimonialSection,
-    // FAQSection,
+    FAQSection,
     // CTASection,
   },
 };
