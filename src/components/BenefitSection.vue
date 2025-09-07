@@ -23,7 +23,7 @@
                             <span class="bar_center"></span>
                         </span>
                         <span class="hacker-text_transform no-delay">
-                            WHY ATHAI WORKS SMARTER.
+                            WHY ATHEANA WORKS SMARTER.
                         </span>
                         <span class="bar-group type-right">
                             <span class="bar_center"></span>
