@@ -63,8 +63,7 @@
             </div>
             <div class="tf-brand assets-title">
                 <div class="container">
-            <h5 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content">您的资产
-                在此处诞生 温和的信任 </h5>
+            <h5 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content">您的资产在此处安睡 </h5>
                 </div>
             </div>
             <div class="container">
@@ -112,12 +111,12 @@
             </div>
             <span class="br-line"></span>
             <!-- == Brand -->
-            <div class="tf-brand">
-                <div class="container">
-                    <div class="tf-brand_inner">
+            <!-- <div class="tf-brand"> -->
+                <!-- <div class="container"> -->
+                    <!-- <div class="tf-brand_inner"> -->
                         <!-- <h5 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp">TRUSTED
                             BY <span class="odometer" data-number="6000">1000</span>+ HIGHLY PRODUCTIVE COMPANY</h5> -->
-                        <div class="infiniteSlide infiniteSlide_brand" data-clone="3">
+                        <!-- <div class="infiniteSlide infiniteSlide_brand" data-clone="3">
                             <div class="image-brand">
                                 <img class="lazyload" src="/asset/images/brand/brand-1.png"
                                     data-src="/asset/images/brand/brand-1.png" alt="Brand">
@@ -142,13 +141,13 @@
                                 <img class="lazyload" src="/asset/images/brand/brand-6.png"
                                     data-src="/asset/images/brand/brand-6.png" alt="Brand">
                             </div>
-                        </div>
-                        <span class="hafl-plus pst-left_bot item_bot wow bounceInScale"></span>
-                        <span class="hafl-plus pst-right_bot item_bot wow bounceInScale"></span>
-                    </div>
-                </div>
-            </div>
-            <span class="br-line"></span>
+                        </div> -->
+                        <!-- <span class="hafl-plus pst-left_bot item_bot wow bounceInScale"></span>
+                        <span class="hafl-plus pst-right_bot item_bot wow bounceInScale"></span> -->
+                    <!-- </div> -->
+                <!-- </div> -->
+            <!-- </div> -->
+            <!-- <span class="br-line"></span> -->
             <!-- == Bottom Section -->
             <div class="sect-bottom">
             </div>

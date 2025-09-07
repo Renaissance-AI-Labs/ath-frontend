@@ -1,7 +1,7 @@
 <template>
     <section class="section-how-to" id="howToUse">
         <!-- == Head Section -->
-        <div class="sect-header">
+        <!-- <div class="sect-header">
             <div class="container">
                 <div class="s-meta text-caption font-2">
                     <p class="s-number_order wg-counter">
@@ -12,7 +12,7 @@
                 </div>
             </div>
         </div>
-        <span class="br-line"></span>
+        <span class="br-line"></span> -->
         <!-- == Tagline Section -->
         <div class="sect-tagline">
             <div class="container">
@@ -48,7 +48,7 @@
                     </h2>
                 </div>
                 <div class="row">
-                    <div class="col-md-6 offset-xl-1 col-xl-4">
+                    <!-- <div class="col-md-6 offset-xl-1 col-xl-4">
                         <div class="tab-content mb-md-0 sticky-top wow fadeInUp">
                             <div class="tab-pane active show" id="step1" role="tabpanel">
                                 <div class="image-how_to wow bounceInScale">
@@ -81,7 +81,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="col-md-6 offset-xl-2 col-xl-4 order-list">
                         <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist">
                             <li class="nav-tab-item" role="presentation">
@@ -157,7 +157,8 @@ export default {
 <style scoped>
 
 .order-list {
-
+    margin-top: 80px; 
+    color: #fff;
 }
 
 .status-box {
