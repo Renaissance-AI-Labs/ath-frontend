@@ -10,7 +10,7 @@
                     </div>
                 </div>
                 <div class="col-6 d-none d-lg-block">
-                    <nav class="box-navigation">
+                    <nav class="box-navigation" style="display: none;">
                         <ul class="box-nav-menu main-nav_menu">
                             <li class="menu-item">
                                 <router-link to="/" class="item-link tf-btn style-transparent text-body-3 animate-btn">
@@ -58,7 +58,7 @@
                             <a v-else href="#" @click.prevent="openModal" class="wallet-address tf-btn text-body-3 style-2 animate-btn animate-dark">
                                 {{ formattedAddress }}
                             </a>
-                            <a href="#mobileMenu" class="btn-menu_mobile d-lg-none" data-bs-toggle="offcanvas">
+                            <a href="#mobileMenu" class="btn-menu_mobile d-none" data-bs-toggle="offcanvas">
                                 <i class="icon icon-menu"></i>
                             </a>
                         </div>
