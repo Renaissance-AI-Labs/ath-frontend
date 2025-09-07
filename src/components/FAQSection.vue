@@ -36,42 +36,53 @@
         <!-- == Main Section -->
         <div class="sect-main">
             <div class="container">
-                <div class="sect-title wow fadeInUp">
-                    <h2 class="s-title font-3 m-0">
-                        Got questions? <br>
-                        We've got answers.
-                    </h2>
+                <div class="place-video">
+                    <div class="visual-object">
+                        <div class="object_img wow bounceInScale">
+                            <div class="image" style="position: relative; width: 100%; height: 100%;">
+                                <img src="/asset/images/artora-img/anime-3.gif" alt="Image" class="benefit-gif-3 gif-place-3">
+                                <div class="gif-fade-overlay" 
+                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; background: radial-gradient(ellipse 85% 65% at center, rgba(12, 12, 14, 0) 25%, rgba(12, 12, 14, 1) 75%);">
+                                </div>
+                            </div>
+                            <!-- <span class="hafl-plus start-0 top-0 rotate-top_left wow bounceInScale"></span>
+                            <span class="hafl-plus end-0 top-0 rotate-top_right wow bounceInScale"></span> -->
+                        </div>
+                    </div>
+                    <div class="sect-title wow fadeInUp title-position-roadmap">
+                        <h2 class="s-title font-3 m-0">
+                            未来的旅途 <br>
+                            让我们一同探索
+                        </h2>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-6 offset-lg-1 col-lg-5 offset-xl-2 col-xl-4">
                         <div class="faq-list">
                             <div class="faq-item wow fadeInLeft">
                                 <h3 class="text-body-2 faq_title text-main-2">
-                                    What can I use Qore for?
+                                    创世 - Genesis 
                                 </h3>
                                 <p class="text-body-3 faq_label">
-                                    You can generate taglines, short descriptions, ideas for visuals, social posts,
-                                    and more in seconds.
+                                    协议部署，LCC 功能上线，Athena AI™ v1.0 开始自主运行。
                                 </p>
                             </div>
                             <span class="br-line has-dot"></span>
                             <div class="faq-item wow fadeInLeft">
                                 <h3 class="text-body-2 faq_title text-main-2">
-                                    Is Qore free to use?
+                                    扩张 - Expansion
                                 </h3>
                                 <p class="text-body-3 faq_label">
-                                    Qore offers a free tier with limited generations. Paid plans unlock more features
-                                    and outputs.
+                                    金库贴现票据 (TDN) V1 的合约接口被激活，协议开始主动进行资产负债表管理。
                                 </p>
                             </div>
                             <span class="br-line has-dot"></span>
                             <div class="faq-item wow fadeInLeft">
                                 <h3 class="text-body-2 faq_title text-main-2">
-                                    Can I use Qore for commercial projects?
+                                    移交 - The Handover
                                 </h3>
                                 <p class="text-body-3 faq_label">
-                                    Yes — all generated content can be used for both personal and commercial
-                                    purposes.
+                                    协议的最高管理权限被转移至一个时间锁合约，AthenaDAO 的治理模块上线。
                                 </p>
                             </div>
                             <span class="br-line has-dot"></span>
@@ -81,15 +92,14 @@
                         <div class="faq-list">
                             <div class="faq-item wow fadeInRight">
                                 <h3 class="text-body-2 faq_title text-main-2">
-                                    How accurate are the outputs?
+                                    消亡 - The Nyx Dissolution
                                 </h3>
                                 <p class="text-body-3 faq_label">
-                                    Results are context-aware and high quality, but we recommend reviewing and
-                                    refining for best use.
+                                    在社区投票确认协议稳定运行后，时间锁到期，The Nyx Collective 的初始部署密钥将被永久销毁。协议进入完全自主进化阶段。
                                 </p>
                             </div>
                             <span class="br-line has-dot"></span>
-                            <div class="faq-item wow fadeInRight">
+                            <!-- <div class="faq-item wow fadeInRight">
                                 <h3 class="text-body-2 faq_title text-main-2">
                                     What if I don’t like the result?
                                 </h3>
@@ -97,7 +107,7 @@
                                     You can regenerate as many times as needed, or edit outputs directly to suit
                                     your needs.
                                 </p>
-                            </div>
+                            </div> -->
                             <span class="br-line has-dot"></span>
                         </div>
                     </div>
@@ -128,6 +138,21 @@ export default {
 }
 </script>
 <style scoped>
+
+.benefit-gif-3 {
+    transform: scale(1.0);
+    width: 200px;
+    height: 200px;
+}
+
+.gif-place-3 {
+    padding-top: 0px !important;
+    margin-bottom: 30px !important;
+}
+
+.title-position-roadmap {
+    padding-top: 0px;
+}
 </style>
 
 
