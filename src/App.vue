@@ -10,10 +10,12 @@
           <div class="bg-texture"></div>
       </div>
       <div class="hero-video" v-if="$route.path === '/'">
-          <video class="video-width" muted autoplay loop playsinline>
-              <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-          </video>
-          <!-- <div class="orther-overlay"></div> -->
+          <div class="video-container">
+              <video class="video-width video-effect" muted autoplay loop playsinline>
+                  <source src="/asset/images/video/BlackHole.mp4" type="video/mp4">
+              </video>
+              <div class="video-fade-overlay"></div>
+          </div>
       </div>
       <Header @open-get-started-modal="openModal" />
       <router-view />
@@ -95,5 +97,27 @@ export default {
 .video-width {
   margin-left: 2px;
   width: 98%;
+}
+
+.video-container {
+  position: relative;
+  line-height: 0; /* Removes potential whitespace below video */
+}
+
+.video-fade-overlay {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Allows clicks to go through to video if needed */
+  background: radial-gradient(ellipse 85% 65% at center, 
+    rgba(12, 12, 14, 0) 25%, 
+    rgba(12, 12, 14, 1) 75%);
+}
+
+.video-effect {
+  filter: hue-rotate(193deg) saturate(1.13) brightness(1.0);
 }
 </style>
