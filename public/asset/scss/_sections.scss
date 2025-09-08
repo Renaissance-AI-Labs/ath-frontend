@@ -479,10 +479,8 @@
 }
 
 .s-title {
-    background: linear-gradient(180deg, #F4F7F5 0%, rgba(244, 247, 245, 0.82) 100%);
-    -webkit-background-clip: text;
+    // background: linear-gradient(180deg, #F4F7F5 0%, rgba(244, 247, 245, 0.82) 100%);
     background-clip: text;
-    -webkit-text-fill-color: transparent;
 
     &.only-title {
         margin-bottom: 88px;
