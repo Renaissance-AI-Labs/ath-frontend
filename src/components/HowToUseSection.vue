@@ -54,7 +54,7 @@
             </div>
             <div class="container">
                 <div class="sect-title wow fadeInUp title-position">
-                    <h2 class="s-title font-3 m-0">
+                    <h2 class="font-3 m-0">
                         在这里 — <br>
                         掌控你的财富
                     </h2>

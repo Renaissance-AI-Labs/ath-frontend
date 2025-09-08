@@ -23,7 +23,7 @@
                             <span class="bar_center"></span>
                         </span>
                         <span class="hacker-text_transform no-delay">
-                            WHY ATHEANA WORKS SMARTER.
+                            WHY ATHENA WORKS SMARTER.
                         </span>
                         <span class="bar-group type-right">
                             <span class="bar_center"></span>
@@ -55,7 +55,7 @@
                         </div>
                     </div>
                     <div class="sect-title wow fadeInUp friend-title-position">
-                        <h2 class="s-title font-3">
+                        <h2 class="s-title">
                             为您而苏醒的<br>
                             投资道路
                         </h2>
