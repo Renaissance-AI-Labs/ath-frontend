@@ -55,7 +55,7 @@
                         </div>
                     </div>
                     <div class="sect-title wow fadeInUp friend-title-position">
-                        <h2 class="s-title">
+                        <h2 class="s-title font-3">
                             为您而苏醒的<br>
                             投资道路
                         </h2>

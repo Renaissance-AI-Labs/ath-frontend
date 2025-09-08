@@ -37,7 +37,7 @@
         <div class="sect-main">
             <div class="container">
                 <div class="sect-title wow fadeInUp">
-                    <h1 class="title-big">
+                    <h1 class="s-title font-3 title-big">
                         Athena Protocol <br>
                         <span class="text-change_wrap">
                             <span class="text-change_rotating">这里没有<span class="icon icon-gemini"></span>CEO

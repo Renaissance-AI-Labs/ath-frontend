@@ -69,7 +69,7 @@
                     <span class="br-line has-dot"></span>
                     <div class="footer-inner_bottom">
                         <p class="text-caption font-2">
-                            © 2025 Athena Protocol. ALL RIGHTS RESERVED. M-1.3
+                            © 2025 Athena Protocol. ALL RIGHTS RESERVED. M-1.4
                         </p>
                         <a href="#" class="text-caption font-2 link">
                             BACK TO TOP
