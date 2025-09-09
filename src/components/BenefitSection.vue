@@ -67,7 +67,7 @@
                     </div>
                 </div>
                 <div class="position-relative">
-                    <div class="grid-box_icon tf-grid-layout sm-col-2 md-col-2">
+                    <div class="grid-box_icon tf-grid-layout sm-col-2 md-col-2 friends-position">
                         <div class="box-icon-text wow fadeInUp">
                             <div class="icon">
                                 <img src="/asset/images/section/platform.svg" alt="Icon">
@@ -139,5 +139,11 @@ export default {
 
 .friend-title-position {
     margin-top: 0px;
+}
+
+.friends-position {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 </style>

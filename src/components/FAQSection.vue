@@ -63,6 +63,35 @@
                         </h2>
                     </div>
                 </div>
+                <div class="position-relative">
+                    <div class="grid-box_icon tf-grid-layout sm-col-2 md-col-2 friends-position">
+                        <div class="box-icon-text wow fadeInUp">
+                            <div class="icon">
+                                <img src="/asset/images/section/platform.svg" alt="Icon">
+                            </div>
+                            <div class="content">
+                                <!-- <p class="title text-main-2">您的业绩</p> -->
+                                <h5 class="title s-title font-3">呼朋唤友之力</h5>
+                                <p class="sub-title text-body-3">
+                                    $ 52739.3913 Token
+                                </p>
+                            </div>
+                        </div>
+                        <div class="box-icon-text wow fadeInUp">
+                            <div class="icon">
+                                <img src="/asset/images/section/ai-core.svg" alt="Icon">
+                            </div>
+                            <div class="content">
+                                <h5 class="title s-title font-3">发送契约链接</h5>
+                                <p class="sub-title text-body-3">
+                                    http://localhost:5173/
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="hafl-plus pst-left_bot item_bot wow bounceInScale"></span>
+                    <span class="hafl-plus pst-right_bot item_bot wow bounceInScale"></span>
+                </div>
                 <div class="row">
                     <div class="col-sm-6 offset-lg-1 col-lg-5 offset-xl-2 col-xl-4">
                         <div class="faq-list">
@@ -159,6 +188,12 @@ export default {
 
 .title-position-roadmap {
     padding-top: 0px;
+}
+
+.friends-position {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 </style>
 
