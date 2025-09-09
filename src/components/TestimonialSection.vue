@@ -44,108 +44,90 @@
             </div>
             <div class="container">
                 <div class="sect-title wow fadeInUp">
-                    <h2 class="s-title font-3 m-0">
-                        What people say <br>
-                        about Qore.
+                    <h2 class="s-title font-3 m-0" style="color: #fff;">
+                        未来的旅途 <br>
+                        让我们一同探索
                     </h2>
                 </div>
+
+                <div class="grid-box_icon tf-grid-layout sm-col-2 md-col-2 friends-position">
+                    <!-- <div class="box-icon-text wow fadeInUp">
+                        <div class="icon">
+                            <img src="/asset/images/section/platform.svg" alt="Icon">
+                        </div>
+                        <div class="content">
+                            <h5 class="title s-title font-3">呼朋唤友之力</h5>
+                            <p class="sub-title text-body-3">
+                                $ 52739.3913 Token
+                            </p>
+                        </div>
+                    </div>
+                    <div class="box-icon-text wow fadeInUp">
+                        <div class="icon">
+                            <img src="/asset/images/section/ai-core.svg" alt="Icon">
+                        </div>
+                        <div class="content">
+                            <h5 class="title s-title font-3">发送契约链接</h5>
+                            <p class="sub-title text-body-3">
+                                http://localhost:5173/
+                            </p>
+                        </div>
+                    </div> -->
+                </div>
+
                 <div class="testimonial-slide-wrap">
                     <div class="overflow-hidden has-overlay_linear type-2 mx-1">
                         <div class="infiniteSlide infiniteSlide-tes">
                             <div class="wg-testimonial">
                                 <div class="tes-author">
-                                    <div class="author_image">
-                                        <img class="lazyload" src="/asset/images/avatar/avt-1.webp"
-                                            data-src="/asset/images/avatar/avt-1.webp" alt="Avatar">
-                                    </div>
+                                    
                                     <div class="author_info">
-                                        <a href="#" class="link name">Lucas Bennett</a>
-                                        <p class="text-body-3">@lucasbennett</p>
+                                        <a href="#" class="text-main-2">创世</a>
+                                        <p class="text-body-3">Genesis</p>
                                     </div>
                                 </div>
-                                <p class="tes-text">
-                                    <span class="text-main-2">@qore</span> helps me organize creative tasks way
-                                    faster. The image prompt support
-                                    is
-                                    smooth and the AI responses feel
-                                    human.
+                                <p class="text-main-2">
+                                    协议部署，LCC 功能上线，Athena AI™ v1.0 开始自主运行，开启一个前所未有的未来。
+
                                 </p>
                             </div>
                             <div class="wg-testimonial">
                                 <div class="tes-author">
-                                    <div class="author_image">
-                                        <img class="lazyload" src="/asset/images/avatar/avt-2.webp"
-                                            data-src="/asset/images/avatar/avt-2.webp" alt="Avatar">
-                                    </div>
+                                    
                                     <div class="author_info">
-                                        <a href="#" class="link name">Ethan Moore</a>
-                                        <p class="text-body-3">@ethanmoore</p>
+                                        <a href="#" class="text-main-2">扩张</a>
+                                        <p class="text-body-3">Expansion</p>
                                     </div>
                                 </div>
-                                <p class="tes-text">
-                                    Started with the free plan on <span class="text-main-2">@qore</span> and didn’t
-                                    expect much. But the speed,
-                                    accuracy, and clean UI convinced me to
-                                    upgrade in just a few days.
+                                <p class="text-main-2">
+                                    金库贴现票据 (TDN) V1 的合约接口被激活，协议开始主动进行资产负债表管理， 望眼前所未有的蓝图。
                                 </p>
                             </div>
                             <div class="wg-testimonial">
                                 <div class="tes-author">
-                                    <div class="author_image">
-                                        <img class="lazyload" src="/asset/images/avatar/avt-3.webp"
-                                            data-src="/asset/images/avatar/avt-3.webp" alt="Avatar">
-                                    </div>
+                                    
                                     <div class="author_info">
-                                        <a href="#" class="link name">Lucas Bennett</a>
-                                        <p class="text-body-3">@lucasbennett</p>
+                                        <a href="#" class="text-main-2">移交</a>
+                                        <p class="text-body-3">The Handover</p>
                                     </div>
                                 </div>
-                                <p class="tes-text">
-                                    <span class="text-main-2">@qore</span> helps me organize creative tasks way
-                                    faster. The image prompt support
-                                    is
-                                    smooth and the AI responses feel
-                                    human.
+                                <p class="text-main-2">
+                                    协议的最高管理权限被转移至一个时间锁合约，AthenaDAO 的治理模块上线， 忠诚调停时间线秩序。
                                 </p>
                             </div>
                             <div class="wg-testimonial">
                                 <div class="tes-author">
-                                    <div class="author_image">
-                                        <img class="lazyload" src="/asset/images/avatar/avt-4.webp"
-                                            data-src="/asset/images/avatar/avt-4.webp" alt="Avatar">
-                                    </div>
+                                    
                                     <div class="author_info">
-                                        <a href="#" class="link name">Sophia Chen</a>
-                                        <p class="text-body-3">@sophiachen</p>
+                                        <a href="#" class="link name text-main-2">消亡</a>
+                                        <p class="text-body-3">The Nyx Dissolution</p>
                                     </div>
                                 </div>
                                 <p class="tes-text">
-                                    Just built a new website using <span class="text-main-2">@qore</span>’s
-                                    website builder. The AI-assisted design
-                                    process
-                                    was intuitive and saved me hours
-                                    of work. Highly recommended!
+                                    <span class="text-main-2">在社区投票确认协议稳定运行后，时间锁到期，The Nyx Collective 的初始部署密钥将被永久销毁以进入完全自主进化阶段。</span>
                                 </p>
                             </div>
-                            <div class="wg-testimonial">
-                                <div class="tes-author">
-                                    <div class="author_image">
-                                        <img class="lazyload" src="/asset/images/avatar/avt-5.webp"
-                                            data-src="/asset/images/avatar/avt-5.webp" alt="Avatar">
-                                    </div>
-                                    <div class="author_info">
-                                        <a href="#" class="link name">Noah Taylor</a>
-                                        <p class="text-body-3">@noahtaylor</p>
-                                    </div>
-                                </div>
-                                <p class="tes-text">
-                                    As a developer, I’m impressed by <span class="text-main-2">@qore</span>’s
-                                    code generation. It writes clean,
-                                    efficient
-                                    code and explains complex functions
-                                    in simple terms. A real time-saver.
-                                </p>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -177,4 +159,9 @@ export default {
 }
 </script>
 <style scoped>
+.friends-position {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
 </style>

@@ -37,13 +37,6 @@
         <div class="sect-main">
             <div class="container">
                 <div class="place-video">
-                    <!-- <div class="visual-object">
-                        <div class="object_img wow bounceInScale">
-                            <div class="image">
-                                <img src="/asset/images/artora-img/anime-2.gif" alt="Image" class="benefit-gif-2 gif-place-2">
-                            </div>
-                        </div>
-                    </div> -->
                     <div class="visual-object">
                         <div class="object_img wow bounceInScale">
                             <div class="image" style="position: relative; width: 100%; height: 100%;">

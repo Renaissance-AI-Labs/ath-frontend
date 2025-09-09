@@ -36,28 +36,28 @@
         <span class="br-line"></span>
         <!-- == Main Section -->
         <div class="sect-main flat-animate-tab img-position">
-            <!-- <div class="s-img_item wow bounceInScale" style="position: relative;">
-                <img class="lazyload" src="/asset/images/artora-img/slider-ai-5.jpg"
-                    data-src="/asset/images/artora-img/slider-ai-5.jpg" alt="Background" style="width: 100%; height: 100%;">
-                <img src="/asset/images/artora-img/anime-1.gif" alt="Foreground Animation" 
-                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.3;">
-                <div class="gif-fade-overlay" 
-                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; background: radial-gradient(ellipse 85% 65% at center, rgba(12, 12, 14, 0) 25%, rgba(0, 0, 0, 90%) 75%);">
-                </div>
-            </div> -->
-            <div class="visual-object">
+            <!-- <div class="visual-object">
                 <div class="object_img wow bounceInScale">
                     <div class="image">
                         <img src="/asset/images/artora-img/anime-2.gif" alt="Image" class="benefit-gif-2 gif-place-2">
                     </div>
                 </div>
+            </div> -->
+            <div class="s-img_item wow bounceInScale">
+                <img class="lazyload" src="/asset/images/section/gradient-ring-bg.webp"
+                    data-src="/asset/images/section/gradient-ring-bg.webp" alt="Background">
             </div>
             <div class="container">
                 <div class="sect-title wow fadeInUp title-position">
-                    <h2 class="s-title font-3 m-0">
+                    <h2 class="s-title font-3 m-0" style="color: #fff;">
                         在这里 — <br>
                         掌控你的财富
                     </h2>
+                    <p class="s-sub_title" style="margin-top: 10px;">
+                        捐赠至底池的资金，将依额度每日累积。 <br
+                            class="d-none d-lg-block">
+                        最高享 1.2% 自动复利，周期不超过 30 天。
+                    </p>
                 </div>
                 <div class="row">
                     <!-- <div class="col-md-6 offset-xl-1 col-xl-4">
