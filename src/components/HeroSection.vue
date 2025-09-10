@@ -37,21 +37,20 @@
         <div class="sect-main">
             <div class="container">
                 <div class="sect-title wow fadeInUp">
-                    <h1 class="title-big">
+                    <h1 class="s-title font-3 title-big">
                         Athena Protocol <br>
-                        <span class="text-change_wrap">
+                        <!-- <span class="text-change_wrap">
                             <span class="text-change_rotating">这里没有<span class="icon icon-gemini"></span>CEO
                             </span>
                             <span class="text-change_rotating">这里没有<span
                                     class="icon icon-gemini"></span>营销团队
                             </span>
-                            <!-- <span class="text-change_rotating">Built on<span class="icon icon-cloud"></span>Claude.
-                            </span> -->
-                        </span>
+                            <span class="text-change_rotating">Built on<span class="icon icon-cloud"></span>Claude.
+                            </span>
+                        </span> -->
                     </h1>
-                    <p class="s-sub_title">
-                        只有代码、数学，以及一个由 AI 驱动的、不可阻挡的<br class="d-none d-sm-block">
-                             价值创造机器
+                    <p class="s-sub_title" style="color: #fff;">
+                        只有代码、数学，以及一个由 AI 驱动的、不可阻挡的<br class="d-none d-sm-block">价值创造机器
                     </p>
                 </div>
             </div>
@@ -61,40 +60,43 @@
                     <!-- ----- 保留节目 ---- -->
                 </div>
             </div>
-            <div class="tf-brand assets-title">
+            <!-- <div class="tf-brand assets-title">
                 <div class="container">
-            <h5 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content">您的资产在此处安睡 </h5>
+                    <h5 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content">您的资产在此处安睡 </h5>
                 </div>
-            </div>
+            </div> -->
             <div class="container">
                 <div class="sect-content position-relative">
                     <div class="box-ask-wrap">
                         <div class="box-ask">
                             <form class="form-ask wow fadeInUp form-ask-bg">
                                 <div class="box-ask-inner">
-                                    <div class="form-content">
-                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px;">30000,00000,0000<span style="font-size: 16px;"> TOKEN</span></p>
+                                    <div class="form-content" style="margin-bottom: 20px;">
+                                        <div class="tf-brand assets-title">
+                                            <div class="container">
+                                                <h5 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content">您的资产在此处安睡 </h5>
+                                            </div>
+                                        </div>
+                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px;">3,000,000,000<span style="font-size: 16px;"> TOKEN</span></p>
+
+                                        <div class="tf-brand assets-title">
+                                            <div class="container">
+                                                <h3 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content" style="font-size: 16px !important;"> 好友带来的助力 </h3>
+                                            </div>
+                                        </div>
+                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px; font-size: 14px !important;">10,000<span style="font-size: 12px;"> TOKEN</span></p>
 
                                         <fieldset class="field-bottom button-add-pool">
                                             <div class="field_left">
-                                                <!-- <a href="#" class="btn-ip type-circle ip-add">
-                                                    <i class="icon icon-plus"></i>
-                                                </a> -->
                                                 <a href="#" class="btn-ip ip-modern text-body-3">
-                                                    <!-- <i class="icon icon-arrow-circle"></i> -->
-                                                    <i class="icon icon-plus"></i>
+                                                    <i class="icon-plus fs-10"></i>
                                                     注入底池
-                                                    <!-- <i class="icon-arrow-caret-down fs-8"></i> -->
+                                                </a>
+                                                <a href="#" class="btn-ip ip-modern text-body-3">
+                                                    <i class="icon-arrow-caret-down  fs-8"></i>
+                                                    分享好友
                                                 </a>
                                             </div>
-                                            <!-- <div class="field_right">
-                                                <a href="#" class="btn-ip type-transparent ip-voice">
-                                                    <i class="icon icon-micro"></i>
-                                                </a>
-                                                <button type="submit" class="btn-submit btn-ip type-circle">
-                                                    <i class="icon icon-arrow-top"></i>
-                                                </button>
-                                            </div> -->
                                         </fieldset>
                                     </div>
                                 </div>
@@ -168,6 +170,7 @@ export default {
 
 .title-big {
     font-size: 48px;
+    color: #fff;
 }
 
 .coins-title {

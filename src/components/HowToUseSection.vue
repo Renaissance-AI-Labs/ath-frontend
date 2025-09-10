@@ -1,7 +1,7 @@
 <template>
     <section class="section-how-to" id="howToUse">
         <!-- == Head Section -->
-        <!-- <div class="sect-header">
+        <div class="sect-header">
             <div class="container">
                 <div class="s-meta text-caption font-2">
                     <p class="s-number_order wg-counter">
@@ -12,7 +12,7 @@
                 </div>
             </div>
         </div>
-        <span class="br-line"></span> -->
+        <span class="br-line"></span>
         <!-- == Tagline Section -->
         <div class="sect-tagline">
             <div class="container">
@@ -36,28 +36,28 @@
         <span class="br-line"></span>
         <!-- == Main Section -->
         <div class="sect-main flat-animate-tab img-position">
-            <!-- <div class="s-img_item wow bounceInScale" style="position: relative;">
-                <img class="lazyload" src="/asset/images/artora-img/slider-ai-5.jpg"
-                    data-src="/asset/images/artora-img/slider-ai-5.jpg" alt="Background" style="width: 100%; height: 100%;">
-                <img src="/asset/images/artora-img/anime-1.gif" alt="Foreground Animation" 
-                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.3;">
-                <div class="gif-fade-overlay" 
-                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; background: radial-gradient(ellipse 85% 65% at center, rgba(12, 12, 14, 0) 25%, rgba(0, 0, 0, 90%) 75%);">
-                </div>
-            </div> -->
-            <div class="visual-object">
+            <!-- <div class="visual-object">
                 <div class="object_img wow bounceInScale">
                     <div class="image">
                         <img src="/asset/images/artora-img/anime-2.gif" alt="Image" class="benefit-gif-2 gif-place-2">
                     </div>
                 </div>
+            </div> -->
+            <div class="s-img_item wow bounceInScale">
+                <img class="lazyload" src="/asset/images/section/gradient-ring-bg.webp"
+                    data-src="/asset/images/section/gradient-ring-bg.webp" alt="Background">
             </div>
             <div class="container">
                 <div class="sect-title wow fadeInUp title-position">
-                    <h2 class="font-3 m-0">
+                    <h2 class="s-title font-3 m-0" style="color: #fff;">
                         在这里 — <br>
                         掌控你的财富
                     </h2>
+                    <p class="s-sub_title" style="margin-top: 14px; color: #fff;">
+                        捐赠至底池的资金，将依额度每日累积。 <br
+                            class="d-none d-lg-block">
+                        最高享 1.2% 自动复利，周期不超过 30 天。
+                    </p>
                 </div>
                 <div class="row">
                     <!-- <div class="col-md-6 offset-xl-1 col-xl-4">
@@ -96,13 +96,20 @@
                     </div> -->
                     <div class="col-md-6 offset-xl-2 col-xl-4 order-list">
                         <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist">
-                            <li class="nav-tab-item" role="presentation">
-                                <div data-bs-toggle="tab" data-bs-target="#step1" class="btn_tab active"
-                                    aria-selected="true" role="tab">
-                                    <p class="number-step text-caption font-2">财富密码 01</p>
-                                    <h5 class="name" data-text="日期：2025/09/07">日期：2025/09/01</h5>
-                                    <p class="desc">本金：$ 1000</p>
-                                    <p class="desc">利息：$ 10</p>
+                            <li class="br-line has-dot"></li>
+                            <li class="nav-tab-item li-style" role="presentation">
+                                <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true"
+                                    role="tab">
+                                    <div style="display: flex; flex-direction: row; justify-content: space-between;">  
+                                        <h5 class="name h5-list-style" data-text="CODE DH-03">CODE DH-03</h5>
+                                        <!-- <p class="number-step text-caption font-2">代码 DH-03</p> -->
+                                        <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
+                                    </div>
+                                    <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
+                                        <p class="desc p-list-style">本金：$ 1000</p>
+                                        <p class="desc p-list-style">利息：$ 10</p>
+                                    </div>
+                                    
                                     <div class="status-box"> 
                                         <p class="desc">状态：进行中</p>
                                         <div class="status-box-button"> 
@@ -112,24 +119,41 @@
                                 </div>
                             </li>
                             <li class="br-line has-dot"></li>
-                            <li class="nav-tab-item" role="presentation">
-                                <div data-bs-toggle="tab" data-bs-target="#step2" class="btn_tab" aria-selected="true"
+                            <li class="nav-tab-item li-style" role="presentation">
+                                <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true"
                                     role="tab">
-                                    <p class="number-step text-caption font-2">财富密码 02</p>
-                                    <h5 class="name" data-text="日期：2025/09/07">日期：2025/09/07</h5>
-                                    <p class="desc">本金：$ 1000</p>
-                                    <p class="desc">利息：$ 10</p>
-                                    <p class="desc">状态：已赎回</p>
+                                    <div style="display: flex; flex-direction: row; justify-content: space-between;">  
+                                        <h5 class="name h5-list-style" data-text="CODE DH-03">CODE DH-03</h5>
+                                        <!-- <p class="number-step text-caption font-2">代码 DH-03</p> -->
+                                        <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
+                                    </div>
+                                    <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
+                                        <p class="desc p-list-style">本金：$ 1000</p>
+                                        <p class="desc p-list-style">利息：$ 10</p>
+                                    </div>
+                                    
+                                    <div class="status-box"> 
+                                        <p class="desc">状态：已召回</p>
+                                        <div class="status-box-button" style="display: none;"> 
+                                            <button class="tf-btn text-body-3 style-2 animate-btn animate-dark">召回</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </li>
                             <li class="br-line has-dot"></li>
-                            <li class="nav-tab-item" role="presentation">
+                            <li class="nav-tab-item li-style" role="presentation">
                                 <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true"
                                     role="tab">
-                                    <p class="number-step text-caption font-2">财富密码 03</p>
-                                    <h5 class="name" data-text="日期：2025/09/07">日期：2025/09/19</h5>
-                                    <p class="desc">本金：$ 1000</p>
-                                    <p class="desc">利息：$ 10</p>
+                                    <div style="display: flex; flex-direction: row; justify-content: space-between;">  
+                                        <h5 class="name h5-list-style" data-text="CODE DH-03">CODE DH-03</h5>
+                                        <!-- <p class="number-step text-caption font-2">代码 DH-03</p> -->
+                                        <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
+                                    </div>
+                                    <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
+                                        <p class="desc p-list-style">本金：$ 1000</p>
+                                        <p class="desc p-list-style">利息：$ 10</p>
+                                    </div>
+                                    
                                     <div class="status-box"> 
                                         <p class="desc">状态：进行中</p>
                                         <div class="status-box-button"> 
@@ -204,10 +228,11 @@ export default {
 
 .tf-btn.style-2 {
     background-color: #161c416b;
+    width: 100px;
 }
 
 .img-position {
-    margin-top: 100px;
+    margin-top: 30px;
 }
 
 .title-position {
@@ -215,7 +240,7 @@ export default {
 }
 
 .pagination-list {
-    margin-top: 30px;
+    margin-top: 50px;
     display: flex;
     justify-content: center; /* Align to the center */
     align-items: center; /* Vertically align items */
@@ -228,6 +253,60 @@ export default {
 .gif-place-2 {
     padding-top: 0px !important;
     margin-bottom: 30px !important;
+}
+
+.tab-how_to .nav-tab-item .btn_tab {
+    background: rgba(20, 20, 21, 0.5);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: all .3s ease;
+}
+
+/* .tab-how_to .nav-tab-item .btn_tab:hover {
+    border-color: #1d2d97a8;
+    transform: translateY(-5px);
+} */
+
+.tab-how_to .nav-tab-item .btn_tab .number-step {
+    margin-bottom: 8px;
+}
+
+.tab-how_to .nav-tab-item .btn_tab .name {
+    margin-bottom: 16px;
+}
+
+.tab-how_to .nav-tab-item .btn_tab .desc {
+    margin-bottom: 6px;
+}
+
+.tab-how_to .nav-tab-item .btn_tab .desc:last-of-type {
+    margin-bottom: 0;
+}
+
+.tab-how_to .nav-tab-item .btn_tab .status-box {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #ffffff2d;
+}
+
+.li-style {
+    margin-bottom: 20px !important;
+}
+
+.h5-list-style {
+    margin-bottom: 0px !important;
+    font-size: 12px;
+}
+
+.tab-how_to .btn_tab {
+    gap: 0px !important;
+}
+
+.p-list-style {
+    font-size: 16px;
 }
 </style>
 

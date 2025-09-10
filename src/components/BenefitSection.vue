@@ -37,13 +37,6 @@
         <div class="sect-main">
             <div class="container">
                 <div class="place-video">
-                    <!-- <div class="visual-object">
-                        <div class="object_img wow bounceInScale">
-                            <div class="image">
-                                <img src="/asset/images/artora-img/anime-2.gif" alt="Image" class="benefit-gif-2 gif-place-2">
-                            </div>
-                        </div>
-                    </div> -->
                     <div class="visual-object">
                         <div class="object_img wow bounceInScale">
                             <div class="image" style="position: relative; width: 100%; height: 100%;">
@@ -55,7 +48,7 @@
                         </div>
                     </div>
                     <div class="sect-title wow fadeInUp friend-title-position">
-                        <h2 class="s-title">
+                        <h2 class="s-title font-3">
                             为您而苏醒的<br>
                             投资道路
                         </h2>
@@ -67,7 +60,7 @@
                     </div>
                 </div>
                 <div class="position-relative">
-                    <div class="grid-box_icon tf-grid-layout sm-col-2 md-col-2">
+                    <div class="grid-box_icon tf-grid-layout sm-col-2 md-col-2 friends-position">
                         <div class="box-icon-text wow fadeInUp">
                             <div class="icon">
                                 <img src="/asset/images/section/platform.svg" alt="Icon">
@@ -139,5 +132,11 @@ export default {
 
 .friend-title-position {
     margin-top: 0px;
+}
+
+.friends-position {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 </style>
