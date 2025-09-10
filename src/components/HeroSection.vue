@@ -71,48 +71,32 @@
                         <div class="box-ask">
                             <form class="form-ask wow fadeInUp form-ask-bg">
                                 <div class="box-ask-inner">
-                                    <div class="form-content">
-
+                                    <div class="form-content" style="margin-bottom: 20px;">
                                         <div class="tf-brand assets-title">
                                             <div class="container">
                                                 <h5 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content">您的资产在此处安睡 </h5>
                                             </div>
                                         </div>
-                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px;">30000,00000<span style="font-size: 16px;"> TOKEN</span></p>
+                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px;">3,000,000,000<span style="font-size: 16px;"> TOKEN</span></p>
 
                                         <div class="tf-brand assets-title">
                                             <div class="container">
                                                 <h3 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content" style="font-size: 16px !important;"> 好友带来的助力 </h3>
                                             </div>
                                         </div>
-                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px; font-size: 14px !important;">100,00<span style="font-size: 12px;"> TOKEN</span></p>
+                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px; font-size: 14px !important;">10,000<span style="font-size: 12px;"> TOKEN</span></p>
 
                                         <fieldset class="field-bottom button-add-pool">
                                             <div class="field_left">
-                                                <!-- <a href="#" class="btn-ip type-circle ip-add">
-                                                    <i class="icon icon-plus"></i>
-                                                </a> -->
                                                 <a href="#" class="btn-ip ip-modern text-body-3">
-                                                    <!-- <i class="icon icon-arrow-circle"></i> -->
                                                     <i class="icon-plus fs-10"></i>
                                                     注入底池
-                                                    <!-- <i class="icon-arrow-caret-down fs-8"></i> -->
                                                 </a>
                                                 <a href="#" class="btn-ip ip-modern text-body-3">
-                                                    <!-- <i class="icon icon-arrow-circle"></i> -->
                                                     <i class="icon-arrow-caret-down  fs-8"></i>
                                                     分享好友
-                                                    <!-- <i class="icon-arrow-caret-down fs-8"></i> -->
                                                 </a>
                                             </div>
-                                            <!-- <div class="field_right">
-                                                <a href="#" class="btn-ip type-transparent ip-voice">
-                                                    <i class="icon icon-micro"></i>
-                                                </a>
-                                                <button type="submit" class="btn-submit btn-ip type-circle">
-                                                    <i class="icon icon-arrow-top"></i>
-                                                </button>
-                                            </div> -->
                                         </fieldset>
                                     </div>
                                 </div>
