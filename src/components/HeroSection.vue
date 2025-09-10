@@ -5,7 +5,7 @@
             <div class="container">
                 <div class="s-meta text-caption font-2">
                     <p class="s-number_order wg-counter">
-                        [ <span class="text-white">BACK<span class="odometer" data-number="1"></span></span> TO ]
+                        [ <span class="text-white">BACK</span> TO ]
                     </p>
                     <p class="s-label">[ <span class="text-white hacker-text_transform">FUTURE</span> ]</p>
                 </div>

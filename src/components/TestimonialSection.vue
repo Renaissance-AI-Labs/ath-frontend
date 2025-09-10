@@ -5,7 +5,7 @@
             <div class="container">
                 <div class="s-meta text-caption font-2">
                     <p class="s-number_order wg-counter">
-                        [ <span class="text-white">0<span class="odometer" data-number="6">0</span></span> / 09 ]
+                        [ <span class="text-white">03</span> / 04 ]
                     </p>
                     <p class="s-label">[ <span class="text-white hacker-text_transform">连接未来</span> ]</p>
                 </div>

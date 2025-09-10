@@ -5,7 +5,7 @@
             <div class="container">
                 <div class="s-meta text-caption font-2">
                     <p class="s-number_order wg-counter">
-                        [ <span class="text-white">0<span class="odometer" data-number="4">3</span></span> / 04 ]
+                        [ <span class="text-white">02</span> / 04 ]
                     </p>
                     <p class="s-label">[ <span class="text-white hacker-text_transform">治理未来
 </span> ]</p>
@@ -112,8 +112,8 @@
                                             <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
                                         </div>
                                         <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
-                                            <p class="desc p-list-style">本金：$ 1000</p>
-                                            <p class="desc p-list-style">利息：$ 10</p>
+                                            <p class="desc p-list-style">母金：$ 1000</p>
+                                            <p class="desc p-list-style">子金：$ 10</p>
                                         </div>
                                         
                                         <div class="status-box"> 
@@ -141,12 +141,12 @@
                                             <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
                                         </div>
                                         <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
-                                            <p class="desc p-list-style">本金：$ 1000</p>
-                                            <p class="desc p-list-style">利息：$ 10</p>
+                                            <p class="desc p-list-style">母金：$ 1000</p>
+                                            <p class="desc p-list-style">子金：$ 10</p>
                                         </div>
                                         
                                         <div class="status-box"> 
-                                            <p class="desc">状态：已召回</p>
+                                            <p class="desc">状态：已赎回</p>
                                             <div class="status-box-button" style="display: none;"> 
                                                 <button class="tf-btn text-body-3 style-2 animate-btn animate-dark">赎回</button>
                                             </div>
@@ -170,8 +170,8 @@
                                             <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
                                         </div>
                                         <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
-                                            <p class="desc p-list-style">本金：$ 1000</p>
-                                            <p class="desc p-list-style">利息：$ 10</p>
+                                            <p class="desc p-list-style">母金：$ 1000</p>
+                                            <p class="desc p-list-style">子金：$ 10</p>
                                         </div>
                                         
                                         <div class="status-box"> 
