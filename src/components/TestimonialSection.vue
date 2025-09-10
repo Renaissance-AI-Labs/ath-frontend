@@ -7,7 +7,7 @@
                     <p class="s-number_order wg-counter">
                         [ <span class="text-white">0<span class="odometer" data-number="6">0</span></span> / 09 ]
                     </p>
-                    <p class="s-label">[ <span class="text-white hacker-text_transform">TESTIMONIALS</span> ]</p>
+                    <p class="s-label">[ <span class="text-white hacker-text_transform">连接未来</span> ]</p>
                 </div>
             </div>
         </div>
@@ -23,7 +23,7 @@
                             <span class="bar_center"></span>
                         </span>
                         <span class="hacker-text_transform no-delay">
-                            REAL FEEDBACK FROM CREATORS AND POWER USERS.
+                            Yourself shapes the future.
                         </span>
                         <span class="bar-group type-right">
                             <span class="bar_center"></span>

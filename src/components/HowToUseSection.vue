@@ -7,7 +7,7 @@
                     <p class="s-number_order wg-counter">
                         [ <span class="text-white">0<span class="odometer" data-number="4">3</span></span> / 04 ]
                     </p>
-                    <p class="s-label">[ <span class="text-white hacker-text_transform">Vault Entrance
+                    <p class="s-label">[ <span class="text-white hacker-text_transform">治理未来
 </span> ]</p>
                 </div>
             </div>
@@ -100,20 +100,27 @@
                             <li class="nav-tab-item li-style" role="presentation">
                                 <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true"
                                     role="tab">
-                                    <div style="display: flex; flex-direction: row; justify-content: space-between;">  
-                                        <h5 class="name h5-list-style" data-text="CODE DH-03">CODE DH-03</h5>
-                                        <!-- <p class="number-step text-caption font-2">代码 DH-03</p> -->
-                                        <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
+                                    <div class="stars-bg stars-bg-1">
+                                        <div class="stars"></div>
+                                        <div class="stars2"></div>
+                                        <div class="stars3"></div>
                                     </div>
-                                    <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
-                                        <p class="desc p-list-style">本金：$ 1000</p>
-                                        <p class="desc p-list-style">利息：$ 10</p>
-                                    </div>
-                                    
-                                    <div class="status-box"> 
-                                        <p class="desc">状态：进行中</p>
-                                        <div class="status-box-button"> 
-                                            <button class="tf-btn text-body-3 style-2 animate-btn animate-dark">召回</button>
+                                    <div class="card-content">
+                                        <div style="display: flex; flex-direction: row; justify-content: space-between;">  
+                                            <h5 class="name h5-list-style" data-text="CODE DH-03">CODE DH-03</h5>
+                                            <!-- <p class="number-step text-caption font-2">代码 DH-03</p> -->
+                                            <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
+                                        </div>
+                                        <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
+                                            <p class="desc p-list-style">本金：$ 1000</p>
+                                            <p class="desc p-list-style">利息：$ 10</p>
+                                        </div>
+                                        
+                                        <div class="status-box"> 
+                                            <p class="desc">状态：进行中</p>
+                                            <div class="status-box-button"> 
+                                                <button class="tf-btn text-body-3 style-2 animate-btn animate-dark">赎回</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -122,20 +129,27 @@
                             <li class="nav-tab-item li-style" role="presentation">
                                 <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true"
                                     role="tab">
-                                    <div style="display: flex; flex-direction: row; justify-content: space-between;">  
-                                        <h5 class="name h5-list-style" data-text="CODE DH-03">CODE DH-03</h5>
-                                        <!-- <p class="number-step text-caption font-2">代码 DH-03</p> -->
-                                        <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
+                                    <div class="stars-bg stars-bg-2">
+                                        <div class="stars"></div>
+                                        <div class="stars2"></div>
+                                        <div class="stars3"></div>
                                     </div>
-                                    <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
-                                        <p class="desc p-list-style">本金：$ 1000</p>
-                                        <p class="desc p-list-style">利息：$ 10</p>
-                                    </div>
-                                    
-                                    <div class="status-box"> 
-                                        <p class="desc">状态：已召回</p>
-                                        <div class="status-box-button" style="display: none;"> 
-                                            <button class="tf-btn text-body-3 style-2 animate-btn animate-dark">召回</button>
+                                    <div class="card-content">
+                                        <div style="display: flex; flex-direction: row; justify-content: space-between;">  
+                                            <h5 class="name h5-list-style" data-text="CODE DH-03">CODE DH-03</h5>
+                                            <!-- <p class="number-step text-caption font-2">代码 DH-03</p> -->
+                                            <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
+                                        </div>
+                                        <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
+                                            <p class="desc p-list-style">本金：$ 1000</p>
+                                            <p class="desc p-list-style">利息：$ 10</p>
+                                        </div>
+                                        
+                                        <div class="status-box"> 
+                                            <p class="desc">状态：已召回</p>
+                                            <div class="status-box-button" style="display: none;"> 
+                                                <button class="tf-btn text-body-3 style-2 animate-btn animate-dark">赎回</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -144,20 +158,27 @@
                             <li class="nav-tab-item li-style" role="presentation">
                                 <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true"
                                     role="tab">
-                                    <div style="display: flex; flex-direction: row; justify-content: space-between;">  
-                                        <h5 class="name h5-list-style" data-text="CODE DH-03">CODE DH-03</h5>
-                                        <!-- <p class="number-step text-caption font-2">代码 DH-03</p> -->
-                                        <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
+                                    <div class="stars-bg stars-bg-3">
+                                        <div class="stars"></div>
+                                        <div class="stars2"></div>
+                                        <div class="stars3"></div>
                                     </div>
-                                    <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
-                                        <p class="desc p-list-style">本金：$ 1000</p>
-                                        <p class="desc p-list-style">利息：$ 10</p>
-                                    </div>
-                                    
-                                    <div class="status-box"> 
-                                        <p class="desc">状态：进行中</p>
-                                        <div class="status-box-button"> 
-                                            <button class="tf-btn text-body-3 style-2 animate-btn animate-dark">召回</button>
+                                    <div class="card-content">
+                                        <div style="display: flex; flex-direction: row; justify-content: space-between;">  
+                                            <h5 class="name h5-list-style" data-text="CODE DH-03">CODE DH-03</h5>
+                                            <!-- <p class="number-step text-caption font-2">代码 DH-03</p> -->
+                                            <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
+                                        </div>
+                                        <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
+                                            <p class="desc p-list-style">本金：$ 1000</p>
+                                            <p class="desc p-list-style">利息：$ 10</p>
+                                        </div>
+                                        
+                                        <div class="status-box"> 
+                                            <p class="desc">状态：进行中</p>
+                                            <div class="status-box-button"> 
+                                                <button class="tf-btn text-body-3 style-2 animate-btn animate-dark">赎回</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -263,6 +284,8 @@ export default {
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     transition: all .3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 /* .tab-how_to .nav-tab-item .btn_tab:hover {
@@ -308,6 +331,84 @@ export default {
 .p-list-style {
     font-size: 16px;
 }
+
+/* Starry background effect */
+.stars-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.stars, .stars2, .stars3 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  background: transparent;
+}
+
+.stars {
+  animation: animStar 20s linear infinite;
+  box-shadow: 123px 45px #FFF, 255px 189px #FFF, 345px 8px #FFF, 99px 345px #FFF, 487px 233px #FFF, 321px 487px #FFF, 499px 10px #FFF, 23px 187px #FFF, 176px 455px #FFF, 433px 321px #FFF, 45px 23px #FFF, 231px 480px #FFF, 467px 98px #FFF, 33px 256px #FFF, 198px 321px #FFF, 349px 465px #FFF, 480px 12px #FFF, 12px 190px #FFF, 256px 432px #FFF, 490px 211px #FFF, 54px 49px #FFF, 289px 344px #FFF, 411px 189px #FFF, 76px 287px #FFF, 201px 477px #FFF, 389px 23px #FFF, 477px 376px #FFF, 156px 143px #FFF, 301px 499px #FFF, 432px 65px #FFF;
+}
+
+.stars2 {
+  width: 2px;
+  height: 2px;
+  animation: animStar 40s linear infinite;
+  box-shadow: 234px 123px #FFF, 456px 345px #FFF, 12px 487px #FFF, 498px 65px #FFF, 213px 289px #FFF, 45px 456px #FFF, 345px 98px #FFF, 187px 399px #FFF, 432px 187px #FFF, 88px 88px #FFF, 287px 465px #FFF, 478px 243px #FFF, 143px 32px #FFF, 365px 398px #FFF, 499px 488px #FFF;
+}
+
+.stars3 {
+  width: 3px;
+  height: 3px;
+  animation: animStar 60s linear infinite;
+  box-shadow: 87px 345px #FFF, 465px 87px #FFF, 234px 487px #FFF, 487px 234px #FFF, 156px 156px #FFF, 387px 432px #FFF, 432px 32px #FFF;
+}
+
+.stars:after, .stars2:after, .stars3:after {
+  content: " ";
+  position: absolute;
+  top: 250px;
+  width: inherit;
+  height: inherit;
+  background: transparent;
+  box-shadow: inherit;
+}
+
+@keyframes animStar {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-250px);
+  }
+}
+
+.card-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Unique animation delays for each card */
+.stars-bg-2 .stars { animation-delay: -5s; }
+.stars-bg-2 .stars2 { animation-delay: -10s; }
+.stars-bg-2 .stars3 { animation-delay: -15s; }
+
+.stars-bg-3 .stars { animation-delay: -10s; }
+.stars-bg-3 .stars2 { animation-delay: -20s; }
+.stars-bg-3 .stars3 { animation-delay: -30s; }
+
+.pagination-list .pagination-item {
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+}
+
 </style>
 
 
