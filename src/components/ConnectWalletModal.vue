@@ -44,11 +44,11 @@
           <div class="info-group">
               <div class="info-item">
                 <h4 class="info-title">地址</h4>
-                <p class="s-sub_title info-content">{{ walletState.address }}</p>
+                <p class="s-sub_title info-content">{{ formattedAddress }}</p>
               </div>
               <div class="info-item">
                 <h4 class="info-title">网络</h4>
-                <p class="s-sub_title info-content">{{ walletState.network }}</p>
+                <p class="s-sub_title info-content">{{ uppercaseNetwork }}</p>
               </div>
           </div>
           <a href="#" @click.prevent="handleDisconnect" class="btn-ip ip-modern text-body-3 disconnect-btn">
@@ -73,6 +73,15 @@ export default {
     return {
       walletState,
     };
+  },
+  computed: {
+    formattedAddress() {
+      if (!this.walletState.address) return '';
+      return `${this.walletState.address.substring(0, 6)}...${this.walletState.address.substring(this.walletState.address.length - 4)}`;
+    },
+    uppercaseNetwork() {
+      return this.walletState.network ? this.walletState.network.toUpperCase() : '';
+    }
   },
   methods: {
     close() {
@@ -110,7 +119,7 @@ export default {
   position: relative;
   width: 90%;
   max-width: 350px;
-  min-height: 400px;
+  /* min-height: 400px; */
   padding: 20px;
   border: 1px solid var(--line);
   backdrop-filter: blur(16px);
