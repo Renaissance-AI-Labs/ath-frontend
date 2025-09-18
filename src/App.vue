@@ -34,6 +34,7 @@ import Footer from './components/Footer.vue';
 import GoTop from './components/GoTop.vue';
 import MobileMenu from './components/MobileMenu.vue';
 import ConnectWalletModal from './components/ConnectWalletModal.vue';
+import { autoConnectWallet } from './services/wallet.js';
 
 export default {
   name: 'App',
@@ -58,6 +59,7 @@ export default {
     }
   },
   mounted() {
+    autoConnectWallet();
     this.$nextTick(() => {
       const loadScript = (src, callback) => {
         const script = document.createElement('script');
