@@ -69,7 +69,7 @@
                     <span class="br-line has-dot"></span>
                     <div class="footer-inner_bottom">
                         <p class="text-caption font-2">
-                            © 2025 Athena Protocol. ALL RIGHTS RESERVED. M-1.6
+                            {{ copyrightText }}
                         </p>
                         <a href="#" class="text-caption font-2 link">
                             BACK TO TOP
@@ -81,8 +81,18 @@
     </footer>
 </template>
 <script>
+import { versions } from '../config/version.js';
+
 export default {
-    name: 'Footer'
+    name: 'Footer',
+    computed: {
+        copyrightText() {
+            const isProduction = import.meta.env.PROD;
+            const envPrefix = isProduction ? 'M' : 'T';
+            const version = isProduction ? versions.mainnet : versions.testnet;
+            return `© 2025 Athena Protocol. ALL RIGHTS RESERVED. ${envPrefix}-${version}`;
+        }
+    }
 }
 </script>
 <style scoped>

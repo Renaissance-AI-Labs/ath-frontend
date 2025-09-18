@@ -103,10 +103,14 @@ const authenticateWallet = async (address, signer) => {
 
 // --- New Network Management Function ---
 const switchNetwork = async (rawProvider) => {
-  // We'll default to BNB Testnet. 
-  // You can create logic here to switch between bnbMainnet and bnbTestnet based on environment variables.
-  const targetNetwork = networks.bnbTestnet; 
+  // Read from Vite's environment variables to determine the network.
+  // Vercel will set NODE_ENV to 'production' for production builds.
+  // We can use this as a reliable indicator.
+  const isProduction = import.meta.env.PROD; 
+  const targetNetwork = isProduction ? networks.bnbMainnet : networks.bnbTestnet;
   
+  console.log(`Environment: ${isProduction ? 'Production' : 'Development'}. Targeting BNB ${isProduction ? 'Mainnet' : 'Testnet'}.`);
+
   try {
     await rawProvider.request({
       method: 'wallet_switchEthereumChain',
