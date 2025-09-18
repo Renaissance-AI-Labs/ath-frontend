@@ -9,30 +9,20 @@
             <h3>连接钱包</h3>
             <p class="connect-text-1">请选择一个钱包以继续</p>
           </div>
-          <div class="wallet-list">
+          <div class="wallet-list" v-if="availableWallets.length > 0">
             <ul>
-              <li>
-                <a href="#" @click.prevent="handleConnect('okx')">
-                  <img src="/asset/images/wallet/okx-logo.png" alt="OKX Wallet" class="wallet-icon okx-icon">
-                  <span>OKX Wallet</span>
-                  <i class="icon icon-arrow-right"></i>
-                </a>
-              </li>
-              <li>
-                <a href="#" @click.prevent="handleConnect('metamask')">
-                  <img src="/asset/images/wallet/MetaMask-icon-fox-with-margins.svg" alt="MetaMask" class="wallet-icon metamask-icon">
-                  <span>MetaMask</span>
-                  <i class="icon icon-arrow-right"></i>
-                </a>
-              </li>
-              <li>
-                <a href="#" @click.prevent="handleConnect('tp')">
-                  <img src="/asset/images/wallet/tp-logo.png" alt="TokenPocket" class="wallet-icon">
-                  <span>TokenPocket</span>
+              <li v-for="wallet in availableWallets" :key="wallet.id">
+                <a href="#" @click.prevent="handleConnect(wallet.id)">
+                  <img :src="getWalletIcon(wallet.id)" :alt="wallet.name" class="wallet-icon" :class="`${wallet.id}-icon`">
+                  <span>{{ wallet.name }}</span>
                   <i class="icon icon-arrow-right"></i>
                 </a>
               </li>
             </ul>
+          </div>
+          <div v-else class="no-wallet-view">
+            <p>未检测到钱包。</p>
+            <p>请安装 <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">MetaMask</a> 或其他兼容的钱包后重试。</p>
           </div>
         </div>
 
@@ -44,11 +34,11 @@
           <div class="info-group">
               <div class="info-item">
                 <h4 class="info-title">地址</h4>
-                <p class="s-sub_title info-content">{{ walletState.address }}</p>
+                <p class="s-sub_title info-content">{{ formattedAddress }}</p>
               </div>
               <div class="info-item">
                 <h4 class="info-title">网络</h4>
-                <p class="s-sub_title info-content">{{ walletState.network }}</p>
+                <p class="s-sub_title info-content">{{ uppercaseNetwork }}</p>
               </div>
           </div>
           <a href="#" @click.prevent="handleDisconnect" class="btn-ip ip-modern text-body-3 disconnect-btn">
@@ -65,29 +55,64 @@
 </template>
 
 <script>
-import { walletState, connectWallet, disconnectWallet } from '@/services/wallet.js';
+import { reactive, onMounted, ref } from 'vue';
+import { walletState, connectWallet, disconnectWallet, detectWallets } from '@/services/wallet.js';
 
 export default {
   name: 'ConnectWalletModal',
-  setup() {
-    return {
-      walletState,
+  setup(props, { emit }) {
+    const availableWallets = ref([]);
+
+    const getWalletIcon = (walletId) => {
+        const icons = {
+            metamask: '/asset/images/wallet/MetaMask-icon-fox-with-margins.svg',
+            tokenpocket: '/asset/images/wallet/tp-logo.png',
+            okx: '/asset/images/wallet/okx-logo.png',
+        };
+        return icons[walletId] || '/asset/images/wallet/default-icon.png';
     };
-  },
-  methods: {
-    close() {
-      this.$emit('close');
-    },
-    async handleConnect(walletType) {
+
+    const close = () => {
+      emit('close');
+    };
+
+    const handleConnect = async (walletType) => {
       const success = await connectWallet(walletType);
       if (success) {
-        this.close();
+        close();
       }
-    },
-    handleDisconnect() {
+    };
+
+    const handleDisconnect = () => {
       disconnectWallet();
-      this.close();
+      close();
+    };
+    
+    onMounted(() => {
+      availableWallets.value = detectWallets();
+    });
+
+    return {
+      walletState,
+      availableWallets,
+      getWalletIcon,
+      handleConnect,
+      handleDisconnect,
+      close,
+    };
+  },
+  computed: {
+    formattedAddress() {
+      if (!this.walletState.address) return '';
+      return `${this.walletState.address.substring(0, 6)}...${this.walletState.address.substring(this.walletState.address.length - 4)}`;
+    },
+    uppercaseNetwork() {
+      return this.walletState.network ? this.walletState.network.toUpperCase() : '';
     }
+  },
+  methods: {
+    // You can keep methods here if you have logic not suitable for setup,
+    // but for this component, everything is moved to setup.
   },
 };
 </script>
@@ -110,7 +135,7 @@ export default {
   position: relative;
   width: 90%;
   max-width: 350px;
-  min-height: 400px;
+  /* min-height: 400px; */
   padding: 20px;
   border: 1px solid var(--line);
   backdrop-filter: blur(16px);
@@ -281,6 +306,20 @@ export default {
     /* No width property, so it shrinks to content size */
 }
 
+.no-wallet-view {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-2);
+}
+
+.no-wallet-view p {
+    margin-bottom: 10px;
+}
+
+.no-wallet-view a {
+    color: var(--primary);
+    text-decoration: underline;
+}
 
 /* Transitions */
 .modal-enter-active {
