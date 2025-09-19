@@ -88,7 +88,7 @@
 
                                         <fieldset class="field-bottom button-add-pool">
                                             <div class="field_left">
-                                                <a href="#" class="btn-ip ip-modern text-body-3">
+                                                <a href="#" @click.prevent="$emit('open-inject-modal')" class="btn-ip ip-modern text-body-3">
                                                     <i class="icon-plus fs-10"></i>
                                                     注入底池
                                                 </a>
