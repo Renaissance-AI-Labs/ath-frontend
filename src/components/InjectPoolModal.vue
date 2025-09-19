@@ -67,7 +67,7 @@ export default {
   },
   setup(props, { emit }) {
     const amount = ref('');
-    const selectedDuration = ref(1);
+    const selectedDuration = ref(15);
     const userTokenBalance = ref(10000); // Placeholder for user's token balance
 
     const isAmountInvalid = computed(() => {

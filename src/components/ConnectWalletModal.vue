@@ -1,6 +1,12 @@
 <template>
   <div class="modal-overlay" @click.self="close">
     <div class="modal-content">
+      <!-- Starry Background Effect -->
+      <div class="stars-bg">
+          <div class="stars"></div>
+          <div class="stars2"></div>
+          <div class="stars3"></div>
+      </div>
       <div class="modal-body">
 
         <!-- Not Connected View -->
@@ -161,6 +167,7 @@ export default {
   color: var(--white);
   font-size: 24px;
   cursor: pointer;
+  z-index: 2; /* Ensure it's above the modal-body */
 }
 
 .title_holder {
@@ -319,6 +326,63 @@ export default {
 .no-wallet-view a {
     color: var(--primary);
     text-decoration: underline;
+}
+
+/* Starry background effect */
+.stars-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  border-radius: 28px;
+  overflow: hidden;
+}
+.modal-body {
+    position: relative;
+    z-index: 1;
+}
+.stars, .stars2, .stars3 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  background: transparent;
+}
+.stars {
+  animation: animStar 50s linear infinite;
+  box-shadow: 123px 45px #FFF, 255px 189px #FFF, 345px 8px #FFF, 99px 345px #FFF, 487px 233px #FFF, 321px 487px #FFF, 499px 10px #FFF, 23px 187px #FFF, 176px 455px #FFF, 433px 321px #FFF, 45px 23px #FFF, 231px 480px #FFF, 467px 98px #FFF, 33px 256px #FFF, 198px 321px #FFF, 349px 465px #FFF, 480px 12px #FFF, 12px 190px #FFF, 256px 432px #FFF, 490px 211px #FFF, 54px 49px #FFF, 289px 344px #FFF, 411px 189px #FFF, 76px 287px #FFF, 201px 477px #FFF, 389px 23px #FFF, 477px 376px #FFF, 156px 143px #FFF, 301px 499px #FFF, 432px 65px #FFF;
+}
+.stars2 {
+  width: 2px;
+  height: 2px;
+  animation: animStar 100s linear infinite;
+  box-shadow: 234px 123px #FFF, 456px 345px #FFF, 12px 487px #FFF, 498px 65px #FFF, 213px 289px #FFF, 45px 456px #FFF, 345px 98px #FFF, 187px 399px #FFF, 432px 187px #FFF, 88px 88px #FFF, 287px 465px #FFF, 478px 243px #FFF, 143px 32px #FFF, 365px 398px #FFF, 499px 488px #FFF;
+}
+.stars3 {
+  width: 3px;
+  height: 3px;
+  animation: animStar 150s linear infinite;
+  box-shadow: 87px 345px #FFF, 465px 87px #FFF, 234px 487px #FFF, 487px 234px #FFF, 156px 156px #FFF, 387px 432px #FFF, 432px 32px #FFF;
+}
+.stars:after, .stars2:after, .stars3:after {
+  content: " ";
+  position: absolute;
+  top: 250px;
+  width: inherit;
+  height: inherit;
+  background: transparent;
+  box-shadow: inherit;
+}
+@keyframes animStar {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-250px);
+  }
 }
 
 /* Transitions */
