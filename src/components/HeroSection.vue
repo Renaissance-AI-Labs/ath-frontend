@@ -92,7 +92,7 @@
                                                     <i class="icon-plus fs-10"></i>
                                                     注入底池
                                                 </a>
-                                                <a href="#" class="btn-ip ip-modern text-body-3">
+                                                <a href="#" @click.prevent="shareFriendLink" class="btn-ip ip-modern text-body-3">
                                                     <i class="icon-arrow-caret-down  fs-8"></i>
                                                     分享好友
                                                 </a>
@@ -159,6 +159,7 @@
 <script>
 import { walletState } from '../services/wallet';
 import { getUserStakedBalance, getFriendsBoost } from '../services/contracts';
+import { showToast } from '../services/notification';
 
 export default {
   name: 'HeroSection',
@@ -199,8 +200,8 @@ export default {
   },
   methods: {
     async fetchHeroData() {
-      if (!this.walletState.address) {
-        console.log("未找到钱包地址，跳过数据获取。");
+      if (!this.walletState.isAuthenticated || !this.walletState.address) {
+        console.log("钱包未认证或地址不存在，跳过数据获取。");
         return;
       }
       console.log("Fetching hero data...");
@@ -210,6 +211,19 @@ export default {
     resetData() {
       this.stakedBalance = '0';
       this.friendsBoost = '0';
+    },
+    shareFriendLink() {
+      if (!this.walletState.isAuthenticated) {
+        showToast('请先连接并授权您的钱包');
+        return;
+      }
+      const referralLink = `${window.location.origin}?ref=${this.walletState.address}`;
+      navigator.clipboard.writeText(referralLink).then(() => {
+        showToast('复制成功！链接已复制到剪贴板');
+      }).catch(err => {
+        console.error('无法复制链接: ', err);
+        showToast('复制失败，请检查浏览器权限');
+      });
     }
   },
   mounted() {

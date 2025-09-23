@@ -322,8 +322,12 @@ const handleAccountsChanged = async (accounts) => {
     localStorage.setItem('ath_walletAddress', accounts[0]);
     
     // Re-authenticate and re-initialize contracts for the new account
-    const reauthSuccess = await authenticateWallet();
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner(accounts[0]);
+    const reauthSuccess = await authenticateWallet(accounts[0], signer);
     if (reauthSuccess) {
+      // Manually update signer in state before re-initializing
+      walletState.signer = signer;
       // Re-initialize contracts with the new signer
       initializeContracts();
     } else {
