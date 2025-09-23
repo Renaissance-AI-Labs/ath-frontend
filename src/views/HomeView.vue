@@ -39,6 +39,19 @@ import FAQSection from '../components/FAQSection.vue';
 import InjectPoolModal from '../components/InjectPoolModal.vue';
 import ConfirmReferrerModal from '../components/ConfirmReferrerModal.vue';
 // import CTASection from '../components/CTASection.vue';
+import {
+  walletState
+} from '../services/wallet';
+import {
+  stakeWithInviter,
+  getReferrer,
+  isReferrerValid,
+  getMaxStakeAmount
+} from '../services/contracts';
+import {
+  showToast
+} from '../services/notification';
+
 
 export default {
   name: 'HomeView',
@@ -59,6 +72,8 @@ export default {
       isInjectModalVisible: false,
       isConfirmReferrerModalVisible: false,
       injectionData: null, // To store data from the first modal
+      isStaking: false, // To lock UI during transaction
+      walletState: walletState,
     };
   },
   methods: {
@@ -68,19 +83,102 @@ export default {
     closeInjectModal() {
       this.isInjectModalVisible = false;
     },
-    handleInjectionConfirm(data) {
+    async handleInjectionConfirm(data) {
       console.log('Injection data received:', data);
-      this.injectionData = data; // Store the data
+      this.injectionData = data;
       this.isInjectModalVisible = false;
-      this.isConfirmReferrerModalVisible = true;
+
+      // Decide the next step based on user status
+      if (this.walletState.isNewUser) {
+        this.isConfirmReferrerModalVisible = true;
+      } else {
+        // Old user flow: directly proceed to stake
+        await this.executeStakeForOldUser();
+      }
     },
     closeConfirmReferrerModal() {
       this.isConfirmReferrerModalVisible = false;
     },
-    handleReferrerConfirm() {
-      console.log('Referrer confirmed. Proceeding with staking using data:', this.injectionData);
-      // Here you would call the final staking contract function
+    async handleReferrerConfirm(pendingReferrer) {
+      console.log('Referrer confirmed by user:', pendingReferrer);
       this.isConfirmReferrerModalVisible = false;
+      // New user flow: proceed to stake with validation
+      await this.executeStakeForNewUser(pendingReferrer);
+    },
+
+    // --- Staking Execution Logic ---
+
+    async executeStakeForNewUser(parentAddress) {
+      if (this.isStaking) return;
+      this.isStaking = true;
+      console.log(`[指挥官] 开始为新用户执行质押流程...`);
+      showToast("正在处理质押请求...");
+
+      // Final on-chain validation for the parent address
+      console.log(`[指挥官] 对新用户的推荐人地址进行最终链上校验: ${parentAddress}`);
+      const isParentValid = await isReferrerValid(parentAddress);
+      if (!isParentValid) {
+        console.error(`[指挥官] 推荐人地址校验失败: ${parentAddress}`);
+        showToast("错误：推荐人地址无效或未质押");
+        this.isStaking = false;
+        return;
+      }
+      console.log(`[指挥官] 推荐人地址校验成功`);
+
+      const { amount, duration } = this.injectionData;
+
+      // Diagnostic log for max stake amount
+      const maxAmount = await getMaxStakeAmount();
+      console.log(`[指挥官] 诊断信息: 当前允许的最大质押额: ${maxAmount} USDT, 用户尝试质押: ${amount} USDT`);
+
+      console.log(`[指挥官] 发起最终质押交易 (stakeWithInviter), 质押天数索引: ${duration}, 推荐人: ${parentAddress}`);
+      const success = await stakeWithInviter(amount, duration, parentAddress);
+
+      if (success) {
+        console.log("[指挥官] 质押交易成功");
+        showToast("质押成功！页面即将刷新。");
+        setTimeout(() => window.location.reload(), 2000);
+      } else {
+        console.error("[指挥官] 质押交易失败");
+        showToast("质押失败，请稍后重试。");
+      }
+      this.isStaking = false;
+    },
+
+    async executeStakeForOldUser() {
+      if (this.isStaking) return;
+      this.isStaking = true;
+      console.log("[指挥官] 开始为老用户执行质押流程...");
+      showToast("正在获取推荐人信息并质押...");
+
+      console.log("[指挥官] 开始从合约获取已绑定的推荐人地址...");
+      const parentAddress = await getReferrer();
+      if (!parentAddress || parentAddress.startsWith('0x000')) {
+        console.error("[指挥官] 获取老用户的推荐人地址失败");
+        showToast("错误：无法获取您已绑定的推荐人地址。");
+        this.isStaking = false;
+        return;
+      }
+      console.log(`[指挥官] 成功获取到老用户的推荐人地址: ${parentAddress}`);
+      
+      const { amount, duration } = this.injectionData;
+
+      // Diagnostic log for max stake amount
+      const maxAmount = await getMaxStakeAmount();
+      console.log(`[指挥官] 诊断信息: 当前允许的最大质押额: ${maxAmount} USDT, 用户尝试质押: ${amount} USDT`);
+
+      console.log(`[指挥官] 发起最终质押交易 (stakeWithInviter), 质押天数索引: ${duration}, 推荐人: ${parentAddress}`);
+      const success = await stakeWithInviter(amount, duration, parentAddress);
+      
+      if (success) {
+        console.log("[指挥官] 质押交易成功");
+        showToast("质押成功！页面即将刷新。");
+        setTimeout(() => window.location.reload(), 2000);
+      } else {
+        console.error("[指挥官] 质押交易失败");
+        showToast("质押失败，请稍后重试。");
+      }
+      this.isStaking = false;
     }
   }
 };

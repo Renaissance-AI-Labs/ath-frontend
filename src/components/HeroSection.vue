@@ -88,7 +88,7 @@
 
                                         <fieldset class="field-bottom button-add-pool">
                                             <div class="field_left">
-                                                <a href="#" @click.prevent="$emit('open-inject-modal')" class="btn-ip ip-modern text-body-3">
+                                                <a href="#" @click.prevent="handleInjectPoolClick" class="btn-ip ip-modern text-body-3">
                                                     <i class="icon-plus fs-10"></i>
                                                     注入底池
                                                 </a>
@@ -220,7 +220,18 @@ export default {
       this.stakedBalance = '0';
       this.friendsBoost = '0';
     },
+    handleInjectPoolClick() {
+      if (!this.walletState.isAuthenticated) {
+        showToast('请先连接并授权您的钱包');
+        return;
+      }
+      this.$emit('open-inject-modal');
+    },
     async shareFriendLink() {
+      if (!this.walletState.isAuthenticated) {
+        showToast('请先连接并授权您的钱包');
+        return;
+      }
       // First, check if the user is eligible to share.
       const isEligible = await checkIfUserHasReferrer();
       if (!isEligible) {

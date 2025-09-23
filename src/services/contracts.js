@@ -6,6 +6,8 @@ import { toRaw } from 'vue';
 import referralAbi from '../abis/referral.json';
 import stakingAbi from '../abis/staking.json';
 import athAbi from '../abis/ath.json';
+// No need for a separate USDT ABI if it follows ERC20 standard like `ath.json`
+// import usdtAbi from '../abis/usdt.json';
 
 // --- Contract Addresses ---
 const contractAddresses = {
@@ -40,7 +42,7 @@ export { referralContract, stakingContract, athContract, usdtContract };
  * Initializes all contract instances with the current signer from walletState.
  * This should be called after a successful wallet connection.
  */
-export const initializeContracts = () => {
+export const initializeContracts = async () => {
   const rawSigner = toRaw(walletState.signer);
   if (!rawSigner) {
     console.warn("Cannot initialize contracts without a signer.");
@@ -62,14 +64,14 @@ export const initializeContracts = () => {
   referralContract = new ethers.Contract(referralAddress, referralAbi, rawSigner);
   stakingContract = new ethers.Contract(stakingAddress, stakingAbi, rawSigner);
   athContract = new ethers.Contract(athAddress, athAbi, rawSigner);
-  // USDT is a standard ERC20, we can use an ABI with balanceOf like ath.json
+  // USDT is a standard ERC20, we can use an ABI with approve/allowance like ath.json
   usdtContract = new ethers.Contract(usdtAddress, athAbi, rawSigner);
 
   console.log("Contracts initialized:", {
-    referral: referralContract.address,
-    staking: stakingContract.address,
-    ath: athContract.address,
-    usdt: usdtContract.address,
+    referral: await referralContract.getAddress(),
+    staking: await stakingContract.getAddress(),
+    ath: await athContract.getAddress(),
+    usdt: await usdtContract.getAddress(),
   });
 };
 
@@ -163,6 +165,160 @@ export const getUsdtBalance = async () => {
     return formattedBalance;
   } catch (error) {
     console.error("Error fetching USDT balance:", error);
+    return "0";
+  }
+};
+
+// --- Staking and Referral Flow Functions ---
+
+/**
+ * Gets the current USDT allowance for the staking contract.
+ * @returns {Promise<string>} The allowance amount in ethers (string).
+ */
+export const getUsdtAllowance = async () => {
+  const stakingAddress = contractAddresses.staking[import.meta.env.PROD ? 'production' : 'development'];
+  if (!usdtContract || !walletState.address || !stakingAddress) {
+    console.warn("USDT contract not initialized, wallet not connected, or staking address missing.");
+    return "0";
+  }
+  try {
+    const allowance = await usdtContract.allowance(walletState.address, stakingAddress);
+    return ethers.formatUnits(allowance, 18);
+  } catch (error) {
+    console.error("Error fetching USDT allowance:", error);
+    return "0";
+  }
+};
+
+/**
+ * Approves the staking contract to spend a certain amount of USDT.
+ * Instead of a specific amount, this will now approve the maximum possible amount.
+ * @returns {Promise<boolean>} True if the approval transaction was successful, false otherwise.
+ */
+export const approveUsdt = async () => {
+  const stakingAddress = contractAddresses.staking[import.meta.env.PROD ? 'production' : 'development'];
+  if (!usdtContract || !stakingAddress) {
+    console.error("USDT contract not initialized or staking address missing.");
+    return false;
+  }
+  try {
+    const tx = await usdtContract.approve(stakingAddress, ethers.MaxUint256);
+    await tx.wait(); // Wait for the transaction to be mined
+    console.log("USDT max approval successful, transaction hash:", tx.hash);
+    return true;
+  } catch (error) {
+    console.error("Error approving USDT:", error);
+    return false;
+  }
+};
+
+/**
+ * Gets the referrer for an existing user.
+ * @returns {Promise<string|null>} The referrer's address or null if not found/error.
+ */
+export const getReferrer = async () => {
+  if (!referralContract || !walletState.address) {
+    console.warn("Referral contract not initialized or user not connected.");
+    return null;
+  }
+  try {
+    return await referralContract.getReferral(walletState.address);
+  } catch (error) {
+    console.error("Error fetching referrer:", error);
+    return null;
+  }
+};
+
+/**
+ * Gets the root address from the referral contract.
+ * @returns {Promise<string|null>} The root referrer's address or null if error.
+ */
+export const getRootReferrer = async () => {
+  if (!referralContract) {
+    console.warn("Referral contract not initialized.");
+    return null;
+  }
+  try {
+    return await referralContract.getRootAddress();
+  } catch (error) {
+    console.error("Error fetching root referrer:", error);
+    return null;
+  }
+};
+
+/**
+ * Checks if a given address is a valid referrer (i.e., has already staked).
+ * @param {string} referrerAddress The address to check.
+ * @returns {Promise<boolean>} True if the referrer is valid.
+ */
+export const isReferrerValid = async (referrerAddress) => {
+  if (!referralContract) {
+    console.warn("Referral contract not initialized.");
+    return false;
+  }
+  try {
+    return await referralContract.isBindReferral(referrerAddress);
+  } catch (error) {
+    console.error("Error validating referrer:", error);
+    return false;
+  }
+};
+
+/**
+ * Executes the final staking transaction.
+ * @param {string} amount The amount of USDT to stake, in ethers.
+ * @param {number} stakeIndex The index for the staking duration (e.g., 1, 15, 30).
+ * @param {string} parentAddress The address of the referrer.
+ * @returns {Promise<boolean>} True if the transaction was successful.
+ */
+export const stakeWithInviter = async (amount, stakeIndex, parentAddress) => {
+  if (!stakingContract) {
+    console.error("Staking contract not initialized.");
+    return false;
+  }
+  try {
+    // Per user feedback, USDT decimals are 6
+    const amountInWei = ethers.parseUnits(amount, 6);
+    // As discussed, amountOutMin is set to 0 for now.
+    const amountOutMin = 0;
+
+    console.log("[contracts.js] stakeWithInviter Parameters:", {
+      _amount: amountInWei.toString(),
+      amountOutMin: amountOutMin.toString(),
+      _stakeIndex: stakeIndex,
+      parent: parentAddress
+    });
+    
+    const tx = await stakingContract.stakeWithInviter(
+      amountInWei,
+      amountOutMin,
+      stakeIndex,
+      parentAddress
+    );
+    await tx.wait();
+    console.log("Staking successful, transaction hash:", tx.hash);
+    return true;
+  } catch (error) {
+    console.error("Error during stakeWithInviter call:", error);
+    return false;
+  }
+};
+
+/**
+ * Reads the current maximum stake amount from the contract.
+ * @returns {Promise<string>} The max stake amount, formatted as a string.
+ */
+export const getMaxStakeAmount = async () => {
+  if (!stakingContract) {
+    console.warn("Staking contract not initialized.");
+    return "0";
+  }
+  try {
+    const maxAmountWei = await stakingContract.maxStakeAmount();
+    // The amount is compared with USDT amount, which has 6 decimals.
+    return ethers.formatUnits(maxAmountWei, 6);
+  } catch (error) {
+    console.error("Error fetching max stake amount:", error);
     return "0";
   }
 };

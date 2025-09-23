@@ -3,7 +3,8 @@ import { ethers } from 'ethers';
 // REMOVED: import { MetaMaskSDK } from "@metamask/sdk";
 import {
   initializeContracts,
-  resetContracts
+  resetContracts,
+  checkIfUserHasReferrer
 } from './contracts';
 
 
@@ -52,6 +53,7 @@ export const walletState = reactive({
   network: null, // To store the network name
   signer: null,
   walletType: null, // To store the type of the connected wallet
+  isNewUser: null, // null: unknown, true: new, false: old
 });
 
 // Utility function to format wallet address
@@ -236,11 +238,15 @@ export const connectWallet = async (walletType) => {
     localStorage.setItem('ath_walletType', walletType); // Save wallet type
 
     // --- Initialize Contracts ---
-    initializeContracts();
+    await initializeContracts();
     // --------------------------
 
     // FINAL STEP: Setup listeners only after a fully successful connection.
     setupWalletListeners(rawProvider);
+
+    // After successful connection and authentication, check if the user is new.
+    const hasReferrer = await checkIfUserHasReferrer();
+    walletState.isNewUser = !hasReferrer; // isBindReferral returns true if they have a referrer (old user)
 
     console.log(`Successfully connected to ${walletType} with address:`, walletState.address);
 
@@ -272,6 +278,7 @@ export const disconnectWallet = () => {
   walletState.network = null;
   walletState.signer = null;
   walletState.walletType = null;
+  walletState.isNewUser = null; // Reset user status on disconnect
   localStorage.removeItem('ath_walletAddress');
   localStorage.removeItem('ath_walletType'); // Also remove wallet type
   
@@ -359,7 +366,10 @@ const handleAccountsChanged = async (accounts) => {
       // Manually update signer in state before re-initializing
       walletState.signer = signer;
       // Re-initialize contracts with the new signer
-      initializeContracts();
+      await initializeContracts();
+      // After re-auth, check the new user's status as well
+      const hasReferrer = await checkIfUserHasReferrer();
+      walletState.isNewUser = !hasReferrer;
     } else {
       // If re-authentication fails, treat as a full disconnect
       disconnectWallet();

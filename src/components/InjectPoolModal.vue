@@ -46,8 +46,8 @@
           <a href="#" @click.prevent="close" class="btn-ip ip-modern text-body-3 btn-cancel">
             取消
           </a>
-          <a href="#" @click.prevent="handleConfirm" class="btn-ip ip-modern text-body-3 btn-confirm">
-            确定
+          <a href="#" @click.prevent="handleMainAction" class="btn-ip ip-modern text-body-3 btn-confirm">
+            {{ mainButtonState.text }}
           </a>
         </div>
 
@@ -57,9 +57,19 @@
 </template>
 
 <script>
-import { walletState } from '../services/wallet';
-import { getUsdtBalance } from '../services/contracts';
+import {
+  walletState
+} from '../services/wallet';
+import {
+  getUsdtBalance,
+  getUsdtAllowance,
+  approveUsdt
+} from '../services/contracts';
 import CustomSelect from './CustomSelect.vue';
+import {
+  showToast
+} from '../services/notification';
+
 
 export default {
   name: 'InjectPoolModal',
@@ -69,14 +79,22 @@ export default {
   data() {
     return {
       amount: '',
-      selectedDuration: 15, // Default to 15 days
+      selectedDuration: 1, // Default to 15 days (index 1)
       usdtBalance: '0',
+      usdtAllowance: '0',
+      isApproving: false,
+      isLoading: true, // Start with loading true to fetch allowance
       walletState: walletState,
-      durationOptions: [
-        { value: 1, text: '1天，复利0.3%' },
-        { value: 15, text: '15天，复利0.6%' },
-        { value: 30, text: '30天，复利1.2%' },
-      ],
+      durationOptions: [{
+        value: 0,
+        text: '1天，复利0.3%'
+      }, {
+        value: 1,
+        text: '15天，复利0.6%'
+      }, {
+        value: 2,
+        text: '30天，复利1.2%'
+      }, ],
     };
   },
   computed: {
@@ -85,6 +103,29 @@ export default {
     },
     isAmountInvalid() {
       return parseFloat(this.amount) > parseFloat(this.usdtBalance);
+    },
+    mainButtonState() {
+      const amountNum = parseFloat(this.amount);
+      const allowanceNum = parseFloat(this.usdtAllowance);
+
+      if (this.isApproving) {
+        return { text: '授权中...', action: 'approving', disabled: true };
+      }
+      
+      if (!this.amount || amountNum <= 0) {
+        // Default state when no amount is entered
+        return { text: '请输入数量', action: 'idle', disabled: true };
+      }
+
+      if (allowanceNum < amountNum) {
+        return { text: '请授权USDT', action: 'approve', disabled: false };
+      }
+
+      if (this.walletState.isNewUser) {
+        return { text: '下一步', action: 'next_step', disabled: false };
+      } else {
+        return { text: '确认质押', action: 'stake', disabled: false };
+      }
     },
     formattedUsdtBalance() {
       const number = parseFloat(this.usdtBalance);
@@ -98,16 +139,33 @@ export default {
   watch: {
     walletAddress(newAddress) {
       if (newAddress) {
-        this.fetchUsdtBalance();
+        this.fetchInitialData();
       } else {
         this.resetBalance();
+        this.usdtAllowance = '0';
       }
     }
   },
   methods: {
-    async fetchUsdtBalance() {
+    async fetchInitialData() {
       if (!this.walletState.address) return;
+      this.isLoading = true;
+      await Promise.all([
+        this.fetchUsdtBalance(),
+        this.fetchUsdtAllowance()
+      ]);
+      
+      const allowanceNum = parseFloat(this.usdtAllowance);
+      const isApproved = allowanceNum > 0;
+      console.log(`注入资产弹窗: 用户USDT授权状态: ${isApproved}, 授权额度: ${this.usdtAllowance}`);
+
+      this.isLoading = false;
+    },
+    async fetchUsdtBalance() {
       this.usdtBalance = await getUsdtBalance();
+    },
+    async fetchUsdtAllowance() {
+      this.usdtAllowance = await getUsdtAllowance();
     },
     resetBalance() {
       this.usdtBalance = '0';
@@ -127,22 +185,46 @@ export default {
     fillMax() {
       this.amount = this.usdtBalance;
     },
-    handleConfirm() {
-      if (!this.amount || parseFloat(this.amount) <= 0) {
-        alert('请输入有效的数量');
-        return;
+    async handleMainAction() {
+      if (this.mainButtonState.disabled) return;
+      
+      console.log(`[注入资产弹窗] 主操作按钮被点击, 当前状态: '${this.mainButtonState.action}'`);
+
+      switch (this.mainButtonState.action) {
+        case 'approve':
+          console.log("[注入资产弹窗] 执行操作: 请求USDT授权");
+          this.isApproving = true;
+          const success = await approveUsdt();
+          if (success) {
+            showToast("授权成功！");
+            await this.fetchUsdtAllowance();
+          } else {
+            showToast("授权失败或被拒绝");
+          }
+          this.isApproving = false;
+          break;
+        case 'next_step':
+          console.log("[注入资产弹窗] 执行操作: 进入下一步 -> 确认推荐人");
+          this.$emit('confirm', {
+            amount: this.amount,
+            duration: this.selectedDuration
+          });
+          break;
+        case 'stake':
+          console.log("[注入资产弹窗] 执行操作: 直接进入质押流程");
+          this.$emit('confirm', {
+            amount: this.amount,
+            duration: this.selectedDuration
+          });
+          break;
       }
-      if (this.isAmountInvalid) {
-        alert('余额不足');
-        return;
-      }
-      this.$emit('confirm', { amount: this.amount, duration: this.selectedDuration });
-      this.close();
     },
   },
   mounted() {
     if (this.walletAddress) {
-      this.fetchUsdtBalance();
+      this.fetchInitialData();
+    } else {
+      this.isLoading = false;
     }
   }
 };

@@ -14,13 +14,14 @@
         <div class="form-group">
           <label class="form-label">推荐人地址:</label>
           <div class="address-box">
-            <span>{{ referrerAddress || 'N/A' }}</span>
+            <span v-if="isLoading">加载中...</span>
+            <span v-else>{{ formattedReferrerAddress }}</span>
           </div>
         </div>
 
         <div class="button-group">
           <button class="btn-ip btn-cancel" @click="$emit('close')">取消</button>
-          <button class="btn-ip btn-confirm" @click="$emit('confirm')">确认推荐人并质押</button>
+          <button class="btn-ip btn-confirm" @click="handleConfirm" :disabled="isLoading || !pendingReferrer">确认推荐人并质押</button>
         </div>
       </div>
     </div>
@@ -28,15 +29,62 @@
 </template>
 
 <script>
+import {
+  getRootReferrer
+} from '../services/contracts';
+import {
+  formatAddress
+} from '../services/wallet';
+
 export default {
   name: 'ConfirmReferrerModal',
   props: {
-    referrerAddress: {
-      type: String,
-      default: ''
+    // referrerAddress prop is no longer needed as the component will fetch it.
+  },
+  emits: ['close', 'confirm'],
+  data() {
+    return {
+      pendingReferrer: null,
+      isLoading: true,
+    };
+  },
+  computed: {
+    formattedReferrerAddress() {
+      if (!this.pendingReferrer) {
+        return 'N/A';
+      }
+      return formatAddress(this.pendingReferrer);
     }
   },
-  emits: ['close', 'confirm']
+  methods: {
+    async fetchReferrer() {
+      this.isLoading = true;
+      // 1. Check URL for ?ref= parameter first
+      const urlParams = new URLSearchParams(window.location.search);
+      const refFromUrl = urlParams.get('ref');
+
+      if (refFromUrl && refFromUrl.startsWith('0x') && refFromUrl.length === 42) {
+        console.log(`[确认推荐人弹窗] 成功从URL中解析到推荐人地址: ${refFromUrl}`);
+        this.pendingReferrer = refFromUrl;
+      } else {
+        // 2. If no valid ref in URL, get the root referrer from the contract
+        console.log("[确认推荐人弹窗] URL中无推荐人, 开始从合约获取根推荐人...");
+        this.pendingReferrer = await getRootReferrer();
+        console.log(`[确认推荐人弹窗] 成功从合约获取到根推荐人地址: ${this.pendingReferrer}`);
+      }
+      this.isLoading = false;
+    },
+    handleConfirm() {
+      // Pass the determined referrer address back to the parent
+      if (this.pendingReferrer) {
+        console.log(`[确认推荐人弹窗] 用户已确认推荐人地址: ${this.pendingReferrer}, 进入最终质押流程`);
+        this.$emit('confirm', this.pendingReferrer);
+      }
+    }
+  },
+  mounted() {
+    this.fetchReferrer();
+  }
 };
 </script>
 
