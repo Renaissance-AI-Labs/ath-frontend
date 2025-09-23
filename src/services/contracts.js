@@ -21,15 +21,20 @@ const contractAddresses = {
     production: '', // To be deployed
     development: '0x705c99F6C25056cC73B299dFe209d80455FA7D63',
   },
+  usdt: {
+    production: '0x55d398326f99059fF775485246999027B3197955', // BNB Mainnet USDT
+    development: '0xaE36d423c5B05f80926AaEAE0Fca978A74C0aA01', // BNB Testnet USDT
+  }
 };
 
 // --- Contract Instances ---
 let referralContract;
 let stakingContract;
 let athContract;
+let usdtContract;
 
 // We need to export these for other modules to use them.
-export { referralContract, stakingContract, athContract };
+export { referralContract, stakingContract, athContract, usdtContract };
 
 /**
  * Initializes all contract instances with the current signer from walletState.
@@ -51,16 +56,20 @@ export const initializeContracts = () => {
   const referralAddress = contractAddresses.referral[env];
   const stakingAddress = contractAddresses.staking[env];
   const athAddress = contractAddresses.ath[env];
+  const usdtAddress = contractAddresses.usdt[env];
 
   // Create new contract instances using the raw, unwrapped signer
   referralContract = new ethers.Contract(referralAddress, referralAbi, rawSigner);
   stakingContract = new ethers.Contract(stakingAddress, stakingAbi, rawSigner);
   athContract = new ethers.Contract(athAddress, athAbi, rawSigner);
+  // USDT is a standard ERC20, we can use an ABI with balanceOf like ath.json
+  usdtContract = new ethers.Contract(usdtAddress, athAbi, rawSigner);
 
   console.log("Contracts initialized:", {
     referral: referralContract.address,
     staking: stakingContract.address,
     ath: athContract.address,
+    usdt: usdtContract.address,
   });
 };
 
@@ -72,6 +81,7 @@ export const resetContracts = () => {
   referralContract = null;
   stakingContract = null;
   athContract = null;
+  usdtContract = null;
   console.log("Contract instances have been reset.");
 };
 
@@ -116,6 +126,27 @@ export const getFriendsBoost = async () => {
     return formattedKpi;
   } catch (error) {
     console.error("Error fetching friends boost (team KPI):", error);
+    return "0";
+  }
+};
+
+/**
+ * Fetches the USDT balance for the current user.
+ * @returns {Promise<string>} The user's USDT balance, formatted as a string.
+ */
+export const getUsdtBalance = async () => {
+  if (!usdtContract || !walletState.address) {
+    console.warn("USDT contract not initialized or user not connected.");
+    return "0";
+  }
+  try {
+    const balance = await usdtContract.balanceOf(walletState.address);
+    // USDT on BNB Chain typically has 18 decimals
+    const formattedBalance = ethers.formatUnits(balance, 18);
+    console.log(`获取到用户 USDT 余额: ${formattedBalance}`);
+    return formattedBalance;
+  } catch (error) {
+    console.error("Error fetching USDT balance:", error);
     return "0";
   }
 };

@@ -29,7 +29,7 @@
             </div>
             <div class="balance-info">
               <a href="#" @click.prevent="fillMax" class="btn-ip ip-modern text-body-3 balance-btn">
-                余额: {{ userTokenBalance }}
+                余额: {{ formattedUsdtBalance }} USDT
               </a>
             </div>
           </div>
@@ -57,7 +57,8 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { walletState } from '../services/wallet';
+import { getUsdtBalance } from '../services/contracts';
 import CustomSelect from './CustomSelect.vue';
 
 export default {
@@ -65,67 +66,84 @@ export default {
   components: {
     CustomSelect,
   },
-  setup(props, { emit }) {
-    const amount = ref('');
-    const selectedDuration = ref(15);
-    const userTokenBalance = ref(10000); // Placeholder for user's token balance
-
-    const isAmountInvalid = computed(() => {
-      // Use parseFloat for correct numeric comparison (handles integers and decimals)
-      return parseFloat(amount.value) > userTokenBalance.value;
-    });
-
-    const durationOptions = [
-      { value: 1, text: '1天，复利0.3%' },
-      { value: 15, text: '15天，复利0.6%' },
-      { value: 30, text: '30天，复利1.2%' },
-    ];
-
-    const close = () => {
-      emit('close');
+  data() {
+    return {
+      amount: '',
+      selectedDuration: 15, // Default to 15 days
+      usdtBalance: '0',
+      walletState: walletState,
+      durationOptions: [
+        { value: 1, text: '1天，复利0.3%' },
+        { value: 15, text: '15天，复利0.6%' },
+        { value: 30, text: '30天，复利1.2%' },
+      ],
     };
-
-    const handleAmountInput = (event) => {
+  },
+  computed: {
+    walletAddress() {
+      return this.walletState.address;
+    },
+    isAmountInvalid() {
+      return parseFloat(this.amount) > parseFloat(this.usdtBalance);
+    },
+    formattedUsdtBalance() {
+      const number = parseFloat(this.usdtBalance);
+      if (isNaN(number)) return '0.00';
+      return number.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+  },
+  watch: {
+    walletAddress(newAddress) {
+      if (newAddress) {
+        this.fetchUsdtBalance();
+      } else {
+        this.resetBalance();
+      }
+    }
+  },
+  methods: {
+    async fetchUsdtBalance() {
+      if (!this.walletState.address) return;
+      this.usdtBalance = await getUsdtBalance();
+    },
+    resetBalance() {
+      this.usdtBalance = '0';
+    },
+    close() {
+      this.$emit('close');
+    },
+    handleAmountInput(event) {
       let value = event.target.value;
-      // 1. Remove any character that is not a digit or a period.
       value = value.replace(/[^0-9.]/g, '');
-      // 2. Ensure there's at most one period.
       const parts = value.split('.');
       if (parts.length > 2) {
         value = parts[0] + '.' + parts.slice(1).join('');
       }
-      amount.value = value;
-    };
-
-    const fillMax = () => {
-      amount.value = userTokenBalance.value;
-    };
-
-    const handleConfirm = () => {
-      // Basic validation
-      if (!amount.value || amount.value <= 0) {
+      this.amount = value;
+    },
+    fillMax() {
+      this.amount = this.usdtBalance;
+    },
+    handleConfirm() {
+      if (!this.amount || parseFloat(this.amount) <= 0) {
         alert('请输入有效的数量');
         return;
       }
-      if (amount.value > userTokenBalance.value) {
+      if (this.isAmountInvalid) {
         alert('余额不足');
         return;
       }
-      emit('confirm', { amount: amount.value, duration: selectedDuration.value });
-      close();
-    };
-
-    return {
-      amount,
-      selectedDuration,
-      userTokenBalance,
-      durationOptions,
-      isAmountInvalid,
-      close,
-      fillMax,
-      handleConfirm,
-      handleAmountInput,
-    };
+      this.$emit('confirm', { amount: this.amount, duration: this.selectedDuration });
+      this.close();
+    },
+  },
+  mounted() {
+    if (this.walletAddress) {
+      this.fetchUsdtBalance();
+    }
   }
 };
 </script>
