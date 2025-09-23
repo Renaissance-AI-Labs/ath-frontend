@@ -77,14 +77,14 @@
                                                 <h5 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content">您的资产在此处安睡 </h5>
                                             </div>
                                         </div>
-                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px;">3,000,000,000<span style="font-size: 16px;"> TOKEN</span></p>
+                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px;">{{ formattedStakedBalance }}<span style="font-size: 16px;"> TOKEN</span></p>
 
                                         <div class="tf-brand assets-title">
                                             <div class="container">
                                                 <h3 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content" style="font-size: 16px !important;"> 好友带来的助力 </h3>
                                             </div>
                                         </div>
-                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px; font-size: 14px !important;">10,000<span style="font-size: 12px;"> TOKEN</span></p>
+                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px; font-size: 14px !important;">{{ formattedFriendsBoost }}<span style="font-size: 12px;"> TOKEN</span></p>
 
                                         <fieldset class="field-bottom button-add-pool">
                                             <div class="field_left">
@@ -157,8 +157,67 @@
     </section>
 </template>
 <script>
+import { walletState } from '../services/wallet';
+import { getUserStakedBalance, getFriendsBoost } from '../services/contracts';
+
 export default {
   name: 'HeroSection',
+  data() {
+    return {
+      stakedBalance: '0',
+      friendsBoost: '0',
+      walletState: walletState, // Make walletState reactive in the component
+    };
+  },
+  computed: {
+    walletAddress() {
+      return this.walletState.address;
+    },
+    formattedStakedBalance() {
+        const number = parseFloat(this.stakedBalance);
+        if (isNaN(number)) return '0';
+        return number.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    },
+    formattedFriendsBoost() {
+        const number = parseFloat(this.friendsBoost);
+        if (isNaN(number)) return '0';
+        return number.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    }
+  },
+  watch: {
+    walletAddress(newAddress, oldAddress) {
+      if (newAddress) {
+        // This covers both initial connection and account switching
+        console.log(`钱包已连接或切换至新地址: ${newAddress}。正在获取数据...`);
+        this.fetchHeroData();
+      } else {
+        // This covers disconnection
+        console.log(`钱包已断开。正在重置数据...`);
+        this.resetData();
+      }
+    }
+  },
+  methods: {
+    async fetchHeroData() {
+      if (!this.walletState.address) {
+        console.log("未找到钱包地址，跳过数据获取。");
+        return;
+      }
+      console.log("Fetching hero data...");
+      this.stakedBalance = await getUserStakedBalance();
+      this.friendsBoost = await getFriendsBoost();
+    },
+    resetData() {
+      this.stakedBalance = '0';
+      this.friendsBoost = '0';
+    }
+  },
+  mounted() {
+    // Initial fetch in case the wallet is already connected on component mount
+    if (this.walletAddress) {
+      this.fetchHeroData();
+    }
+  }
 }
 </script>
 <style scoped>

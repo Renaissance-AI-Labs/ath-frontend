@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import { walletState } from './wallet';
+import { toRaw } from 'vue';
 
 // --- Import ABIs ---
 import referralAbi from '../abis/referral.json';
@@ -27,12 +28,16 @@ let referralContract;
 let stakingContract;
 let athContract;
 
+// We need to export these for other modules to use them.
+export { referralContract, stakingContract, athContract };
+
 /**
  * Initializes all contract instances with the current signer from walletState.
  * This should be called after a successful wallet connection.
  */
 export const initializeContracts = () => {
-  if (!walletState.signer) {
+  const rawSigner = toRaw(walletState.signer);
+  if (!rawSigner) {
     console.warn("Cannot initialize contracts without a signer.");
     return;
   }
@@ -47,10 +52,10 @@ export const initializeContracts = () => {
   const stakingAddress = contractAddresses.staking[env];
   const athAddress = contractAddresses.ath[env];
 
-  // Create new contract instances
-  referralContract = new ethers.Contract(referralAddress, referralAbi, walletState.signer);
-  stakingContract = new ethers.Contract(stakingAddress, stakingAbi, walletState.signer);
-  athContract = new ethers.Contract(athAddress, athAbi, walletState.signer);
+  // Create new contract instances using the raw, unwrapped signer
+  referralContract = new ethers.Contract(referralAddress, referralAbi, rawSigner);
+  stakingContract = new ethers.Contract(stakingAddress, stakingAbi, rawSigner);
+  athContract = new ethers.Contract(athAddress, athAbi, rawSigner);
 
   console.log("Contracts initialized:", {
     referral: referralContract.address,
@@ -68,6 +73,51 @@ export const resetContracts = () => {
   stakingContract = null;
   athContract = null;
   console.log("Contract instances have been reset.");
+};
+
+
+/**
+ * Fetches the total real-time value (principal + interest) of the current user's stakes.
+ * @returns {Promise<string>} The user's total staked value, formatted as a string.
+ */
+export const getUserStakedBalance = async () => {
+  if (!stakingContract || !walletState.address) {
+    console.warn("Staking contract not initialized or user not connected.");
+    return "0";
+  }
+  try {
+    // Call the balanceOf method to get the user's total staked value (principal + interest).
+    const totalValue = await stakingContract.balanceOf(walletState.address);
+    // Format from Wei to standard unit
+    const formattedValue = ethers.formatUnits(totalValue, 18); // Assuming 18 decimals
+    console.log(`获取到用户质押总价值: ${formattedValue}`);
+    return formattedValue;
+  } catch (error) {
+    console.error("Error fetching staked balance:", error);
+    return "0";
+  }
+};
+
+/**
+ * Fetches the team KPI (friends boost) for the current user.
+ * @returns {Promise<string>} The user's team KPI, formatted as a string.
+ */
+export const getFriendsBoost = async () => {
+  if (!stakingContract || !walletState.address) {
+    console.warn("Staking contract not initialized or user not connected.");
+    return "0";
+  }
+  try {
+    // Call the getTeamKpi method to get the user's total team performance.
+    const kpi = await stakingContract.getTeamKpi(walletState.address);
+    // Format from Wei to standard unit
+    const formattedKpi = ethers.formatUnits(kpi, 18); // Assuming 18 decimals
+    console.log(`获取到好友助力值 (团队KPI): ${formattedKpi}`);
+    return formattedKpi;
+  } catch (error) {
+    console.error("Error fetching friends boost (team KPI):", error);
+    return "0";
+  }
 };
 
 // --- Exported Functions to get contract instances (optional, but good practice) ---
