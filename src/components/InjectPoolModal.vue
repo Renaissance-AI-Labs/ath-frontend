@@ -332,33 +332,6 @@ export default {
   }
 }
 
-/* Transitions */
-.modal-enter-active {
-  transition: opacity 0.3s ease;
-}
-.modal-enter-active .modal-content {
-  transition: transform 0.4s 0.1s ease, opacity 0.4s 0.1s ease;
-}
-.modal-enter-from {
-  opacity: 0;
-}
-.modal-enter-from .modal-content {
-  transform: translateY(20px);
-  opacity: 0;
-}
-.modal-leave-active {
-  transition: opacity 0.3s 0.1s ease;
-}
-.modal-leave-active .modal-content {
-  transition: transform 0.4s ease, opacity 0.4s ease;
-}
-.modal-leave-to {
-  opacity: 0;
-}
-.modal-leave-to .modal-content {
-  transform: translateY(20px);
-  opacity: 0;
-}
 .form-input.input-error {
   color: #b60e0e; /* A clear red color for error state */
 }

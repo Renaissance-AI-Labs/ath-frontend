@@ -17,6 +17,14 @@
         @confirm="handleInjectionConfirm"
       />
     </transition>
+
+    <transition name="modal">
+      <ConfirmReferrerModal
+        v-if="isConfirmReferrerModalVisible"
+        @close="closeConfirmReferrerModal"
+        @confirm="handleReferrerConfirm"
+      />
+    </transition>
   </div>
 </template>
 
@@ -29,6 +37,7 @@ import HowToUseSection from '../components/HowToUseSection.vue';
 import TestimonialSection from '../components/TestimonialSection.vue';
 import FAQSection from '../components/FAQSection.vue';
 import InjectPoolModal from '../components/InjectPoolModal.vue';
+import ConfirmReferrerModal from '../components/ConfirmReferrerModal.vue';
 // import CTASection from '../components/CTASection.vue';
 
 export default {
@@ -42,11 +51,14 @@ export default {
     TestimonialSection,
     FAQSection,
     InjectPoolModal,
+    ConfirmReferrerModal,
     // CTASection,
   },
   data() {
     return {
       isInjectModalVisible: false,
+      isConfirmReferrerModalVisible: false,
+      injectionData: null, // To store data from the first modal
     };
   },
   methods: {
@@ -57,8 +69,18 @@ export default {
       this.isInjectModalVisible = false;
     },
     handleInjectionConfirm(data) {
-      console.log('Injection confirmed with:', data);
-      // Here you would typically call a service to interact with a smart contract
+      console.log('Injection data received:', data);
+      this.injectionData = data; // Store the data
+      this.isInjectModalVisible = false;
+      this.isConfirmReferrerModalVisible = true;
+    },
+    closeConfirmReferrerModal() {
+      this.isConfirmReferrerModalVisible = false;
+    },
+    handleReferrerConfirm() {
+      console.log('Referrer confirmed. Proceeding with staking using data:', this.injectionData);
+      // Here you would call the final staking contract function
+      this.isConfirmReferrerModalVisible = false;
     }
   }
 };
