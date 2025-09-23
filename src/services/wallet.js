@@ -1,6 +1,11 @@
 import { reactive } from 'vue';
 import { ethers } from 'ethers';
 // REMOVED: import { MetaMaskSDK } from "@metamask/sdk";
+import {
+  initializeContracts,
+  resetContracts
+} from './contracts';
+
 
 let listenersInitialized = false;
 let MMSDK;
@@ -232,8 +237,13 @@ export const connectWallet = async (walletType) => {
     localStorage.setItem('ath_walletAddress', address);
     localStorage.setItem('ath_walletType', walletType); // Save wallet type
 
-    console.log(`Wallet connected: ${address} on network ${network.name}`);
-    return true;
+    // --- Initialize Contracts ---
+    initializeContracts();
+    // --------------------------
+
+    console.log(`Successfully connected to ${walletType} with address:`, walletState.address);
+
+    return true; // Connection successful
 
   } catch (error) {
     // Check for user rejection (Ethers v6 uses 'ACTION_REJECTED', 4001 is the standard JSON-RPC error)
@@ -249,6 +259,10 @@ export const connectWallet = async (walletType) => {
 
 // Function to disconnect the wallet
 export const disconnectWallet = () => {
+  // --- Reset Contracts ---
+  resetContracts();
+  // -----------------------
+
   const address = walletState.address; // Get address before clearing it.
 
   walletState.isConnected = false;
@@ -292,28 +306,39 @@ export const autoConnectWallet = async () => {
 // --- Wallet Event Listeners ---
 
 const handleAccountsChanged = async (accounts) => {
+  console.log("Wallet account changed:", accounts);
   if (accounts.length === 0) {
-    // User has disconnected all accounts from the dapp.
-    console.log('Wallet disconnected by user.');
+    // All accounts disconnected
     disconnectWallet();
-  } else if (accounts[0].toLowerCase() !== walletState.address?.toLowerCase()) {
-    // User has switched to a new account.
-    console.log('Account switched to:', accounts[0]);
-
-    // Reset connection state but keep isAuthenticated until new auth is attempted.
-    walletState.isConnected = false;
-    walletState.isAuthenticated = false;
-
-    // Trigger a new connection and authentication flow for the new account.
-    await connectWallet(walletState.walletType); // Use the existing wallet type to reconnect
+  } else if (accounts[0] !== walletState.address) {
+    // Switched to a new account
+    console.log("Switched to new account:", accounts[0]);
+    
+    // --- Reset and Re-initialize ---
+    // First, reset contracts and clear old state
+    resetContracts();
+    
+    walletState.address = accounts[0];
+    localStorage.setItem('ath_walletAddress', accounts[0]);
+    
+    // Re-authenticate and re-initialize contracts for the new account
+    const reauthSuccess = await authenticateWallet();
+    if (reauthSuccess) {
+      // Re-initialize contracts with the new signer
+      initializeContracts();
+    } else {
+      // If re-authentication fails, treat as a full disconnect
+      disconnectWallet();
+    }
+    // --------------------------------
   }
 };
 
-const handleChainChanged = async () => {
+const handleChainChanged = (chainId) => {
   console.log('Network chain changed.');
   // Re-run the connect process to get the new network's details and re-validate everything.
   if (walletState.isConnected) {
-    await connectWallet(walletState.walletType); // Use the existing wallet type
+    connectWallet(walletState.walletType); // Use the existing wallet type
   }
 };
 
