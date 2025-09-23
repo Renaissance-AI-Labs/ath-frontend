@@ -7,7 +7,6 @@ import {
 } from './contracts';
 
 
-let listenersInitialized = false;
 let MMSDK;
 
 // Helper to initialize MetaMask SDK - NOW ASYNC
@@ -155,7 +154,6 @@ const switchNetwork = async (rawProvider) => {
 
 // Main function to connect to a wallet
 export const connectWallet = async (walletType) => {
-  setupWalletListeners(); // Set up listeners on connection attempt
   let rawProvider;
   let provider; // This will be the ethers provider
   let accounts;
@@ -241,6 +239,9 @@ export const connectWallet = async (walletType) => {
     initializeContracts();
     // --------------------------
 
+    // FINAL STEP: Setup listeners only after a fully successful connection.
+    setupWalletListeners(rawProvider);
+
     console.log(`Successfully connected to ${walletType} with address:`, walletState.address);
 
     return true; // Connection successful
@@ -279,6 +280,14 @@ export const disconnectWallet = () => {
     localStorage.removeItem(authTokenKey); // Clear the signature cache on disconnect.
   }
 
+  // Clean up listeners on disconnect
+  if (activeProvider && typeof activeProvider.removeListener === 'function') {
+    activeProvider.removeListener('accountsChanged', handleAccountsChanged);
+    activeProvider.removeListener('chainChanged', handleChainChanged);
+    activeProvider = null;
+    console.log('Wallet event listeners removed.');
+  }
+
   // Do not remove the authToken for other accounts, so we only clear the current connected address.
   console.log('Wallet disconnected.');
 };
@@ -287,7 +296,6 @@ export const disconnectWallet = () => {
 export const autoConnectWallet = async () => {
   // Add a delay to allow wallet providers to inject their scripts without conflict.
   setTimeout(async () => {
-    setupWalletListeners(); // Also setup listeners on auto-connect attempt
     const savedAddress = localStorage.getItem('ath_walletAddress');
     const savedWalletType = localStorage.getItem('ath_walletType');
     if (savedAddress && savedWalletType) {
@@ -322,9 +330,31 @@ const handleAccountsChanged = async (accounts) => {
     localStorage.setItem('ath_walletAddress', accounts[0]);
     
     // Re-authenticate and re-initialize contracts for the new account
-    const provider = new ethers.BrowserProvider(window.ethereum);
+    let rawProvider;
+    const currentWalletType = walletState.walletType;
+
+    // Use the correct provider based on the currently connected wallet type
+    if (currentWalletType === 'metamask') {
+        const sdk = await getMMSDK();
+        rawProvider = sdk.getProvider();
+    } else if (currentWalletType === 'tokenpocket') {
+        rawProvider = window.tokenpocket.ethereum;
+    } else if (currentWalletType === 'okx') {
+        rawProvider = window.okexchain;
+    } else {
+        rawProvider = window.ethereum; // Fallback for safety
+    }
+
+    if (!rawProvider) {
+        console.error("Could not get provider for account change handling. Disconnecting.");
+        disconnectWallet();
+        return;
+    }
+
+    const provider = new ethers.BrowserProvider(rawProvider);
     const signer = await provider.getSigner(accounts[0]);
     const reauthSuccess = await authenticateWallet(accounts[0], signer);
+
     if (reauthSuccess) {
       // Manually update signer in state before re-initializing
       walletState.signer = signer;
@@ -339,20 +369,32 @@ const handleAccountsChanged = async (accounts) => {
 };
 
 const handleChainChanged = (chainId) => {
-  console.log('Network chain changed.');
-  // Re-run the connect process to get the new network's details and re-validate everything.
-  if (walletState.isConnected) {
-    connectWallet(walletState.walletType); // Use the existing wallet type
-  }
+  console.log('Network chain changed. Reloading to apply changes.');
+  // The most reliable way to handle chain changes is to reload the page.
+  // This ensures all state, including the ethers provider and contract instances,
+  // are re-initialized correctly for the new network.
+  window.location.reload();
 };
 
-export const setupWalletListeners = () => {
-  if (typeof window.ethereum !== 'undefined' && !listenersInitialized) {
-    window.ethereum.on('accountsChanged', handleAccountsChanged);
-    window.ethereum.on('chainChanged', handleChainChanged);
-    listenersInitialized = true;
-    console.log('Wallet event listeners initialized.');
+let activeProvider = null; // Keep track of the provider with active listeners
+
+export const setupWalletListeners = (provider) => {
+  if (typeof provider?.on !== 'function') {
+    return; // Do nothing if provider doesn't support events
   }
+
+  // Clean up old listeners before attaching new ones
+  if (activeProvider && typeof activeProvider.removeListener === 'function') {
+    activeProvider.removeListener('accountsChanged', handleAccountsChanged);
+    activeProvider.removeListener('chainChanged', handleChainChanged);
+    console.log('Removed old wallet event listeners.');
+  }
+  
+  provider.on('accountsChanged', handleAccountsChanged);
+  provider.on('chainChanged', handleChainChanged);
+  
+  activeProvider = provider; // Store the new provider
+  console.log('Wallet event listeners initialized on the correct provider.');
 };
 
 // --- New Wallet Detection Function ---
