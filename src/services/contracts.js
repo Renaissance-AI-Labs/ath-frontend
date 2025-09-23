@@ -1,6 +1,14 @@
 import { ethers } from 'ethers';
 import { walletState } from './wallet';
 import { toRaw } from 'vue';
+import { showToast } from '../services/notification';
+
+// --- Helper to get USDT decimals based on environment ---
+const getUsdtDecimals = () => {
+  const isProduction = import.meta.env.PROD;
+  // Production (Mainnet) USDT uses 6 decimals, Development (Testnet) test USDT uses 18
+  return isProduction ? 6 : 18;
+};
 
 // --- Import ABIs ---
 import referralAbi from '../abis/referral.json';
@@ -8,6 +16,10 @@ import stakingAbi from '../abis/staking.json';
 import athAbi from '../abis/ath.json';
 // No need for a separate USDT ABI if it follows ERC20 standard like `ath.json`
 // import usdtAbi from '../abis/usdt.json';
+
+const uniswapV2RouterAbi = [
+  "function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts)"
+];
 
 // --- Contract Addresses ---
 const contractAddresses = {
@@ -26,6 +38,10 @@ const contractAddresses = {
   usdt: {
     production: '0x55d398326f99059fF775485246999027B3197955', // BNB Mainnet USDT
     development: '0xaE36d423c5B05f80926AaEAE0Fca978A74C0aA01', // BNB Testnet USDT
+  },
+  router: {
+    production: '0x10ED43C718714eb63d5aA57B78B54704E256024E', // PancakeSwap Router V2 on BNB Mainnet
+    development: '0xD99D1c33F9fC3444f8101754aBC46c52416550D1', // PancakeSwap Router V2 on BNB Testnet
   }
 };
 
@@ -34,6 +50,7 @@ let referralContract;
 let stakingContract;
 let athContract;
 let usdtContract;
+let routerContract;
 
 // We need to export these for other modules to use them.
 export { referralContract, stakingContract, athContract, usdtContract };
@@ -59,19 +76,21 @@ export const initializeContracts = async () => {
   const stakingAddress = contractAddresses.staking[env];
   const athAddress = contractAddresses.ath[env];
   const usdtAddress = contractAddresses.usdt[env];
+  const routerAddress = contractAddresses.router[env];
 
   // Create new contract instances using the raw, unwrapped signer
   referralContract = new ethers.Contract(referralAddress, referralAbi, rawSigner);
   stakingContract = new ethers.Contract(stakingAddress, stakingAbi, rawSigner);
   athContract = new ethers.Contract(athAddress, athAbi, rawSigner);
-  // USDT is a standard ERC20, we can use an ABI with approve/allowance like ath.json
   usdtContract = new ethers.Contract(usdtAddress, athAbi, rawSigner);
+  routerContract = new ethers.Contract(routerAddress, uniswapV2RouterAbi, rawSigner);
 
   console.log("Contracts initialized:", {
     referral: await referralContract.getAddress(),
     staking: await stakingContract.getAddress(),
     ath: await athContract.getAddress(),
     usdt: await usdtContract.getAddress(),
+    router: await routerContract.getAddress(),
   });
 };
 
@@ -84,6 +103,7 @@ export const resetContracts = () => {
   stakingContract = null;
   athContract = null;
   usdtContract = null;
+  routerContract = null;
   console.log("Contract instances have been reset.");
 };
 
@@ -159,9 +179,11 @@ export const getUsdtBalance = async () => {
   }
   try {
     const balance = await usdtContract.balanceOf(walletState.address);
-    // USDT on BNB Chain typically has 18 decimals
-    const formattedBalance = ethers.formatUnits(balance, 18);
-    console.log(`获取到用户 USDT 余额: ${formattedBalance}`);
+    // USDT on BNB Chain typically has 18 decimals, but can be 6.
+    // We will handle decimals dynamically in each function.
+    const decimals = getUsdtDecimals();
+    const formattedBalance = ethers.formatUnits(balance, decimals);
+    console.log(`获取到用户 USDT 余额 (使用 ${decimals} 位小数): ${formattedBalance}`);
     return formattedBalance;
   } catch (error) {
     console.error("Error fetching USDT balance:", error);
@@ -170,6 +192,40 @@ export const getUsdtBalance = async () => {
 };
 
 // --- Staking and Referral Flow Functions ---
+
+/**
+ * Uses the Uniswap Router to get the expected amount of ATH for a given USDT amount.
+ * @param {bigint} usdtAmountIn The amount of USDT in, as a BigInt (6 decimals).
+ * @returns {Promise<bigint>} The expected amount of ATH out, as a BigInt (18 decimals).
+ */
+const getExpectedAthAmount = async (usdtAmountIn) => {
+  if (!routerContract) {
+    console.error("Router contract not initialized.");
+    return 0n;
+  }
+  const isProduction = import.meta.env.PROD;
+  const env = isProduction ? 'production' : 'development';
+  const usdtAddress = contractAddresses.usdt[env];
+  const athAddress = contractAddresses.ath[env];
+  
+  console.log(`[滑点计算] 预查询参数:`, {
+    '输入USDT (wei)': usdtAmountIn.toString(),
+    'USDT地址': usdtAddress,
+    'ATH地址': athAddress
+  });
+
+  try {
+    const amountsOut = await routerContract.getAmountsOut(usdtAmountIn, [usdtAddress, athAddress]);
+    console.log(`[滑点计算] 预查询结果:`, {
+      '输出ATH (wei)': amountsOut[1].toString(),
+      'ATH地址': athAddress
+    });
+    return amountsOut[1]; // The second element is the output amount
+  } catch (error) {
+    console.error("Error fetching expected ATH amount from router:", error);
+    return 0n;
+  }
+};
 
 /**
  * Gets the current USDT allowance for the staking contract.
@@ -183,7 +239,7 @@ export const getUsdtAllowance = async () => {
   }
   try {
     const allowance = await usdtContract.allowance(walletState.address, stakingAddress);
-    return ethers.formatUnits(allowance, 18);
+    return ethers.formatUnits(allowance, getUsdtDecimals());
   } catch (error) {
     console.error("Error fetching USDT allowance:", error);
     return "0";
@@ -277,10 +333,25 @@ export const stakeWithInviter = async (amount, stakeIndex, parentAddress) => {
     return false;
   }
   try {
-    // Per user feedback, USDT decimals are 6
-    const amountInWei = ethers.parseUnits(amount, 6);
-    // As discussed, amountOutMin is set to 0 for now.
-    const amountOutMin = 0;
+    // Dynamically get decimals for the current environment
+    const decimals = getUsdtDecimals();
+    const amountInWei = ethers.parseUnits(amount, decimals);
+    
+    // --- Calculate amountOutMin with 5% slippage ---
+    const expectedAth = await getExpectedAthAmount(amountInWei / 2n); // Only half is swapped
+    if (expectedAth === 0n) {
+      console.error("Could not calculate expected ATH amount, aborting stake.");
+      showToast("无法计算预期输出，质押中止");
+      return false;
+    }
+    const slippageTolerance = 10n; // 10%
+    const amountOutMin = (expectedAth * (100n - slippageTolerance)) / 100n;
+    
+    console.log(`[滑点计算] 结果:`, {
+      '预期获得ATH (wei)': expectedAth.toString(),
+      '最小接受ATH (wei)': amountOutMin.toString()
+    });
+    // -------------------------------------------------
 
     console.log("[contracts.js] stakeWithInviter Parameters:", {
       _amount: amountInWei.toString(),
@@ -315,8 +386,9 @@ export const getMaxStakeAmount = async () => {
   }
   try {
     const maxAmountWei = await stakingContract.maxStakeAmount();
-    // The amount is compared with USDT amount, which has 6 decimals.
-    return ethers.formatUnits(maxAmountWei, 6);
+    // The amount is compared with USDT amount, so decimals should match USDT's.
+    const decimals = getUsdtDecimals();
+    return ethers.formatUnits(maxAmountWei, decimals);
   } catch (error) {
     console.error("Error fetching max stake amount:", error);
     return "0";

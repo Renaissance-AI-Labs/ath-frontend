@@ -156,7 +156,19 @@
         </div>
     </section>
 </template>
-<script>
+
+<script setup>
+import {
+  ref,
+  computed,
+  watch,
+  onMounted,
+  onUnmounted,
+  reactive
+} from 'vue';
+import {
+  gsap
+} from 'gsap';
 import {
   walletState
 } from '../services/wallet';
@@ -169,98 +181,153 @@ import {
   showToast
 } from '../services/notification';
 
-export default {
-  name: 'HeroSection',
-  data() {
-    return {
-      stakedBalance: '0',
-      friendsBoost: '0',
-      walletState: walletState, // Make walletState reactive in the component
-    };
-  },
-  computed: {
-    walletAddress() {
-      return this.walletState.address;
-    },
-    formattedStakedBalance() {
-        const number = parseFloat(this.stakedBalance);
-        if (isNaN(number)) return '0';
-        return number.toLocaleString('en-US', { maximumFractionDigits: 2 });
-    },
-    formattedFriendsBoost() {
-        const number = parseFloat(this.friendsBoost);
-        if (isNaN(number)) return '0';
-        return number.toLocaleString('en-US', { maximumFractionDigits: 2 });
-    }
-  },
-  watch: {
-    walletAddress(newAddress, oldAddress) {
-      if (newAddress) {
-        // This covers both initial connection and account switching
-        console.log(`钱包已连接或切换至新地址: ${newAddress}。正在获取数据...`);
-        this.fetchHeroData();
-      } else {
-        // This covers disconnection
-        console.log(`钱包已断开。正在重置数据...`);
-        this.resetData();
-      }
-    }
-  },
-  methods: {
-    async fetchHeroData() {
-      if (!this.walletState.isAuthenticated || !this.walletState.address) {
-        console.log("钱包未认证或地址不存在，跳过数据获取。");
-        return;
-      }
-      console.log("Fetching hero data...");
-      this.stakedBalance = await getUserStakedBalance();
-      this.friendsBoost = await getFriendsBoost();
-    },
-    resetData() {
-      this.stakedBalance = '0';
-      this.friendsBoost = '0';
-    },
-    handleInjectPoolClick() {
-      if (!this.walletState.isAuthenticated) {
-        showToast('请先连接并授权您的钱包');
-        return;
-      }
-      this.$emit('open-inject-modal');
-    },
-    async shareFriendLink() {
-      if (!this.walletState.isAuthenticated) {
-        showToast('请先连接并授权您的钱包');
-        return;
-      }
-      // First, check if the user is eligible to share.
-      const isEligible = await checkIfUserHasReferrer();
-      if (!isEligible) {
-        showToast("请先进行质押并绑定您的推荐好友"); // Duration is 3s by default
-        return;
-      }
+const emits = defineEmits(['open-inject-modal']);
 
-      if (!this.walletState.address) {
-        showToast("Please connect your wallet first.");
-        return;
-      }
-      const referralLink = `${window.location.origin}?ref=${this.walletState.address}`;
-      try {
-        await navigator.clipboard.writeText(referralLink);
-        showToast("Referral link copied to clipboard!");
-      } catch (err) {
-        console.error('Failed to copy: ', err);
-        showToast("Failed to copy referral link.");
-      }
-    }
-  },
-  mounted() {
-    // Initial fetch in case the wallet is already connected on component mount
-    if (this.walletAddress) {
-      this.fetchHeroData();
-    }
+const stakedBalance = ref('0');
+const friendsBoost = ref('0');
+const animatedValues = reactive({
+  stakedBalance: 0,
+  friendsBoost: 0,
+});
+let fetchInterval = null;
+const isInitialFetch = ref(true); // Flag for the first fetch
+
+const isAuthenticated = computed(() => walletState.isAuthenticated);
+
+const formattedStakedBalance = computed(() => {
+  const value = animatedValues.stakedBalance;
+  if (value === 0) return '0';
+  return value.toLocaleString('en-US', {
+    minimumFractionDigits: 6,
+    maximumFractionDigits: 6,
+  });
+});
+
+const formattedFriendsBoost = computed(() => {
+  const value = animatedValues.friendsBoost;
+  if (value === 0) return '0';
+  return value.toLocaleString('en-US', {
+    minimumFractionDigits: 6,
+    maximumFractionDigits: 6,
+  });
+});
+
+const fetchHeroData = async () => {
+  if (!isAuthenticated.value) return;
+
+  if (isInitialFetch.value) {
+    console.log("正在首次加载数据...");
+  } else {
+    console.log("每6秒刷新数据...");
   }
-}
+
+  try {
+    const [newStakedBalance, newFriendsBoost] = await Promise.all([
+      getUserStakedBalance(),
+      getFriendsBoost(),
+    ]);
+    stakedBalance.value = newStakedBalance;
+    friendsBoost.value = newFriendsBoost;
+  } catch (error) {
+    console.error("刷新数据失败:", error);
+  }
+};
+
+const resetData = () => {
+  stakedBalance.value = '0';
+  friendsBoost.value = '0';
+  animatedValues.stakedBalance = 0;
+  animatedValues.friendsBoost = 0;
+  isInitialFetch.value = true; // Reset flag on disconnect
+};
+
+const startFetching = () => {
+  stopFetching(); // Ensure no multiple intervals are running
+  fetchHeroData(); // Fetch immediately
+  fetchInterval = setInterval(fetchHeroData, 6000);
+};
+
+const stopFetching = () => {
+  if (fetchInterval) {
+    clearInterval(fetchInterval);
+    fetchInterval = null;
+  }
+};
+
+const handleInjectPoolClick = () => {
+  if (!isAuthenticated.value) {
+    showToast('请先连接并授权您的钱包');
+    return;
+  }
+  emits('open-inject-modal');
+};
+
+const shareFriendLink = async () => {
+  if (!isAuthenticated.value) {
+    showToast('请先连接并授权您的钱包');
+    return;
+  }
+  const isEligible = await checkIfUserHasReferrer();
+  if (!isEligible) {
+    showToast('请先进行质押并绑定您的推荐好友');
+    return;
+  }
+  const referralLink = `${window.location.origin}?ref=${walletState.address}`;
+  try {
+    await navigator.clipboard.writeText(referralLink);
+    showToast('复制成功！链接已复制到剪贴板');
+  } catch (err) {
+    console.error('无法复制链接: ', err);
+    showToast('复制失败，请检查浏览器权限');
+  }
+};
+
+watch(isAuthenticated, (isAuth) => {
+  if (isAuth) {
+    startFetching();
+  } else {
+    stopFetching();
+    resetData();
+  }
+});
+
+watch(stakedBalance, (newValue) => {
+  if (isInitialFetch.value) {
+    // For the first fetch, set value directly without animation
+    animatedValues.stakedBalance = Number(newValue) || 0;
+  } else {
+    gsap.to(animatedValues, {
+      duration: 1,
+      stakedBalance: Number(newValue) || 0,
+    });
+  }
+});
+
+watch(friendsBoost, (newValue) => {
+  if (isInitialFetch.value) {
+    // For the first fetch, set value directly without animation
+    animatedValues.friendsBoost = Number(newValue) || 0;
+    // After the very first data is set, subsequent fetches should be animated
+    isInitialFetch.value = false;
+  } else {
+    gsap.to(animatedValues, {
+      duration: 1,
+      friendsBoost: Number(newValue) || 0,
+    });
+  }
+});
+
+onMounted(() => {
+  if (isAuthenticated.value) {
+    startFetching();
+  }
+});
+
+onUnmounted(() => {
+  stopFetching();
+});
 </script>
+
 <style scoped>
 
 .text-change_wrap {

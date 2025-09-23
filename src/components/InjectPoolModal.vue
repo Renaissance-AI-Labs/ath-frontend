@@ -79,7 +79,7 @@ export default {
   data() {
     return {
       amount: '',
-      selectedDuration: 1, // Default to 15 days (index 1)
+      selectedDuration: 0, // Default to 1 day (index 0)
       usdtBalance: '0',
       usdtAllowance: '0',
       isApproving: false,

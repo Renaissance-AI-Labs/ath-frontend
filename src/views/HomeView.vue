@@ -46,7 +46,8 @@ import {
   stakeWithInviter,
   getReferrer,
   isReferrerValid,
-  getMaxStakeAmount
+  getMaxStakeAmount,
+  getUsdtBalance
 } from '../services/contracts';
 import {
   showToast
@@ -114,6 +115,15 @@ export default {
       console.log(`[指挥官] 开始为新用户执行质押流程...`);
       showToast("正在处理质押请求...");
 
+      // Final real-time balance check
+      const realTimeBalance = await getUsdtBalance();
+      const amountToStake = this.injectionData.amount;
+      if (parseFloat(realTimeBalance) < parseFloat(amountToStake)) {
+        showToast(`错误：您的USDT余额不足 (当前: ${parseFloat(realTimeBalance).toFixed(4)})`);
+        this.isStaking = false;
+        return;
+      }
+
       // Final on-chain validation for the parent address
       console.log(`[指挥官] 对新用户的推荐人地址进行最终链上校验: ${parentAddress}`);
       const isParentValid = await isReferrerValid(parentAddress);
@@ -131,7 +141,7 @@ export default {
       const maxAmount = await getMaxStakeAmount();
       console.log(`[指挥官] 诊断信息: 当前允许的最大质押额: ${maxAmount} USDT, 用户尝试质押: ${amount} USDT`);
 
-      console.log(`[指挥官] 发起最终质押交易 (stakeWithInviter), 质押天数索引: ${duration}, 推荐人: ${parentAddress}`);
+      console.log(`[指挥官] 即将调用 stakeWithInviter, 参数为:`, { amount, stakeIndex: duration, parentAddress });
       const success = await stakeWithInviter(amount, duration, parentAddress);
 
       if (success) {
@@ -151,6 +161,15 @@ export default {
       console.log("[指挥官] 开始为老用户执行质押流程...");
       showToast("正在获取推荐人信息并质押...");
 
+      // Final real-time balance check
+      const realTimeBalance = await getUsdtBalance();
+      const amountToStake = this.injectionData.amount;
+      if (parseFloat(realTimeBalance) < parseFloat(amountToStake)) {
+        showToast(`错误：您的USDT余额不足 (当前: ${parseFloat(realTimeBalance).toFixed(4)})`);
+        this.isStaking = false;
+        return;
+      }
+
       console.log("[指挥官] 开始从合约获取已绑定的推荐人地址...");
       const parentAddress = await getReferrer();
       if (!parentAddress || parentAddress.startsWith('0x000')) {
@@ -167,7 +186,7 @@ export default {
       const maxAmount = await getMaxStakeAmount();
       console.log(`[指挥官] 诊断信息: 当前允许的最大质押额: ${maxAmount} USDT, 用户尝试质押: ${amount} USDT`);
 
-      console.log(`[指挥官] 发起最终质押交易 (stakeWithInviter), 质押天数索引: ${duration}, 推荐人: ${parentAddress}`);
+      console.log(`[指挥官] 即将调用 stakeWithInviter, 参数为:`, { amount, stakeIndex: duration, parentAddress });
       const success = await stakeWithInviter(amount, duration, parentAddress);
       
       if (success) {
