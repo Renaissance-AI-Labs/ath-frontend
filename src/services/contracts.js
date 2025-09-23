@@ -130,6 +130,22 @@ export const getFriendsBoost = async () => {
   }
 };
 
+export const checkIfUserHasReferrer = async () => {
+  if (!referralContract || !walletState.address) {
+    console.log("Referral contract not initialized or user not connected.");
+    // Default to false to prevent sharing if state is unclear
+    return false;
+  }
+  try {
+    const hasReferrer = await referralContract.isBindReferral(walletState.address);
+    console.log(`用户是否已绑定推荐人: ${hasReferrer}`);
+    return hasReferrer;
+  } catch (error) {
+    console.error("Error checking user's referrer status:", error);
+    return false; // Default to false on error
+  }
+};
+
 /**
  * Fetches the USDT balance for the current user.
  * @returns {Promise<string>} The user's USDT balance, formatted as a string.

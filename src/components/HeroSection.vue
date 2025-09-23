@@ -157,9 +157,17 @@
     </section>
 </template>
 <script>
-import { walletState } from '../services/wallet';
-import { getUserStakedBalance, getFriendsBoost } from '../services/contracts';
-import { showToast } from '../services/notification';
+import {
+  walletState
+} from '../services/wallet';
+import {
+  getUserStakedBalance,
+  getFriendsBoost,
+  checkIfUserHasReferrer
+} from '../services/contracts';
+import {
+  showToast
+} from '../services/notification';
 
 export default {
   name: 'HeroSection',
@@ -212,18 +220,26 @@ export default {
       this.stakedBalance = '0';
       this.friendsBoost = '0';
     },
-    shareFriendLink() {
-      if (!this.walletState.isAuthenticated) {
-        showToast('请先连接并授权您的钱包');
+    async shareFriendLink() {
+      // First, check if the user is eligible to share.
+      const isEligible = await checkIfUserHasReferrer();
+      if (!isEligible) {
+        showToast("请先进行质押并绑定您的推荐好友"); // Duration is 3s by default
+        return;
+      }
+
+      if (!this.walletState.address) {
+        showToast("Please connect your wallet first.");
         return;
       }
       const referralLink = `${window.location.origin}?ref=${this.walletState.address}`;
-      navigator.clipboard.writeText(referralLink).then(() => {
-        showToast('复制成功！链接已复制到剪贴板');
-      }).catch(err => {
-        console.error('无法复制链接: ', err);
-        showToast('复制失败，请检查浏览器权限');
-      });
+      try {
+        await navigator.clipboard.writeText(referralLink);
+        showToast("Referral link copied to clipboard!");
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+        showToast("Failed to copy referral link.");
+      }
     }
   },
   mounted() {
