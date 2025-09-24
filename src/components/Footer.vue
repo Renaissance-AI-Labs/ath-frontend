@@ -81,15 +81,13 @@
     </footer>
 </template>
 <script>
-import { versions } from '../config/version.js';
-
 export default {
     name: 'Footer',
     computed: {
         copyrightText() {
             const isProduction = import.meta.env.PROD;
             const envPrefix = isProduction ? 'M' : 'T';
-            const version = isProduction ? versions.mainnet : versions.testnet;
+            const version = '1.0.0'; // Version is now hardcoded here
             return `© 2025 Athena Protocol. ALL RIGHTS RESERVED. ${envPrefix}-${version}`;
         }
     }

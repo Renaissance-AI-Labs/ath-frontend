@@ -1,8 +1,13 @@
 import { reactive } from 'vue';
 import { ethers } from 'ethers';
 // REMOVED: import { MetaMaskSDK } from "@metamask/sdk";
+import {
+  initializeContracts,
+  resetContracts,
+  checkIfUserHasReferrer
+} from './contracts';
 
-let listenersInitialized = false;
+
 let MMSDK;
 
 // Helper to initialize MetaMask SDK - NOW ASYNC
@@ -48,6 +53,8 @@ export const walletState = reactive({
   network: null, // To store the network name
   signer: null,
   walletType: null, // To store the type of the connected wallet
+  isNewUser: null, // null: unknown, true: new, false: old
+  contractsInitialized: false, // <-- Add this new state
 });
 
 // Utility function to format wallet address
@@ -150,7 +157,6 @@ const switchNetwork = async (rawProvider) => {
 
 // Main function to connect to a wallet
 export const connectWallet = async (walletType) => {
-  setupWalletListeners(); // Set up listeners on connection attempt
   let rawProvider;
   let provider; // This will be the ethers provider
   let accounts;
@@ -232,8 +238,20 @@ export const connectWallet = async (walletType) => {
     localStorage.setItem('ath_walletAddress', address);
     localStorage.setItem('ath_walletType', walletType); // Save wallet type
 
-    console.log(`Wallet connected: ${address} on network ${network.name}`);
-    return true;
+    // --- Initialize Contracts ---
+    await initializeContracts();
+    // --------------------------
+
+    // FINAL STEP: Setup listeners only after a fully successful connection.
+    setupWalletListeners(rawProvider);
+
+    // After successful connection and authentication, check if the user is new.
+    const hasReferrer = await checkIfUserHasReferrer();
+    walletState.isNewUser = !hasReferrer; // isBindReferral returns true if they have a referrer (old user)
+
+    console.log(`Successfully connected to ${walletType} with address:`, walletState.address);
+
+    return true; // Connection successful
 
   } catch (error) {
     // Check for user rejection (Ethers v6 uses 'ACTION_REJECTED', 4001 is the standard JSON-RPC error)
@@ -249,20 +267,34 @@ export const connectWallet = async (walletType) => {
 
 // Function to disconnect the wallet
 export const disconnectWallet = () => {
+  // --- Reset Contracts ---
+  resetContracts();
+  // -----------------------
+
   const address = walletState.address; // Get address before clearing it.
 
   walletState.isConnected = false;
   walletState.isAuthenticated = false;
+  walletState.contractsInitialized = false; // <-- Reset on disconnect
   walletState.address = null;
   walletState.network = null;
   walletState.signer = null;
   walletState.walletType = null;
+  walletState.isNewUser = null; // Reset user status on disconnect
   localStorage.removeItem('ath_walletAddress');
   localStorage.removeItem('ath_walletType'); // Also remove wallet type
   
   if (address) {
     const authTokenKey = `ath_authToken_${address.toLowerCase()}`;
     localStorage.removeItem(authTokenKey); // Clear the signature cache on disconnect.
+  }
+
+  // Clean up listeners on disconnect
+  if (activeProvider && typeof activeProvider.removeListener === 'function') {
+    activeProvider.removeListener('accountsChanged', handleAccountsChanged);
+    activeProvider.removeListener('chainChanged', handleChainChanged);
+    activeProvider = null;
+    console.log('Wallet event listeners removed.');
   }
 
   // Do not remove the authToken for other accounts, so we only clear the current connected address.
@@ -273,7 +305,6 @@ export const disconnectWallet = () => {
 export const autoConnectWallet = async () => {
   // Add a delay to allow wallet providers to inject their scripts without conflict.
   setTimeout(async () => {
-    setupWalletListeners(); // Also setup listeners on auto-connect attempt
     const savedAddress = localStorage.getItem('ath_walletAddress');
     const savedWalletType = localStorage.getItem('ath_walletType');
     if (savedAddress && savedWalletType) {
@@ -292,38 +323,73 @@ export const autoConnectWallet = async () => {
 // --- Wallet Event Listeners ---
 
 const handleAccountsChanged = async (accounts) => {
+  console.log('Wallet accounts changed:', accounts);
   if (accounts.length === 0) {
-    // User has disconnected all accounts from the dapp.
-    console.log('Wallet disconnected by user.');
+    console.log('Wallet disconnected.');
     disconnectWallet();
-  } else if (accounts[0].toLowerCase() !== walletState.address?.toLowerCase()) {
-    // User has switched to a new account.
-    console.log('Account switched to:', accounts[0]);
+  } else {
+    const newAddress = accounts[0];
+    console.log(`Switched to new address: ${newAddress}`);
 
-    // Reset connection state but keep isAuthenticated until new auth is attempted.
-    walletState.isConnected = false;
+    // Critical Step 1: Immediately de-authenticate the old session.
+    // This will cause UI components to revert to a "please connect" state.
     walletState.isAuthenticated = false;
+    walletState.contractsInitialized = false; // Also reset contracts
+    localStorage.removeItem(`ath_authToken_${walletState.address.toLowerCase()}`); // Clean up old token
+    walletState.address = newAddress;
 
-    // Trigger a new connection and authentication flow for the new account.
-    await connectWallet(walletState.walletType); // Use the existing wallet type to reconnect
+    // Critical Step 2: Attempt to re-authenticate with the new address.
+    // We need a provider and signer for the new account.
+    const provider = new ethers.BrowserProvider(activeProvider);
+    const signer = await provider.getSigner();
+
+    // The UI is now waiting for this re-authentication to complete.
+    const reauthSuccess = await authenticateWallet(newAddress, signer);
+
+    if (reauthSuccess) {
+      console.log(`Successfully re-authenticated new address: ${newAddress}`);
+      // Update the rest of the state only after successful re-authentication
+      walletState.signer = signer;
+      await initializeContracts(); // Re-initialize contracts for the new user context
+      const hasReferrer = await checkIfUserHasReferrer();
+      walletState.isNewUser = !hasReferrer;
+      // isAuthenticated is already set to true inside authenticateWallet
+    } else {
+      console.log(`Failed to re-authenticate new address: ${newAddress}. Wallet remains connected but unauthenticated.`);
+      // If re-authentication fails, we effectively disconnect the authenticated session
+      // but keep the basic connection info.
+      disconnectWallet(); // A full disconnect might be cleaner here.
+    }
   }
 };
 
-const handleChainChanged = async () => {
-  console.log('Network chain changed.');
-  // Re-run the connect process to get the new network's details and re-validate everything.
-  if (walletState.isConnected) {
-    await connectWallet(walletState.walletType); // Use the existing wallet type
-  }
+const handleChainChanged = (chainId) => {
+  console.log('Wallet chain changed to:', chainId);
+  // The most reliable way to handle chain changes is to reload the page.
+  // This ensures all state, including the ethers provider and contract instances,
+  // are re-initialized correctly for the new network.
+  window.location.reload();
 };
 
-export const setupWalletListeners = () => {
-  if (typeof window.ethereum !== 'undefined' && !listenersInitialized) {
-    window.ethereum.on('accountsChanged', handleAccountsChanged);
-    window.ethereum.on('chainChanged', handleChainChanged);
-    listenersInitialized = true;
-    console.log('Wallet event listeners initialized.');
+let activeProvider = null; // To keep track of the provider we've attached listeners to
+
+export const setupWalletListeners = (provider) => {
+  if (typeof provider?.on !== 'function') {
+    return; // Do nothing if provider doesn't support events
   }
+
+  // Clean up old listeners before attaching new ones
+  if (activeProvider && typeof activeProvider.removeListener === 'function') {
+    activeProvider.removeListener('accountsChanged', handleAccountsChanged);
+    activeProvider.removeListener('chainChanged', handleChainChanged);
+    console.log('Removed old wallet event listeners.');
+  }
+  
+  provider.on('accountsChanged', handleAccountsChanged);
+  provider.on('chainChanged', handleChainChanged);
+  
+  activeProvider = provider; // Store the new provider
+  console.log('Wallet event listeners initialized on the correct provider.');
 };
 
 // --- New Wallet Detection Function ---

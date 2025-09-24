@@ -124,7 +124,7 @@
                                     </div>
                                 </div>
                                 <p class="tes-text">
-                                    <span class="text-main-2">在社区投票确认协议稳定运行后，时间锁到期，The Nyx Collective 的初始部署密钥将被永久销毁以进入完全自主进化阶段。</span>
+                                    <span class="text-main-2">在投票确认协议稳定后，时间锁到期，The Nyx Collective 的部署密钥将被永久销毁以进入自主进化阶段。</span>
                                 </p>
                             </div>
                             

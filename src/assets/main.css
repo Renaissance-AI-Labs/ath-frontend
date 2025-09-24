@@ -33,3 +33,35 @@ a,
     /* padding: 0 1rem; */
   }
 }
+
+/* Global Modal Transition Styles */
+.modal-enter-active {
+  transition: opacity 0.3s ease;
+}
+.modal-enter-active .modal-content,
+.modal-enter-active .modal-container { /* Covers both modal structures */
+  transition: transform 0.4s 0.1s ease, opacity 0.4s 0.1s ease;
+}
+.modal-enter-from {
+  opacity: 0;
+}
+.modal-enter-from .modal-content,
+.modal-enter-from .modal-container {
+  transform: translateY(20px);
+  opacity: 0;
+}
+.modal-leave-active {
+  transition: opacity 0.3s 0.1s ease;
+}
+.modal-leave-active .modal-content,
+.modal-leave-active .modal-container {
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+.modal-leave-to {
+  opacity: 0;
+}
+.modal-leave-to .modal-content,
+.modal-leave-to .modal-container {
+  transform: translateY(20px);
+  opacity: 0;
+}
