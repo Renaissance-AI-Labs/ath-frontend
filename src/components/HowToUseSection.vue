@@ -95,47 +95,82 @@
                         </div>
                     </div> -->
                     <div class="col-md-6 offset-xl-2 col-xl-4 order-list">
-                        <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist">
-                            <li v-for="(item, index) in paginatedItems" :key="((currentPage - 1) * itemsPerPage) + index" class="nav-tab-item li-style" role="presentation">
-                                <li class="br-line has-dot"></li>
-                                <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true" role="tab">
-                                    <div :class="`stars-bg stars-bg-${(index % 3) + 1}`">
-                                        <div class="stars"></div>
-                                        <div class="stars2"></div>
-                                        <div class="stars3"></div>
-                                    </div>
-                                    <div class="card-content">
-                                        <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                                            <h5 class="name h5-list-style" :data-text="`CODE-${String(((currentPage - 1) * itemsPerPage) + index + 1).padStart(2, '0')}`">STAKING-CODE-{{ String(((currentPage - 1) * itemsPerPage) + index + 1).padStart(2, '0') }}</h5>
-                                            <h5 class="name h5-list-style" :data-text="item.date">{{ item.date }}</h5>
+                        <div v-if="isLoading" class="loading-state">
+                            <div class="stars-bg stars-bg-1">
+                                <div class="stars"></div>
+                                <div class="stars2"></div>
+                                <div class="stars3"></div>
+                            </div>
+                            <p>正在加载质押数据...</p>
+                        </div>
+                        <div v-else-if="!walletState.isAuthenticated" class="empty-state">
+                            <div class="stars-bg stars-bg-1">
+                                <div class="stars"></div>
+                                <div class="stars2"></div>
+                                <div class="stars3"></div>
+                            </div>
+                            <p>请先连接钱包以查看您的质押订单</p>
+                        </div>
+                        <div v-else-if="!walletState.contractsInitialized" class="empty-state">
+                            <div class="stars-bg stars-bg-1">
+                                <div class="stars"></div>
+                                <div class="stars2"></div>
+                                <div class="stars3"></div>
+                            </div>
+                            <p>合约初始化失败，请刷新重试</p>
+                        </div>
+                        <div v-else-if="allStakingItems.length === 0" class="empty-state">
+                            <div class="stars-bg stars-bg-1">
+                                <div class="stars"></div>
+                                <div class="stars2"></div>
+                                <div class="stars3"></div>
+                            </div>
+                            <p>您还没有任何质押订单</p>
+                        </div>
+                        <template v-else>
+                            <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist">
+                                <li v-for="(item, index) in paginatedItems" :key="((currentPage - 1) * itemsPerPage) + index" class="nav-tab-item li-style" role="presentation">
+                                    <li class="br-line has-dot"></li>
+                                    <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true" role="tab">
+                                        <div :class="`stars-bg stars-bg-${(index % 3) + 1}`">
+                                            <div class="stars"></div>
+                                            <div class="stars2"></div>
+                                            <div class="stars3"></div>
                                         </div>
-                                        <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                                            <p class="desc p-list-style">母金：$ {{ item.principal.toFixed(4) }}</p>
-                                            <p class="desc p-list-style">子金：$ {{ item.interest.toFixed(4) }}</p>
-                                        </div>
+                                        <div class="card-content">
+                                            <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                                                <h5 class="name h5-list-style" :data-text="`CODE-${String(((currentPage - 1) * itemsPerPage) + index + 1).padStart(2, '0')}`">STAKING-CODE-{{ String(((currentPage - 1) * itemsPerPage) + index + 1).padStart(2, '0') }}</h5>
+                                                <h5 class="name h5-list-style" :data-text="item.stakeDate">{{ item.stakeDate }}</h5>
+                                            </div>
+                                            <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                                                <p class="desc p-list-style">母金：$ {{ parseFloat(item.principal).toFixed(4) }}</p>
+                                                <p class="desc p-list-style">子金：$ {{ parseFloat(item.interest).toFixed(4) }}</p>
+                                            </div>
 
-                                        <div class="status-box">
-                                            <CountdownTimer :target-timestamp="item.expiryTimestamp" />
-                                            <div class="status-box-button">
-                                                <button v-if="item.status === 'redeemable'" class="tf-btn text-body-3 style-2 animate-btn animate-dark">可赎回</button>
-                                                <button v-else class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>等待赎回</button>
+                                            <div class="status-box">
+                                                <CountdownTimer :target-timestamp="item.expiryTimestamp" />
+                                                <div class="status-box-button">
+                                                    <button v-if="item.displayStatus === 'redeemable'" class="tf-btn text-body-3 style-2 animate-btn animate-dark">可赎回</button>
+                                                    <button v-else-if="item.displayStatus === 'redeemed'" class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>已赎回</button>
+                                                    <button v-else class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>等待赎回</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </li>
-                        </ul>
-                        <div class="pagination-list">
-                            <a href="#" class="pagination-item" @click.prevent="prevPage" :class="{ 'disabled': currentPage === 1 }">
-                                <span class="icon icon-CaretDoubleRight fs-20" style="transform: rotate(180deg);"></span>
-                            </a>
-                            <a v-for="page in displayedPages" :key="page" href="#" class="pagination-item" :class="{ 'active': currentPage === page }" @click.prevent="goToPage(page)">
-                                <span>{{ page }}</span>
-                            </a>
-                            <a href="#" class="pagination-item" @click.prevent="nextPage" :class="{ 'disabled': currentPage === totalPages }">
-                                <span class="icon icon-CaretDoubleRight fs-20"></span>
-                            </a>
-                        </div>
+                                </li>
+                            </ul>
+                            <div v-if="totalPages > 1" class="pagination-list">
+                                <a href="#" class="pagination-item" @click.prevent="prevPage" :class="{ 'disabled': currentPage === 1 }">
+                                    <span class="icon icon-CaretDoubleRight fs-20" style="transform: rotate(180deg);"></span>
+                                </a>
+                                <a v-for="page in displayedPages" :key="page" href="#" class="pagination-item" :class="{ 'active': currentPage === page }" @click.prevent="goToPage(page)">
+                                    <span>{{ page }}</span>
+                                </a>
+                                <a href="#" class="pagination-item" @click.prevent="nextPage" :class="{ 'disabled': currentPage === totalPages }">
+                                    <span class="icon icon-CaretDoubleRight fs-20"></span>
+                                </a>
+                            </div>
+                        </template>
                     </div>
                 </div>
                 <div class="position-relative has-hafl_plus">
@@ -161,39 +196,50 @@
 <script setup>
 import {
   ref,
-  computed
+  computed,
+  watch
 } from 'vue';
-import CountdownTimer from './CountdownTimer.vue'; // Import the new component
+import {
+  walletState
+} from '../services/wallet';
+import {
+  getUserStakingData
+} from '../services/contracts';
+import CountdownTimer from './CountdownTimer.vue';
 
-// Generate 20 mock data items
 const allStakingItems = ref([]);
-for (let i = 0; i < 20; i++) {
-  const isExpired = Math.random() > 0.5;
-  const now = Date.now();
-  // Random time within the next 30 days
-  const randomFutureTime = now + (Math.random() * 30 * 24 * 60 * 60 * 1000);
-  // Random time within the past 30 days
-  const randomPastTime = now - (Math.random() * 30 * 24 * 60 * 60 * 1000);
+const isLoading = ref(true);
 
-  const expiryTimestamp = isExpired ? randomPastTime : randomFutureTime;
-  const date = new Date(now - (i * 24 * 60 * 60 * 1000 * 2)); // Fake date for variety
+const fetchStakingData = async () => {
+  console.log('[订单列表-检查] fetchStakingData 被调用。认证状态:', walletState.isAuthenticated, '合约初始化状态:', walletState.contractsInitialized);
+  // Now we check both authentication and contract initialization
+  if (!walletState.isAuthenticated || !walletState.contractsInitialized) {
+    allStakingItems.value = [];
+    isLoading.value = false;
+    return;
+  }
+  isLoading.value = true;
+  try {
+    console.log('[订单列表-检查] 条件满足，准备调用 getUserStakingData...');
+    allStakingItems.value = await getUserStakingData();
+  } finally {
+    isLoading.value = false;
+  }
+};
 
-  allStakingItems.value.push({
-    date: date.toLocaleString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    }).replace(/\//g, '-'),
-    principal: Math.random() * 5000 + 100,
-    interest: Math.random() * 50 + 1,
-    expiryTimestamp: expiryTimestamp,
-    status: isExpired ? 'redeemable' : 'waiting',
-  });
-}
+watch(() => [walletState.isAuthenticated, walletState.contractsInitialized], ([isAuth, contractsReady]) => {
+  console.log(`[订单列表-检查] 监听到状态变化 -> isAuth: ${isAuth}, contractsReady: ${contractsReady}`);
+  // Only fetch data when both are true
+  if (isAuth && contractsReady) {
+    fetchStakingData();
+  } else {
+    // Clear data if user disconnects or contracts fail
+    allStakingItems.value = [];
+    isLoading.value = false;
+  }
+}, {
+  immediate: true
+});
 
 
 const currentPage = ref(1);
@@ -262,6 +308,29 @@ const displayedPages = computed(() => {
 });
 </script>
 <style scoped>
+
+.empty-state,
+.loading-state {
+  /* Replicating the style of .btn_tab for consistency */
+  background: rgba(20, 20, 21, 0.5);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 50px 20px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  text-align: center;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  /* Adjust font size or other properties as needed */
+}
+
+.empty-state p,
+.loading-state p {
+    position: relative;
+    z-index: 2;
+}
+
 
 .order-list {
     margin-top: 30px; 

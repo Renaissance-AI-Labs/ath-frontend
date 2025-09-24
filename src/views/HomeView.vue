@@ -159,7 +159,7 @@ export default {
       if (this.isStaking) return;
       this.isStaking = true;
       console.log("[指挥官] 开始为老用户执行质押流程...");
-      showToast("正在获取推荐人信息并质押...");
+      // showToast("正在获取推荐人信息并质押...");
 
       // Final real-time balance check
       const realTimeBalance = await getUsdtBalance();

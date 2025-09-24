@@ -223,9 +223,9 @@ const fetchHeroData = async () => {
   if (!isAuthenticated.value) return;
 
   if (isInitialFetch.value) {
-    console.log("正在首次加载数据...");
+    // console.log("正在首次加载数据...");
   } else {
-    console.log("每6秒刷新数据...");
+    // console.log("每6秒刷新数据...");
   }
 
   try {

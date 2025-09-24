@@ -54,6 +54,7 @@ export const walletState = reactive({
   signer: null,
   walletType: null, // To store the type of the connected wallet
   isNewUser: null, // null: unknown, true: new, false: old
+  contractsInitialized: false, // <-- Add this new state
 });
 
 // Utility function to format wallet address
@@ -274,6 +275,7 @@ export const disconnectWallet = () => {
 
   walletState.isConnected = false;
   walletState.isAuthenticated = false;
+  walletState.contractsInitialized = false; // <-- Reset on disconnect
   walletState.address = null;
   walletState.network = null;
   walletState.signer = null;

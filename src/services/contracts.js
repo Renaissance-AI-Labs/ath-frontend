@@ -92,6 +92,9 @@ export const initializeContracts = async () => {
     usdt: await usdtContract.getAddress(),
     router: await routerContract.getAddress(),
   });
+
+  walletState.contractsInitialized = true;
+  console.log("[合约] 初始化成功, contractsInitialized 状态已更新为 true");
 };
 
 /**
@@ -122,7 +125,7 @@ export const getUserStakedBalance = async () => {
     const totalValue = await stakingContract.balanceOf(walletState.address);
     // Format from Wei to standard unit
     const formattedValue = ethers.formatUnits(totalValue, 18); // Assuming 18 decimals
-    console.log(`获取到用户质押总价值: ${formattedValue}`);
+    // console.log(`获取到用户质押总价值: ${formattedValue}`);
     return formattedValue;
   } catch (error) {
     console.error("Error fetching staked balance:", error);
@@ -144,13 +147,97 @@ export const getFriendsBoost = async () => {
     const kpi = await stakingContract.getTeamKpi(walletState.address);
     // Format from Wei to standard unit
     const formattedKpi = ethers.formatUnits(kpi, 18); // Assuming 18 decimals
-    console.log(`获取到好友助力值 (团队KPI): ${formattedKpi}`);
+    // console.log(`获取到好友助力值 (团队KPI): ${formattedKpi}`);
     return formattedKpi;
   } catch (error) {
     console.error("Error fetching friends boost (team KPI):", error);
     return "0";
   }
 };
+
+export const getUserStakingData = async () => {
+  if (!stakingContract || !walletState.address) {
+    console.warn("Staking contract not initialized or user not connected.");
+    return [];
+  }
+  console.log(`[质押列表] 开始获取数据, 用户地址: ${walletState.address}`);
+
+  try {
+    const count = await stakingContract.stakeCount(walletState.address);
+    const stakeCount = Number(count);
+    console.log(`[质押列表] 获取到总质押笔数: ${stakeCount}`);
+
+
+    if (stakeCount === 0) {
+      console.log("[质押列表] 用户无质押记录, 停止获取.");
+      return [];
+    }
+
+    const recordPromises = [];
+    const rewardPromises = [];
+    const indices = [];
+
+    // Loop from newest to oldest
+    for (let i = stakeCount - 1; i >= 0; i--) {
+      indices.push(i);
+      recordPromises.push(stakingContract.userStakeRecord(walletState.address, i));
+      rewardPromises.push(stakingContract.rewardOfSlot(walletState.address, i));
+    }
+
+    const records = await Promise.all(recordPromises);
+    const rewards = await Promise.all(rewardPromises);
+
+    console.log("[质押列表] 批量获取到原始Record数据:", records);
+    console.log("[质押列表] 批量获取到原始Reward数据:", rewards);
+
+    const stakeDurations = [86400, 1296000, 2592000]; // 1, 15, 30 days in seconds
+
+    const formattedData = records.map((record, index) => {
+      const originalIndex = indices[index];
+      const totalValue = rewards[index];
+
+      const interest = totalValue - record.amount;
+
+      const stakeTimeInSeconds = Number(record.stakeTime);
+      const stakeDurationInSeconds = stakeDurations[Number(record.stakeIndex)];
+      const expiryTimestamp = (stakeTimeInSeconds + stakeDurationInSeconds) * 1000;
+
+      let displayStatus = 'waiting';
+      if (record.status === true) {
+        displayStatus = 'redeemed';
+      } else if (expiryTimestamp <= Date.now()) {
+        displayStatus = 'redeemable';
+      }
+
+      const decimals = getUsdtDecimals();
+
+      return {
+        principal: ethers.formatUnits(record.amount, decimals),
+        interest: ethers.formatUnits(interest, decimals),
+        stakeDate: new Date(stakeTimeInSeconds * 1000).toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        }).replace(/\//g, '-'),
+        expiryTimestamp: expiryTimestamp,
+        displayStatus: displayStatus,
+      };
+    });
+
+    console.log("[质押列表] 数据处理完成, 最终格式化后数据:", formattedData);
+    return formattedData;
+
+  } catch (error) {
+    console.error("[质押列表] 获取数据时发生严重错误:", error);
+    showToast("获取质押数据失败");
+    return [];
+  }
+};
+
 
 export const checkIfUserHasReferrer = async () => {
   if (!referralContract || !walletState.address) {
@@ -179,12 +266,7 @@ export const getUsdtBalance = async () => {
   }
   try {
     const balance = await usdtContract.balanceOf(walletState.address);
-    // USDT on BNB Chain typically has 18 decimals, but can be 6.
-    // We will handle decimals dynamically in each function.
-    const decimals = getUsdtDecimals();
-    const formattedBalance = ethers.formatUnits(balance, decimals);
-    console.log(`获取到用户 USDT 余额 (使用 ${decimals} 位小数): ${formattedBalance}`);
-    return formattedBalance;
+    return ethers.formatUnits(balance, getUsdtDecimals());
   } catch (error) {
     console.error("Error fetching USDT balance:", error);
     return "0";
@@ -329,11 +411,10 @@ export const isReferrerValid = async (referrerAddress) => {
  */
 export const stakeWithInviter = async (amount, stakeIndex, parentAddress) => {
   if (!stakingContract) {
-    console.error("Staking contract not initialized.");
+    showToast("质押合约未初始化");
     return false;
   }
   try {
-    // Dynamically get decimals for the current environment
     const decimals = getUsdtDecimals();
     const amountInWei = ethers.parseUnits(amount, decimals);
     
@@ -385,10 +466,8 @@ export const getMaxStakeAmount = async () => {
     return "0";
   }
   try {
-    const maxAmountWei = await stakingContract.maxStakeAmount();
-    // The amount is compared with USDT amount, so decimals should match USDT's.
-    const decimals = getUsdtDecimals();
-    return ethers.formatUnits(maxAmountWei, decimals);
+    const maxStake = await stakingContract.maxStakeAmount();
+    return ethers.formatUnits(maxStake, getUsdtDecimals());
   } catch (error) {
     console.error("Error fetching max stake amount:", error);
     return "0";
