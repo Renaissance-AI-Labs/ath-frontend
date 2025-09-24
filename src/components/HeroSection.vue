@@ -77,14 +77,20 @@
                                                 <h5 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content">您的资产在此处安睡 </h5>
                                             </div>
                                         </div>
-                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px;">{{ formattedStakedBalance }}<span style="font-size: 16px;"> TOKEN</span></p>
+                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px;">
+                                          <span v-if="isLoading">Loading...</span>
+                                          <span v-else>{{ formattedStakedBalance }}<span style="font-size: 16px;"> TOKEN</span></span>
+                                        </p>
 
                                         <div class="tf-brand assets-title">
                                             <div class="container">
                                                 <h3 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content" style="font-size: 16px !important;"> 好友带来的助力 </h3>
                                             </div>
                                         </div>
-                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px; font-size: 14px !important;">{{ formattedFriendsBoost }}<span style="font-size: 12px;"> TOKEN</span></p>
+                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px; font-size: 14px !important;">
+                                          <span v-if="isLoading">Loading...</span>
+                                          <span v-else>{{ formattedFriendsBoost }}<span style="font-size: 12px;"> TOKEN</span></span>
+                                        </p>
 
                                         <fieldset class="field-bottom button-add-pool">
                                             <div class="field_left">
@@ -193,6 +199,7 @@ let fetchInterval = null;
 const isInitialFetch = ref(true); // Flag for the first fetch
 
 const isAuthenticated = computed(() => walletState.isAuthenticated);
+const isLoading = computed(() => isAuthenticated.value && isInitialFetch.value);
 
 const formattedStakedBalance = computed(() => {
   const value = animatedValues.stakedBalance;

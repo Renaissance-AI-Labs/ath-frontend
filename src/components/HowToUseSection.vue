@@ -96,88 +96,29 @@
                     </div> -->
                     <div class="col-md-6 offset-xl-2 col-xl-4 order-list">
                         <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist">
-                            <li class="br-line has-dot"></li>
-                            <li class="nav-tab-item li-style" role="presentation">
-                                <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true"
-                                    role="tab">
-                                    <div class="stars-bg stars-bg-1">
+                            <li v-for="(item, index) in stakingItems" :key="item.id" class="nav-tab-item li-style" role="presentation">
+                                <li class="br-line has-dot"></li>
+                                <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true" role="tab">
+                                    <div :class="`stars-bg stars-bg-${index + 1}`">
                                         <div class="stars"></div>
                                         <div class="stars2"></div>
                                         <div class="stars3"></div>
                                     </div>
                                     <div class="card-content">
-                                        <div style="display: flex; flex-direction: row; justify-content: space-between;">  
-                                            <h5 class="name h5-list-style" data-text="CODE DH-03">CODE DH-03</h5>
-                                            <!-- <p class="number-step text-caption font-2">代码 DH-03</p> -->
-                                            <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
+                                        <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                                            <h5 class="name h5-list-style" :data-text="item.id">STAKING-{{ item.id }}</h5>
+                                            <h5 class="name h5-list-style" :data-text="item.date">{{ item.date }}</h5>
                                         </div>
-                                        <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
-                                            <p class="desc p-list-style">母金：$ 1000</p>
-                                            <p class="desc p-list-style">子金：$ 10</p>
+                                        <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                                            <p class="desc p-list-style">母金：$ {{ item.principal }}</p>
+                                            <p class="desc p-list-style">子金：$ {{ item.interest }}</p>
                                         </div>
-                                        
-                                        <div class="status-box"> 
-                                            <p class="desc">状态：进行中</p>
-                                            <div class="status-box-button"> 
-                                                <button class="tf-btn text-body-3 style-2 animate-btn animate-dark">赎回</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="br-line has-dot"></li>
-                            <li class="nav-tab-item li-style" role="presentation">
-                                <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true"
-                                    role="tab">
-                                    <div class="stars-bg stars-bg-2">
-                                        <div class="stars"></div>
-                                        <div class="stars2"></div>
-                                        <div class="stars3"></div>
-                                    </div>
-                                    <div class="card-content">
-                                        <div style="display: flex; flex-direction: row; justify-content: space-between;">  
-                                            <h5 class="name h5-list-style" data-text="CODE DH-03">CODE DH-03</h5>
-                                            <!-- <p class="number-step text-caption font-2">代码 DH-03</p> -->
-                                            <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
-                                        </div>
-                                        <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
-                                            <p class="desc p-list-style">母金：$ 1000</p>
-                                            <p class="desc p-list-style">子金：$ 10</p>
-                                        </div>
-                                        
-                                        <div class="status-box"> 
-                                            <p class="desc">状态：已赎回</p>
-                                            <div class="status-box-button" style="display: none;"> 
-                                                <button class="tf-btn text-body-3 style-2 animate-btn animate-dark">赎回</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="br-line has-dot"></li>
-                            <li class="nav-tab-item li-style" role="presentation">
-                                <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true"
-                                    role="tab">
-                                    <div class="stars-bg stars-bg-3">
-                                        <div class="stars"></div>
-                                        <div class="stars2"></div>
-                                        <div class="stars3"></div>
-                                    </div>
-                                    <div class="card-content">
-                                        <div style="display: flex; flex-direction: row; justify-content: space-between;">  
-                                            <h5 class="name h5-list-style" data-text="CODE DH-03">CODE DH-03</h5>
-                                            <!-- <p class="number-step text-caption font-2">代码 DH-03</p> -->
-                                            <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
-                                        </div>
-                                        <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
-                                            <p class="desc p-list-style">母金：$ 1000</p>
-                                            <p class="desc p-list-style">子金：$ 10</p>
-                                        </div>
-                                        
-                                        <div class="status-box"> 
-                                            <p class="desc">状态：进行中</p>
-                                            <div class="status-box-button"> 
-                                                <button class="tf-btn text-body-3 style-2 animate-btn animate-dark">赎回</button>
+
+                                        <div class="status-box">
+                                            <CountdownTimer :target-timestamp="item.expiryTimestamp" />
+                                            <div class="status-box-button">
+                                                <button v-if="item.status === 'redeemable'" class="tf-btn text-body-3 style-2 animate-btn animate-dark">可赎回</button>
+                                                <button v-else class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>等待赎回</button>
                                             </div>
                                         </div>
                                     </div>
@@ -217,21 +158,41 @@
         <span class="br-line"></span>
     </section>
 </template>
-<script>
-import { ref } from 'vue';
+<script setup>
+import {
+  ref
+} from 'vue';
+import CountdownTimer from './CountdownTimer.vue'; // Import the new component
 
-export default {
-    name: 'HowToUseSection',
-    setup() {
-        const currentPage = ref(1);
-        const totalPages = ref(3); // Example total pages
+// Sample data structure to replace the hardcoded list
+const stakingItems = ref([{
+  id: 'CODE-01',
+  date: '2025/09/19 23:22:10',
+  principal: 1000,
+  interest: 10,
+  // Expired timestamp (in the past)
+  expiryTimestamp: new Date('2025-09-19T23:22:10').getTime(),
+  status: 'redeemable', // 'redeemable', 'waiting'
+}, {
+  id: 'CODE-02',
+  date: '2025/10/06 18:00:00',
+  principal: 1000,
+  interest: 10,
+  // A future timestamp for a 12-day countdown
+  expiryTimestamp: Date.now() + 12 * 24 * 60 * 60 * 1000 + 13 * 60 * 60 * 1000 + 19 * 60 * 1000 + 10 * 1000,
+  status: 'waiting',
+}, {
+  id: 'CODE-03',
+  date: '2025/09/24 12:00:00',
+  principal: 1000,
+  interest: 10,
+  // A future timestamp for a short countdown
+  expiryTimestamp: Date.now() + 19 * 60 * 1000 + 10 * 1000,
+  status: 'waiting',
+}, ]);
 
-        return {
-            currentPage,
-            totalPages,
-        };
-    }
-}
+const currentPage = ref(1);
+const totalPages = ref(3); // Example total pages
 </script>
 <style scoped>
 
@@ -250,6 +211,11 @@ export default {
 .tf-btn.style-2 {
     background-color: #161c416b;
     width: 100px;
+}
+
+.tf-btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .img-position {
