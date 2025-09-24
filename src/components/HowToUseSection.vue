@@ -60,141 +60,93 @@
                     </p>
                 </div>
                 <div class="row">
-                    <!-- <div class="col-md-6 offset-xl-1 col-xl-4">
-                        <div class="tab-content mb-md-0 sticky-top wow fadeInUp">
-                            <div class="tab-pane active show" id="step1" role="tabpanel">
-                                <div class="image-how_to wow bounceInScale">
-                                    <img class="lazyload" src="/asset/images/section/step-1.webp"
-                                        data-src="/asset/images/section/step-1.webp" alt="Image">
-                                    <span class="hafl-plus start-0 top-0 rotate-top_left"></span>
-                                    <span class="hafl-plus end-0 top-0 rotate-top_right"></span>
-                                    <span class="hafl-plus start-0 bottom-0 item_bot rotate-bot_left"></span>
-                                    <span class="hafl-plus end-0 bottom-0 item_bot rotate-bot_right"></span>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="step2" role="tabpanel">
-                                <div class="image-how_to">
-                                    <img class="lazyload" src="/asset/images/section/step-2.webp"
-                                        data-src="/asset/images/section/step-2.webp" alt="Image">
-                                    <span class="hafl-plus start-0 top-0 rotate-top_left"></span>
-                                    <span class="hafl-plus end-0 top-0 rotate-top_right"></span>
-                                    <span class="hafl-plus start-0 bottom-0 item_bot rotate-bot_left"></span>
-                                    <span class="hafl-plus end-0 bottom-0 item_bot rotate-bot_right"></span>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="step3" role="tabpanel">
-                                <div class="image-how_to">
-                                    <img class="lazyload" src="/asset/images/section/step-3.webp"
-                                        data-src="/asset/images/section/step-3.webp" alt="Image">
-                                    <span class="hafl-plus start-0 top-0 rotate-top_left"></span>
-                                    <span class="hafl-plus end-0 top-0 rotate-top_right"></span>
-                                    <span class="hafl-plus start-0 bottom-0 item_bot rotate-bot_left"></span>
-                                    <span class="hafl-plus end-0 bottom-0 item_bot rotate-bot_right"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
                     <div class="col-md-6 offset-xl-2 col-xl-4 order-list">
-                        <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist">
-                            <li class="br-line has-dot"></li>
-                            <li class="nav-tab-item li-style" role="presentation">
-                                <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true"
-                                    role="tab">
-                                    <div class="stars-bg stars-bg-1">
-                                        <div class="stars"></div>
-                                        <div class="stars2"></div>
-                                        <div class="stars3"></div>
-                                    </div>
-                                    <div class="card-content">
-                                        <div style="display: flex; flex-direction: row; justify-content: space-between;">  
-                                            <h5 class="name h5-list-style" data-text="CODE DH-03">CODE DH-03</h5>
-                                            <!-- <p class="number-step text-caption font-2">代码 DH-03</p> -->
-                                            <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
-                                        </div>
-                                        <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
-                                            <p class="desc p-list-style">母金：$ 1000</p>
-                                            <p class="desc p-list-style">子金：$ 10</p>
-                                        </div>
-                                        
-                                        <div class="status-box"> 
-                                            <p class="desc">状态：进行中</p>
-                                            <div class="status-box-button"> 
-                                                <button class="tf-btn text-body-3 style-2 animate-btn animate-dark">赎回</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="br-line has-dot"></li>
-                            <li class="nav-tab-item li-style" role="presentation">
-                                <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true"
-                                    role="tab">
-                                    <div class="stars-bg stars-bg-2">
-                                        <div class="stars"></div>
-                                        <div class="stars2"></div>
-                                        <div class="stars3"></div>
-                                    </div>
-                                    <div class="card-content">
-                                        <div style="display: flex; flex-direction: row; justify-content: space-between;">  
-                                            <h5 class="name h5-list-style" data-text="CODE DH-03">CODE DH-03</h5>
-                                            <!-- <p class="number-step text-caption font-2">代码 DH-03</p> -->
-                                            <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
-                                        </div>
-                                        <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
-                                            <p class="desc p-list-style">母金：$ 1000</p>
-                                            <p class="desc p-list-style">子金：$ 10</p>
-                                        </div>
-                                        
-                                        <div class="status-box"> 
-                                            <p class="desc">状态：已赎回</p>
-                                            <div class="status-box-button" style="display: none;"> 
-                                                <button class="tf-btn text-body-3 style-2 animate-btn animate-dark">赎回</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="br-line has-dot"></li>
-                            <li class="nav-tab-item li-style" role="presentation">
-                                <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true"
-                                    role="tab">
-                                    <div class="stars-bg stars-bg-3">
-                                        <div class="stars"></div>
-                                        <div class="stars2"></div>
-                                        <div class="stars3"></div>
-                                    </div>
-                                    <div class="card-content">
-                                        <div style="display: flex; flex-direction: row; justify-content: space-between;">  
-                                            <h5 class="name h5-list-style" data-text="CODE DH-03">CODE DH-03</h5>
-                                            <!-- <p class="number-step text-caption font-2">代码 DH-03</p> -->
-                                            <h5 class="name h5-list-style" data-text="2025/09/19">2025/09/19</h5>
-                                        </div>
-                                        <div style="display: flex; flex-direction: row; justify-content: space-between;"> 
-                                            <p class="desc p-list-style">母金：$ 1000</p>
-                                            <p class="desc p-list-style">子金：$ 10</p>
-                                        </div>
-                                        
-                                        <div class="status-box"> 
-                                            <p class="desc">状态：进行中</p>
-                                            <div class="status-box-button"> 
-                                                <button class="tf-btn text-body-3 style-2 animate-btn animate-dark">赎回</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                        <div class="pagination-list">
-                          <a href="#" class="pagination-item">
-                            <span class="icon icon-CaretDoubleRight fs-20" style="transform: rotate(180deg);"></span>
-                          </a>
-                          <a href="#" class="pagination-item"><span>1</span></a>
-                          <a href="#" class="pagination-item"><span>2</span></a>
-                          <a href="#" class="pagination-item"><span>3</span></a>
-                          <a href="#" class="pagination-item">
-                            <span class="icon icon-CaretDoubleRight fs-20"></span>
-                          </a>
+
+                        <div class="tabs-container">
+                            <button class="toggle-button" @click="toggleTab">
+                                <span class="tab-text" :class="{ active: activeTab === 'investment' }">投资列表</span>
+                                <span class="tab-divider"></span>
+                                <span class="tab-text" :class="{ active: activeTab === 'redemption' }">赎回列表</span>
+                            </button>
                         </div>
+
+                        <div v-if="isLoading" class="loading-state" :class="`list-${listMode}`">
+                            <div class="stars-bg stars-bg-1">
+                                <div class="stars"></div>
+                                <div class="stars2"></div>
+                                <div class="stars3"></div>
+                            </div>
+                            <p>正在加载质押数据...</p>
+                        </div>
+                        <div v-else-if="!walletState.isAuthenticated" class="empty-state" :class="`list-${listMode}`">
+                            <div class="stars-bg stars-bg-1">
+                                <div class="stars"></div>
+                                <div class="stars2"></div>
+                                <div class="stars3"></div>
+                            </div>
+                            <p>请先连接钱包以查看您的质押订单</p>
+                        </div>
+                        <div v-else-if="!walletState.contractsInitialized" class="empty-state" :class="`list-${listMode}`">
+                            <div class="stars-bg stars-bg-1">
+                                <div class="stars"></div>
+                                <div class="stars2"></div>
+                                <div class="stars3"></div>
+                            </div>
+                            <p>合约初始化失败，请刷新重试</p>
+                        </div>
+                        <div v-else-if="filteredItems.length === 0" class="empty-state" :class="`list-${listMode}`">
+                            <div class="stars-bg stars-bg-1">
+                                <div class="stars"></div>
+                                <div class="stars2"></div>
+                                <div class="stars3"></div>
+                            </div>
+                            <p v-if="activeTab === 'investment'">您还没有任何质押订单</p>
+                            <p v-else>您还没有已赎回订单</p>
+                        </div>
+                        <template v-else>
+                            <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist" :class="`list-${listMode}`">
+                                <li v-for="(item, index) in paginatedItems" :key="((currentPage - 1) * itemsPerPage) + index" class="nav-tab-item li-style" role="presentation">
+                                    <li class="br-line has-dot"></li>
+                                    <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true" role="tab">
+                                        <div :class="`stars-bg stars-bg-${(index % 3) + 1}`">
+                                            <div class="stars"></div>
+                                            <div class="stars2"></div>
+                                            <div class="stars3"></div>
+                                        </div>
+                                        <div class="card-content">
+                                            <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                                                <h5 class="name h5-list-style" :data-text="`CODE-${String(((currentPage - 1) * itemsPerPage) + index + 1).padStart(2, '0')}`">STAKING-CODE-{{ String(((currentPage - 1) * itemsPerPage) + index + 1).padStart(2, '0') }}</h5>
+                                                <h5 class="name h5-list-style" :data-text="item.stakeDate">{{ item.stakeDate }}</h5>
+                                            </div>
+                                            <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                                                <p class="desc p-list-style">母金：$ {{ parseFloat(item.principal).toFixed(4) }}</p>
+                                                <p class="desc p-list-style">子金：$ {{ parseFloat(item.interest).toFixed(4) }}</p>
+                                            </div>
+
+                                            <div class="status-box">
+                                                <CountdownTimer :target-timestamp="item.expiryTimestamp" />
+                                                <div class="status-box-button">
+                                                    <button v-if="item.displayStatus === 'redeemable'" class="tf-btn text-body-3 style-2 animate-btn animate-dark">可赎回</button>
+                                                    <button v-else-if="item.displayStatus === 'redeemed'" class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>已赎回</button>
+                                                    <button v-else class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>等待赎回</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div v-if="totalPages > 1" class="pagination-list">
+                                <a href="#" class="pagination-item" @click.prevent="prevPage" :class="{ 'disabled': currentPage === 1 }">
+                                    <span class="icon icon-CaretDoubleRight fs-20" style="transform: rotate(180deg);"></span>
+                                </a>
+                                <a v-for="page in displayedPages" :key="page" href="#" class="pagination-item" :class="{ 'active': currentPage === page }" @click.prevent="goToPage(page)">
+                                    <span>{{ page }}</span>
+                                </a>
+                                <a href="#" class="pagination-item" @click.prevent="nextPage" :class="{ 'disabled': currentPage === totalPages }">
+                                    <span class="icon icon-CaretDoubleRight fs-20"></span>
+                                </a>
+                            </div>
+                        </template>
                     </div>
                 </div>
                 <div class="position-relative has-hafl_plus">
@@ -217,23 +169,234 @@
         <span class="br-line"></span>
     </section>
 </template>
-<script>
-import { ref } from 'vue';
+<script setup>
+import {
+  ref,
+  computed,
+  watch
+} from 'vue';
+import {
+  walletState
+} from '../services/wallet';
+import {
+  getUserStakingData
+} from '../services/contracts';
+import CountdownTimer from './CountdownTimer.vue';
 
-export default {
-    name: 'HowToUseSection',
-    setup() {
-        const currentPage = ref(1);
-        const totalPages = ref(3); // Example total pages
+const allStakingItems = ref([]);
+const isLoading = ref(true);
+const activeTab = ref('investment'); // 'investment' or 'redemption'
+const currentPage = ref(1);
+const itemsPerPage = ref(4); // 3 items per page as per current UI
+const listMode = ref('show'); // 'show' or 'hide' for transitions
 
-        return {
-            currentPage,
-            totalPages,
-        };
+const fetchStakingData = async () => {
+  console.log('[订单列表-检查] fetchStakingData 被调用。认证状态:', walletState.isAuthenticated, '合约初始化状态:', walletState.contractsInitialized);
+  // Now we check both authentication and contract initialization
+  if (!walletState.isAuthenticated || !walletState.contractsInitialized) {
+    allStakingItems.value = [];
+    isLoading.value = false;
+    return;
+  }
+  isLoading.value = true;
+  try {
+    console.log('[订单列表-检查] 条件满足，准备调用 getUserStakingData...');
+    allStakingItems.value = await getUserStakingData();
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+watch(() => [walletState.isAuthenticated, walletState.address, walletState.contractsInitialized], ([isAuth, address, contractsReady]) => {
+  console.log(`[订单列表-检查] 监听到状态变化 -> isAuth: ${isAuth}, address: ${address}, contractsReady: ${contractsReady}`);
+  // Only fetch data when both authenticated and contracts are ready
+  if (isAuth && contractsReady) {
+    fetchStakingData();
+  } else {
+    // Clear data if user disconnects or contracts fail
+    allStakingItems.value = [];
+    isLoading.value = false;
+    activeTab.value = 'investment'; // Reset tab on disconnect
+    currentPage.value = 1;
+  }
+}, {
+  immediate: true
+});
+
+const toggleTab = () => {
+  listMode.value = 'hide'; // Start fade out animation
+  setTimeout(() => {
+    activeTab.value = activeTab.value === 'investment' ? 'redemption' : 'investment';
+    currentPage.value = 1; // Reset to first page on tab switch
+    listMode.value = 'show'; // Start fade in animation
+  }, 150); // This duration should match the CSS transition duration
+};
+
+
+const filteredItems = computed(() => {
+  if (activeTab.value === 'investment') {
+    // Investment list shows non-redeemed items
+    return allStakingItems.value.filter(item => item.displayStatus !== 'redeemed');
+  } else { // redemption list
+    // Redemption list shows redeemed items
+    return allStakingItems.value.filter(item => item.displayStatus === 'redeemed');
+  }
+});
+
+// Calculate total pages based on the filtered list
+const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPerPage.value));
+
+// Create a computed property for the items on the current page from the filtered list
+const paginatedItems = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return filteredItems.value.slice(start, end);
+});
+
+// Methods to change the page
+const goToPage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+};
+
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+};
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+};
+
+const displayedPages = computed(() => {
+  const maxDisplayed = 5;
+  const pages = [];
+
+  if (totalPages.value <= maxDisplayed) {
+    for (let i = 1; i <= totalPages.value; i++) {
+      pages.push(i);
     }
-}
+  } else {
+    let startPage;
+    let endPage;
+
+    if (currentPage.value <= 3) {
+      // At the beginning
+      startPage = 1;
+      endPage = maxDisplayed;
+    } else if (currentPage.value >= totalPages.value - 2) {
+      // At the end
+      startPage = totalPages.value - maxDisplayed + 1;
+      endPage = totalPages.value;
+    } else {
+      // In the middle
+      startPage = currentPage.value - 2;
+      endPage = currentPage.value + 2;
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+  }
+  return pages;
+});
 </script>
 <style scoped>
+
+.tab-how_to,
+.empty-state,
+.loading-state {
+  transition: opacity 0.15s ease-in-out;
+}
+.list-hide {
+  opacity: 0;
+}
+.list-show {
+  opacity: 1;
+}
+
+.tabs-container {
+    display: flex;
+    margin-bottom: 20px;
+    justify-content: center; /* Center the button */
+}
+
+.toggle-button {
+    /* Base styles from .btn-ip */
+    background: var(--primary-gradient);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 280px; /* Shorten the width */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: relative;
+}
+
+.toggle-button .tab-text {
+    transition: all 0.3s ease;
+}
+
+.toggle-button:hover {
+    box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.5);
+}
+
+.toggle-button:hover .tab-text {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+.tab-text {
+    flex-grow: 1;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7); /* Dim inactive tabs */
+    transition: all 0.3s ease;
+}
+
+.tab-text.active {
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+.tab-divider {
+    width: 1px;
+    height: 20px; /* Adjust height as needed */
+    background: linear-gradient(to bottom, transparent, #fff, transparent);
+    opacity: 0.5;
+}
+
+
+.empty-state,
+.loading-state {
+  /* Replicating the style of .btn_tab for consistency */
+  background: rgba(20, 20, 21, 0.5);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 50px 20px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  text-align: center;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  /* Adjust font size or other properties as needed */
+}
+
+.empty-state p,
+.loading-state p {
+    position: relative;
+    z-index: 2;
+}
+
 
 .order-list {
     margin-top: 30px; 
@@ -250,6 +413,23 @@ export default {
 .tf-btn.style-2 {
     background-color: #161c416b;
     width: 100px;
+}
+
+.tf-btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-item.active {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.pagination-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .img-position {

@@ -29,7 +29,7 @@
             </div>
             <div class="balance-info">
               <a href="#" @click.prevent="fillMax" class="btn-ip ip-modern text-body-3 balance-btn">
-                最大: {{ userTokenBalance }}
+                余额: {{ formattedUsdtBalance }} USDT
               </a>
             </div>
           </div>
@@ -46,8 +46,8 @@
           <a href="#" @click.prevent="close" class="btn-ip ip-modern text-body-3 btn-cancel">
             取消
           </a>
-          <a href="#" @click.prevent="handleConfirm" class="btn-ip ip-modern text-body-3 btn-confirm">
-            确定
+          <a href="#" @click.prevent="handleMainAction" class="btn-ip ip-modern text-body-3 btn-confirm">
+            {{ mainButtonState.text }}
           </a>
         </div>
 
@@ -57,75 +57,175 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import {
+  walletState
+} from '../services/wallet';
+import {
+  getUsdtBalance,
+  getUsdtAllowance,
+  approveUsdt
+} from '../services/contracts';
 import CustomSelect from './CustomSelect.vue';
+import {
+  showToast
+} from '../services/notification';
+
 
 export default {
   name: 'InjectPoolModal',
   components: {
     CustomSelect,
   },
-  setup(props, { emit }) {
-    const amount = ref('');
-    const selectedDuration = ref(15);
-    const userTokenBalance = ref(10000); // Placeholder for user's token balance
-
-    const isAmountInvalid = computed(() => {
-      // Use parseFloat for correct numeric comparison (handles integers and decimals)
-      return parseFloat(amount.value) > userTokenBalance.value;
-    });
-
-    const durationOptions = [
-      { value: 1, text: '1天，复利0.3%' },
-      { value: 15, text: '15天，复利0.6%' },
-      { value: 30, text: '30天，复利1.2%' },
-    ];
-
-    const close = () => {
-      emit('close');
+  data() {
+    return {
+      amount: '',
+      selectedDuration: 0, // Default to 1 day (index 0)
+      usdtBalance: '0',
+      usdtAllowance: '0',
+      isApproving: false,
+      isLoading: true, // Start with loading true to fetch allowance
+      walletState: walletState,
+      durationOptions: [{
+        value: 0,
+        text: '1天，复利0.3%'
+      }, {
+        value: 1,
+        text: '15天，复利0.6%'
+      }, {
+        value: 2,
+        text: '30天，复利1.2%'
+      }, ],
     };
+  },
+  computed: {
+    walletAddress() {
+      return this.walletState.address;
+    },
+    isAmountInvalid() {
+      return parseFloat(this.amount) > parseFloat(this.usdtBalance);
+    },
+    mainButtonState() {
+      const amountNum = parseFloat(this.amount);
+      const allowanceNum = parseFloat(this.usdtAllowance);
 
-    const handleAmountInput = (event) => {
+      if (this.isApproving) {
+        return { text: '授权中...', action: 'approving', disabled: true };
+      }
+      
+      if (!this.amount || amountNum <= 0) {
+        // Default state when no amount is entered
+        return { text: '请输入数量', action: 'idle', disabled: true };
+      }
+
+      if (allowanceNum < amountNum) {
+        return { text: '请授权USDT', action: 'approve', disabled: false };
+      }
+
+      if (this.walletState.isNewUser) {
+        return { text: '下一步', action: 'next_step', disabled: false };
+      } else {
+        return { text: '确认质押', action: 'stake', disabled: false };
+      }
+    },
+    formattedUsdtBalance() {
+      const number = parseFloat(this.usdtBalance);
+      if (isNaN(number)) return '0.00';
+      return number.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+  },
+  watch: {
+    walletAddress(newAddress) {
+      if (newAddress) {
+        this.fetchInitialData();
+      } else {
+        this.resetBalance();
+        this.usdtAllowance = '0';
+      }
+    }
+  },
+  methods: {
+    async fetchInitialData() {
+      if (!this.walletState.address) return;
+      this.isLoading = true;
+      await Promise.all([
+        this.fetchUsdtBalance(),
+        this.fetchUsdtAllowance()
+      ]);
+      
+      const allowanceNum = parseFloat(this.usdtAllowance);
+      const isApproved = allowanceNum > 0;
+      console.log(`注入资产弹窗: 用户USDT授权状态: ${isApproved}, 授权额度: ${this.usdtAllowance}`);
+
+      this.isLoading = false;
+    },
+    async fetchUsdtBalance() {
+      this.usdtBalance = await getUsdtBalance();
+    },
+    async fetchUsdtAllowance() {
+      this.usdtAllowance = await getUsdtAllowance();
+    },
+    resetBalance() {
+      this.usdtBalance = '0';
+    },
+    close() {
+      this.$emit('close');
+    },
+    handleAmountInput(event) {
       let value = event.target.value;
-      // 1. Remove any character that is not a digit or a period.
       value = value.replace(/[^0-9.]/g, '');
-      // 2. Ensure there's at most one period.
       const parts = value.split('.');
       if (parts.length > 2) {
         value = parts[0] + '.' + parts.slice(1).join('');
       }
-      amount.value = value;
-    };
+      this.amount = value;
+    },
+    fillMax() {
+      this.amount = this.usdtBalance;
+    },
+    async handleMainAction() {
+      if (this.mainButtonState.disabled) return;
+      
+      console.log(`[注入资产弹窗] 主操作按钮被点击, 当前状态: '${this.mainButtonState.action}'`);
 
-    const fillMax = () => {
-      amount.value = userTokenBalance.value;
-    };
-
-    const handleConfirm = () => {
-      // Basic validation
-      if (!amount.value || amount.value <= 0) {
-        alert('请输入有效的数量');
-        return;
+      switch (this.mainButtonState.action) {
+        case 'approve':
+          console.log("[注入资产弹窗] 执行操作: 请求USDT授权");
+          this.isApproving = true;
+          const success = await approveUsdt();
+          if (success) {
+            showToast("授权成功！");
+            await this.fetchUsdtAllowance();
+          } else {
+            showToast("授权失败或被拒绝");
+          }
+          this.isApproving = false;
+          break;
+        case 'next_step':
+          console.log("[注入资产弹窗] 执行操作: 进入下一步 -> 确认推荐人");
+          this.$emit('confirm', {
+            amount: this.amount,
+            duration: this.selectedDuration
+          });
+          break;
+        case 'stake':
+          console.log("[注入资产弹窗] 执行操作: 直接进入质押流程");
+          this.$emit('confirm', {
+            amount: this.amount,
+            duration: this.selectedDuration
+          });
+          break;
       }
-      if (amount.value > userTokenBalance.value) {
-        alert('余额不足');
-        return;
-      }
-      emit('confirm', { amount: amount.value, duration: selectedDuration.value });
-      close();
-    };
-
-    return {
-      amount,
-      selectedDuration,
-      userTokenBalance,
-      durationOptions,
-      isAmountInvalid,
-      close,
-      fillMax,
-      handleConfirm,
-      handleAmountInput,
-    };
+    },
+  },
+  mounted() {
+    if (this.walletAddress) {
+      this.fetchInitialData();
+    } else {
+      this.isLoading = false;
+    }
   }
 };
 </script>
@@ -314,33 +414,6 @@ export default {
   }
 }
 
-/* Transitions */
-.modal-enter-active {
-  transition: opacity 0.3s ease;
-}
-.modal-enter-active .modal-content {
-  transition: transform 0.4s 0.1s ease, opacity 0.4s 0.1s ease;
-}
-.modal-enter-from {
-  opacity: 0;
-}
-.modal-enter-from .modal-content {
-  transform: translateY(20px);
-  opacity: 0;
-}
-.modal-leave-active {
-  transition: opacity 0.3s 0.1s ease;
-}
-.modal-leave-active .modal-content {
-  transition: transform 0.4s ease, opacity 0.4s ease;
-}
-.modal-leave-to {
-  opacity: 0;
-}
-.modal-leave-to .modal-content {
-  transform: translateY(20px);
-  opacity: 0;
-}
 .form-input.input-error {
   color: #b60e0e; /* A clear red color for error state */
 }

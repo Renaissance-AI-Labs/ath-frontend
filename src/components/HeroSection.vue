@@ -77,22 +77,28 @@
                                                 <h5 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content">您的资产在此处安睡 </h5>
                                             </div>
                                         </div>
-                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px;">3,000,000,000<span style="font-size: 16px;"> TOKEN</span></p>
+                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px;">
+                                          <span v-if="isLoading">Loading...</span>
+                                          <span v-else>{{ formattedStakedBalance }}<span style="font-size: 16px;"> TOKEN</span></span>
+                                        </p>
 
                                         <div class="tf-brand assets-title">
                                             <div class="container">
                                                 <h3 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content" style="font-size: 16px !important;"> 好友带来的助力 </h3>
                                             </div>
                                         </div>
-                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px; font-size: 14px !important;">10,000<span style="font-size: 12px;"> TOKEN</span></p>
+                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px; font-size: 14px !important;">
+                                          <span v-if="isLoading">Loading...</span>
+                                          <span v-else>{{ formattedFriendsBoost }}<span style="font-size: 12px;"> TOKEN</span></span>
+                                        </p>
 
                                         <fieldset class="field-bottom button-add-pool">
                                             <div class="field_left">
-                                                <a href="#" @click.prevent="$emit('open-inject-modal')" class="btn-ip ip-modern text-body-3">
+                                                <a href="#" @click.prevent="handleInjectPoolClick" class="btn-ip ip-modern text-body-3">
                                                     <i class="icon-plus fs-10"></i>
                                                     注入底池
                                                 </a>
-                                                <a href="#" class="btn-ip ip-modern text-body-3">
+                                                <a href="#" @click.prevent="shareFriendLink" class="btn-ip ip-modern text-body-3">
                                                     <i class="icon-arrow-caret-down  fs-8"></i>
                                                     分享好友
                                                 </a>
@@ -156,11 +162,179 @@
         </div>
     </section>
 </template>
-<script>
-export default {
-  name: 'HeroSection',
-}
+
+<script setup>
+import {
+  ref,
+  computed,
+  watch,
+  onMounted,
+  onUnmounted,
+  reactive
+} from 'vue';
+import {
+  gsap
+} from 'gsap';
+import {
+  walletState
+} from '../services/wallet';
+import {
+  getUserStakedBalance,
+  getFriendsBoost,
+  checkIfUserHasReferrer
+} from '../services/contracts';
+import {
+  showToast
+} from '../services/notification';
+
+const emits = defineEmits(['open-inject-modal']);
+
+const stakedBalance = ref('0');
+const friendsBoost = ref('0');
+const animatedValues = reactive({
+  stakedBalance: 0,
+  friendsBoost: 0,
+});
+let fetchInterval = null;
+const isInitialFetch = ref(true); // Flag for the first fetch
+
+const isAuthenticated = computed(() => walletState.isAuthenticated);
+const isLoading = computed(() => isAuthenticated.value && isInitialFetch.value);
+
+const formattedStakedBalance = computed(() => {
+  const value = animatedValues.stakedBalance;
+  if (value === 0) return '0';
+  return value.toLocaleString('en-US', {
+    minimumFractionDigits: 6,
+    maximumFractionDigits: 6,
+  });
+});
+
+const formattedFriendsBoost = computed(() => {
+  const value = animatedValues.friendsBoost;
+  if (value === 0) return '0';
+  return value.toLocaleString('en-US', {
+    minimumFractionDigits: 6,
+    maximumFractionDigits: 6,
+  });
+});
+
+const fetchHeroData = async () => {
+  if (!isAuthenticated.value) return;
+
+  if (isInitialFetch.value) {
+    // console.log("正在首次加载数据...");
+  } else {
+    // console.log("每6秒刷新数据...");
+  }
+
+  try {
+    const [newStakedBalance, newFriendsBoost] = await Promise.all([
+      getUserStakedBalance(),
+      getFriendsBoost(),
+    ]);
+    stakedBalance.value = newStakedBalance;
+    friendsBoost.value = newFriendsBoost;
+  } catch (error) {
+    console.error("刷新数据失败:", error);
+  }
+};
+
+const resetData = () => {
+  stakedBalance.value = '0';
+  friendsBoost.value = '0';
+  animatedValues.stakedBalance = 0;
+  animatedValues.friendsBoost = 0;
+  isInitialFetch.value = true; // Reset flag on disconnect
+};
+
+const startFetching = () => {
+  stopFetching(); // Ensure no multiple intervals are running
+  fetchHeroData(); // Fetch immediately
+  fetchInterval = setInterval(fetchHeroData, 6000);
+};
+
+const stopFetching = () => {
+  if (fetchInterval) {
+    clearInterval(fetchInterval);
+    fetchInterval = null;
+  }
+};
+
+const handleInjectPoolClick = () => {
+  if (!isAuthenticated.value) {
+    showToast('请先连接并授权您的钱包');
+    return;
+  }
+  emits('open-inject-modal');
+};
+
+const shareFriendLink = async () => {
+  if (!isAuthenticated.value) {
+    showToast('请先连接并授权您的钱包');
+    return;
+  }
+  const isEligible = await checkIfUserHasReferrer();
+  if (!isEligible) {
+    showToast('请先进行质押并绑定您的推荐好友');
+    return;
+  }
+  const referralLink = `${window.location.origin}?ref=${walletState.address}`;
+  try {
+    await navigator.clipboard.writeText(referralLink);
+    showToast('复制成功！链接已复制到剪贴板');
+  } catch (err) {
+    console.error('无法复制链接: ', err);
+    showToast('复制失败，请检查浏览器权限');
+  }
+};
+
+watch(isAuthenticated, (isAuth) => {
+  if (isAuth) {
+    startFetching();
+  } else {
+    stopFetching();
+    resetData();
+  }
+});
+
+watch(stakedBalance, (newValue) => {
+  if (isInitialFetch.value) {
+    // For the first fetch, set value directly without animation
+    animatedValues.stakedBalance = Number(newValue) || 0;
+  } else {
+    gsap.to(animatedValues, {
+      duration: 1,
+      stakedBalance: Number(newValue) || 0,
+    });
+  }
+});
+
+watch(friendsBoost, (newValue) => {
+  if (isInitialFetch.value) {
+    // For the first fetch, set value directly without animation
+    animatedValues.friendsBoost = Number(newValue) || 0;
+    // After the very first data is set, subsequent fetches should be animated
+    isInitialFetch.value = false;
+  } else {
+    gsap.to(animatedValues, {
+      duration: 1,
+      friendsBoost: Number(newValue) || 0,
+    });
+  }
+});
+
+onMounted(() => {
+  if (isAuthenticated.value) {
+    startFetching();
+  }
+});
+
+onUnmounted(() => {
+  stopFetching();
+});
 </script>
+
 <style scoped>
 
 .text-change_wrap {

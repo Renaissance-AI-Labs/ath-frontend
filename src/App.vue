@@ -1,5 +1,6 @@
 <template>
   <div>
+    <ToastNotification />
     <GoTop />
     <div id="wrapper">
       <span class="line_page"></span>
@@ -35,6 +36,7 @@ import GoTop from './components/GoTop.vue';
 import MobileMenu from './components/MobileMenu.vue';
 import ConnectWalletModal from './components/ConnectWalletModal.vue';
 import { autoConnectWallet } from './services/wallet.js';
+import ToastNotification from './components/ToastNotification.vue';
 
 export default {
   name: 'App',
@@ -43,7 +45,8 @@ export default {
     Footer,
     GoTop,
     MobileMenu,
-    ConnectWalletModal
+    ConnectWalletModal,
+    ToastNotification
   },
   data() {
     return {
@@ -60,6 +63,20 @@ export default {
   },
   mounted() {
     autoConnectWallet();
+
+    // Check for referral code in URL
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const refAddress = urlParams.get('ref');
+      if (refAddress && refAddress.startsWith('0x')) { // Basic validation
+        console.log(`检测到推荐人地址: ${refAddress}`);
+        // Store it for later use when staking
+        localStorage.setItem('ath_referrerAddress', refAddress);
+      }
+    } catch (error) {
+      console.error("Error processing URL parameters:", error);
+    }
+
     this.$nextTick(() => {
       const loadScript = (src, callback) => {
         const script = document.createElement('script');
