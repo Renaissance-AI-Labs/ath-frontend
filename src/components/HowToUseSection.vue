@@ -96,22 +96,22 @@
                     </div> -->
                     <div class="col-md-6 offset-xl-2 col-xl-4 order-list">
                         <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist">
-                            <li v-for="(item, index) in stakingItems" :key="item.id" class="nav-tab-item li-style" role="presentation">
+                            <li v-for="(item, index) in paginatedItems" :key="((currentPage - 1) * itemsPerPage) + index" class="nav-tab-item li-style" role="presentation">
                                 <li class="br-line has-dot"></li>
                                 <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true" role="tab">
-                                    <div :class="`stars-bg stars-bg-${index + 1}`">
+                                    <div :class="`stars-bg stars-bg-${(index % 3) + 1}`">
                                         <div class="stars"></div>
                                         <div class="stars2"></div>
                                         <div class="stars3"></div>
                                     </div>
                                     <div class="card-content">
                                         <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                                            <h5 class="name h5-list-style" :data-text="item.id">STAKING-{{ item.id }}</h5>
+                                            <h5 class="name h5-list-style" :data-text="`CODE-${String(((currentPage - 1) * itemsPerPage) + index + 1).padStart(2, '0')}`">STAKING-CODE-{{ String(((currentPage - 1) * itemsPerPage) + index + 1).padStart(2, '0') }}</h5>
                                             <h5 class="name h5-list-style" :data-text="item.date">{{ item.date }}</h5>
                                         </div>
                                         <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                                            <p class="desc p-list-style">母金：$ {{ item.principal }}</p>
-                                            <p class="desc p-list-style">子金：$ {{ item.interest }}</p>
+                                            <p class="desc p-list-style">母金：$ {{ item.principal.toFixed(4) }}</p>
+                                            <p class="desc p-list-style">子金：$ {{ item.interest.toFixed(4) }}</p>
                                         </div>
 
                                         <div class="status-box">
@@ -126,15 +126,15 @@
                             </li>
                         </ul>
                         <div class="pagination-list">
-                          <a href="#" class="pagination-item">
-                            <span class="icon icon-CaretDoubleRight fs-20" style="transform: rotate(180deg);"></span>
-                          </a>
-                          <a href="#" class="pagination-item"><span>1</span></a>
-                          <a href="#" class="pagination-item"><span>2</span></a>
-                          <a href="#" class="pagination-item"><span>3</span></a>
-                          <a href="#" class="pagination-item">
-                            <span class="icon icon-CaretDoubleRight fs-20"></span>
-                          </a>
+                            <a href="#" class="pagination-item" @click.prevent="prevPage" :class="{ 'disabled': currentPage === 1 }">
+                                <span class="icon icon-CaretDoubleRight fs-20" style="transform: rotate(180deg);"></span>
+                            </a>
+                            <a v-for="page in displayedPages" :key="page" href="#" class="pagination-item" :class="{ 'active': currentPage === page }" @click.prevent="goToPage(page)">
+                                <span>{{ page }}</span>
+                            </a>
+                            <a href="#" class="pagination-item" @click.prevent="nextPage" :class="{ 'disabled': currentPage === totalPages }">
+                                <span class="icon icon-CaretDoubleRight fs-20"></span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -160,39 +160,106 @@
 </template>
 <script setup>
 import {
-  ref
+  ref,
+  computed
 } from 'vue';
 import CountdownTimer from './CountdownTimer.vue'; // Import the new component
 
-// Sample data structure to replace the hardcoded list
-const stakingItems = ref([{
-  id: 'CODE-01',
-  date: '2025/09/19 23:22:10',
-  principal: 1000,
-  interest: 10,
-  // Expired timestamp (in the past)
-  expiryTimestamp: new Date('2025-09-19T23:22:10').getTime(),
-  status: 'redeemable', // 'redeemable', 'waiting'
-}, {
-  id: 'CODE-02',
-  date: '2025/10/06 18:00:00',
-  principal: 1000,
-  interest: 10,
-  // A future timestamp for a 12-day countdown
-  expiryTimestamp: Date.now() + 12 * 24 * 60 * 60 * 1000 + 13 * 60 * 60 * 1000 + 19 * 60 * 1000 + 10 * 1000,
-  status: 'waiting',
-}, {
-  id: 'CODE-03',
-  date: '2025/09/24 12:00:00',
-  principal: 1000,
-  interest: 10,
-  // A future timestamp for a short countdown
-  expiryTimestamp: Date.now() + 19 * 60 * 1000 + 10 * 1000,
-  status: 'waiting',
-}, ]);
+// Generate 20 mock data items
+const allStakingItems = ref([]);
+for (let i = 0; i < 20; i++) {
+  const isExpired = Math.random() > 0.5;
+  const now = Date.now();
+  // Random time within the next 30 days
+  const randomFutureTime = now + (Math.random() * 30 * 24 * 60 * 60 * 1000);
+  // Random time within the past 30 days
+  const randomPastTime = now - (Math.random() * 30 * 24 * 60 * 60 * 1000);
+
+  const expiryTimestamp = isExpired ? randomPastTime : randomFutureTime;
+  const date = new Date(now - (i * 24 * 60 * 60 * 1000 * 2)); // Fake date for variety
+
+  allStakingItems.value.push({
+    date: date.toLocaleString('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    }).replace(/\//g, '-'),
+    principal: Math.random() * 5000 + 100,
+    interest: Math.random() * 50 + 1,
+    expiryTimestamp: expiryTimestamp,
+    status: isExpired ? 'redeemable' : 'waiting',
+  });
+}
+
 
 const currentPage = ref(1);
-const totalPages = ref(3); // Example total pages
+const itemsPerPage = ref(3); // 3 items per page as per current UI
+
+// Calculate total pages
+const totalPages = computed(() => Math.ceil(allStakingItems.value.length / itemsPerPage.value));
+
+// Create a computed property for the items on the current page
+const paginatedItems = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return allStakingItems.value.slice(start, end);
+});
+
+// Methods to change the page
+const goToPage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+};
+
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+};
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+};
+
+const displayedPages = computed(() => {
+  const maxDisplayed = 5;
+  const pages = [];
+
+  if (totalPages.value <= maxDisplayed) {
+    for (let i = 1; i <= totalPages.value; i++) {
+      pages.push(i);
+    }
+  } else {
+    let startPage;
+    let endPage;
+
+    if (currentPage.value <= 3) {
+      // At the beginning
+      startPage = 1;
+      endPage = maxDisplayed;
+    } else if (currentPage.value >= totalPages.value - 2) {
+      // At the end
+      startPage = totalPages.value - maxDisplayed + 1;
+      endPage = totalPages.value;
+    } else {
+      // In the middle
+      startPage = currentPage.value - 2;
+      endPage = currentPage.value + 2;
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+  }
+  return pages;
+});
 </script>
 <style scoped>
 
@@ -216,6 +283,18 @@ const totalPages = ref(3); // Example total pages
 .tf-btn[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.pagination-item.active {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.pagination-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .img-position {
