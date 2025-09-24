@@ -60,42 +60,17 @@
                     </p>
                 </div>
                 <div class="row">
-                    <!-- <div class="col-md-6 offset-xl-1 col-xl-4">
-                        <div class="tab-content mb-md-0 sticky-top wow fadeInUp">
-                            <div class="tab-pane active show" id="step1" role="tabpanel">
-                                <div class="image-how_to wow bounceInScale">
-                                    <img class="lazyload" src="/asset/images/section/step-1.webp"
-                                        data-src="/asset/images/section/step-1.webp" alt="Image">
-                                    <span class="hafl-plus start-0 top-0 rotate-top_left"></span>
-                                    <span class="hafl-plus end-0 top-0 rotate-top_right"></span>
-                                    <span class="hafl-plus start-0 bottom-0 item_bot rotate-bot_left"></span>
-                                    <span class="hafl-plus end-0 bottom-0 item_bot rotate-bot_right"></span>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="step2" role="tabpanel">
-                                <div class="image-how_to">
-                                    <img class="lazyload" src="/asset/images/section/step-2.webp"
-                                        data-src="/asset/images/section/step-2.webp" alt="Image">
-                                    <span class="hafl-plus start-0 top-0 rotate-top_left"></span>
-                                    <span class="hafl-plus end-0 top-0 rotate-top_right"></span>
-                                    <span class="hafl-plus start-0 bottom-0 item_bot rotate-bot_left"></span>
-                                    <span class="hafl-plus end-0 bottom-0 item_bot rotate-bot_right"></span>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="step3" role="tabpanel">
-                                <div class="image-how_to">
-                                    <img class="lazyload" src="/asset/images/section/step-3.webp"
-                                        data-src="/asset/images/section/step-3.webp" alt="Image">
-                                    <span class="hafl-plus start-0 top-0 rotate-top_left"></span>
-                                    <span class="hafl-plus end-0 top-0 rotate-top_right"></span>
-                                    <span class="hafl-plus start-0 bottom-0 item_bot rotate-bot_left"></span>
-                                    <span class="hafl-plus end-0 bottom-0 item_bot rotate-bot_right"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
                     <div class="col-md-6 offset-xl-2 col-xl-4 order-list">
-                        <div v-if="isLoading" class="loading-state">
+
+                        <div class="tabs-container">
+                            <button class="toggle-button" @click="toggleTab">
+                                <span class="tab-text" :class="{ active: activeTab === 'investment' }">投资列表</span>
+                                <span class="tab-divider"></span>
+                                <span class="tab-text" :class="{ active: activeTab === 'redemption' }">赎回列表</span>
+                            </button>
+                        </div>
+
+                        <div v-if="isLoading" class="loading-state" :class="`list-${listMode}`">
                             <div class="stars-bg stars-bg-1">
                                 <div class="stars"></div>
                                 <div class="stars2"></div>
@@ -103,7 +78,7 @@
                             </div>
                             <p>正在加载质押数据...</p>
                         </div>
-                        <div v-else-if="!walletState.isAuthenticated" class="empty-state">
+                        <div v-else-if="!walletState.isAuthenticated" class="empty-state" :class="`list-${listMode}`">
                             <div class="stars-bg stars-bg-1">
                                 <div class="stars"></div>
                                 <div class="stars2"></div>
@@ -111,7 +86,7 @@
                             </div>
                             <p>请先连接钱包以查看您的质押订单</p>
                         </div>
-                        <div v-else-if="!walletState.contractsInitialized" class="empty-state">
+                        <div v-else-if="!walletState.contractsInitialized" class="empty-state" :class="`list-${listMode}`">
                             <div class="stars-bg stars-bg-1">
                                 <div class="stars"></div>
                                 <div class="stars2"></div>
@@ -119,16 +94,17 @@
                             </div>
                             <p>合约初始化失败，请刷新重试</p>
                         </div>
-                        <div v-else-if="allStakingItems.length === 0" class="empty-state">
+                        <div v-else-if="filteredItems.length === 0" class="empty-state" :class="`list-${listMode}`">
                             <div class="stars-bg stars-bg-1">
                                 <div class="stars"></div>
                                 <div class="stars2"></div>
                                 <div class="stars3"></div>
                             </div>
-                            <p>您还没有任何质押订单</p>
+                            <p v-if="activeTab === 'investment'">您还没有任何质押订单</p>
+                            <p v-else>您还没有已赎回订单</p>
                         </div>
                         <template v-else>
-                            <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist">
+                            <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist" :class="`list-${listMode}`">
                                 <li v-for="(item, index) in paginatedItems" :key="((currentPage - 1) * itemsPerPage) + index" class="nav-tab-item li-style" role="presentation">
                                     <li class="br-line has-dot"></li>
                                     <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true" role="tab">
@@ -209,6 +185,10 @@ import CountdownTimer from './CountdownTimer.vue';
 
 const allStakingItems = ref([]);
 const isLoading = ref(true);
+const activeTab = ref('investment'); // 'investment' or 'redemption'
+const currentPage = ref(1);
+const itemsPerPage = ref(4); // 3 items per page as per current UI
+const listMode = ref('show'); // 'show' or 'hide' for transitions
 
 const fetchStakingData = async () => {
   console.log('[订单列表-检查] fetchStakingData 被调用。认证状态:', walletState.isAuthenticated, '合约初始化状态:', walletState.contractsInitialized);
@@ -227,32 +207,50 @@ const fetchStakingData = async () => {
   }
 };
 
-watch(() => [walletState.isAuthenticated, walletState.contractsInitialized], ([isAuth, contractsReady]) => {
-  console.log(`[订单列表-检查] 监听到状态变化 -> isAuth: ${isAuth}, contractsReady: ${contractsReady}`);
-  // Only fetch data when both are true
+watch(() => [walletState.isAuthenticated, walletState.address, walletState.contractsInitialized], ([isAuth, address, contractsReady]) => {
+  console.log(`[订单列表-检查] 监听到状态变化 -> isAuth: ${isAuth}, address: ${address}, contractsReady: ${contractsReady}`);
+  // Only fetch data when both authenticated and contracts are ready
   if (isAuth && contractsReady) {
     fetchStakingData();
   } else {
     // Clear data if user disconnects or contracts fail
     allStakingItems.value = [];
     isLoading.value = false;
+    activeTab.value = 'investment'; // Reset tab on disconnect
+    currentPage.value = 1;
   }
 }, {
   immediate: true
 });
 
+const toggleTab = () => {
+  listMode.value = 'hide'; // Start fade out animation
+  setTimeout(() => {
+    activeTab.value = activeTab.value === 'investment' ? 'redemption' : 'investment';
+    currentPage.value = 1; // Reset to first page on tab switch
+    listMode.value = 'show'; // Start fade in animation
+  }, 150); // This duration should match the CSS transition duration
+};
 
-const currentPage = ref(1);
-const itemsPerPage = ref(3); // 3 items per page as per current UI
 
-// Calculate total pages
-const totalPages = computed(() => Math.ceil(allStakingItems.value.length / itemsPerPage.value));
+const filteredItems = computed(() => {
+  if (activeTab.value === 'investment') {
+    // Investment list shows non-redeemed items
+    return allStakingItems.value.filter(item => item.displayStatus !== 'redeemed');
+  } else { // redemption list
+    // Redemption list shows redeemed items
+    return allStakingItems.value.filter(item => item.displayStatus === 'redeemed');
+  }
+});
 
-// Create a computed property for the items on the current page
+// Calculate total pages based on the filtered list
+const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPerPage.value));
+
+// Create a computed property for the items on the current page from the filtered list
 const paginatedItems = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value;
   const end = start + itemsPerPage.value;
-  return allStakingItems.value.slice(start, end);
+  return filteredItems.value.slice(start, end);
 });
 
 // Methods to change the page
@@ -308,6 +306,74 @@ const displayedPages = computed(() => {
 });
 </script>
 <style scoped>
+
+.tab-how_to,
+.empty-state,
+.loading-state {
+  transition: opacity 0.15s ease-in-out;
+}
+.list-hide {
+  opacity: 0;
+}
+.list-show {
+  opacity: 1;
+}
+
+.tabs-container {
+    display: flex;
+    margin-bottom: 20px;
+    justify-content: center; /* Center the button */
+}
+
+.toggle-button {
+    /* Base styles from .btn-ip */
+    background: var(--primary-gradient);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 280px; /* Shorten the width */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: relative;
+}
+
+.toggle-button .tab-text {
+    transition: all 0.3s ease;
+}
+
+.toggle-button:hover {
+    box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.5);
+}
+
+.toggle-button:hover .tab-text {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+.tab-text {
+    flex-grow: 1;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7); /* Dim inactive tabs */
+    transition: all 0.3s ease;
+}
+
+.tab-text.active {
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+.tab-divider {
+    width: 1px;
+    height: 20px; /* Adjust height as needed */
+    background: linear-gradient(to bottom, transparent, #fff, transparent);
+    opacity: 0.5;
+}
+
 
 .empty-state,
 .loading-state {

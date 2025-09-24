@@ -323,72 +323,55 @@ export const autoConnectWallet = async () => {
 // --- Wallet Event Listeners ---
 
 const handleAccountsChanged = async (accounts) => {
-  console.log("Wallet account changed:", accounts);
+  console.log('Wallet accounts changed:', accounts);
   if (accounts.length === 0) {
-    // All accounts disconnected
+    console.log('Wallet disconnected.');
     disconnectWallet();
-  } else if (accounts[0] !== walletState.address) {
-    // Switched to a new account
-    console.log("Switched to new account:", accounts[0]);
-    
-    // --- Reset and Re-initialize ---
-    // First, reset contracts and clear old state
-    resetContracts();
-    
-    walletState.address = accounts[0];
-    localStorage.setItem('ath_walletAddress', accounts[0]);
-    
-    // Re-authenticate and re-initialize contracts for the new account
-    let rawProvider;
-    const currentWalletType = walletState.walletType;
+  } else {
+    const newAddress = accounts[0];
+    console.log(`Switched to new address: ${newAddress}`);
 
-    // Use the correct provider based on the currently connected wallet type
-    if (currentWalletType === 'metamask') {
-        const sdk = await getMMSDK();
-        rawProvider = sdk.getProvider();
-    } else if (currentWalletType === 'tokenpocket') {
-        rawProvider = window.tokenpocket.ethereum;
-    } else if (currentWalletType === 'okx') {
-        rawProvider = window.okexchain;
-    } else {
-        rawProvider = window.ethereum; // Fallback for safety
-    }
+    // Critical Step 1: Immediately de-authenticate the old session.
+    // This will cause UI components to revert to a "please connect" state.
+    walletState.isAuthenticated = false;
+    walletState.contractsInitialized = false; // Also reset contracts
+    localStorage.removeItem(`ath_authToken_${walletState.address.toLowerCase()}`); // Clean up old token
+    walletState.address = newAddress;
 
-    if (!rawProvider) {
-        console.error("Could not get provider for account change handling. Disconnecting.");
-        disconnectWallet();
-        return;
-    }
+    // Critical Step 2: Attempt to re-authenticate with the new address.
+    // We need a provider and signer for the new account.
+    const provider = new ethers.BrowserProvider(activeProvider);
+    const signer = await provider.getSigner();
 
-    const provider = new ethers.BrowserProvider(rawProvider);
-    const signer = await provider.getSigner(accounts[0]);
-    const reauthSuccess = await authenticateWallet(accounts[0], signer);
+    // The UI is now waiting for this re-authentication to complete.
+    const reauthSuccess = await authenticateWallet(newAddress, signer);
 
     if (reauthSuccess) {
-      // Manually update signer in state before re-initializing
+      console.log(`Successfully re-authenticated new address: ${newAddress}`);
+      // Update the rest of the state only after successful re-authentication
       walletState.signer = signer;
-      // Re-initialize contracts with the new signer
-      await initializeContracts();
-      // After re-auth, check the new user's status as well
+      await initializeContracts(); // Re-initialize contracts for the new user context
       const hasReferrer = await checkIfUserHasReferrer();
       walletState.isNewUser = !hasReferrer;
+      // isAuthenticated is already set to true inside authenticateWallet
     } else {
-      // If re-authentication fails, treat as a full disconnect
-      disconnectWallet();
+      console.log(`Failed to re-authenticate new address: ${newAddress}. Wallet remains connected but unauthenticated.`);
+      // If re-authentication fails, we effectively disconnect the authenticated session
+      // but keep the basic connection info.
+      disconnectWallet(); // A full disconnect might be cleaner here.
     }
-    // --------------------------------
   }
 };
 
 const handleChainChanged = (chainId) => {
-  console.log('Network chain changed. Reloading to apply changes.');
+  console.log('Wallet chain changed to:', chainId);
   // The most reliable way to handle chain changes is to reload the page.
   // This ensures all state, including the ethers provider and contract instances,
   // are re-initialized correctly for the new network.
   window.location.reload();
 };
 
-let activeProvider = null; // Keep track of the provider with active listeners
+let activeProvider = null; // To keep track of the provider we've attached listeners to
 
 export const setupWalletListeners = (provider) => {
   if (typeof provider?.on !== 'function') {
