@@ -79,7 +79,9 @@
                                         </div>
                                         <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px;">
                                           <span v-if="isLoading">Loading...</span>
-                                          <span v-else>{{ formattedStakedBalance }}<span style="font-size: 16px;"> TOKEN</span></span>
+                                          <span v-else>
+                                            <AnimatedNumber :value="stakedBalance" :decimals="6" /> TOKEN
+                                          </span>
                                         </p>
 
                                         <div class="tf-brand assets-title">
@@ -89,7 +91,9 @@
                                         </div>
                                         <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px; font-size: 14px !important;">
                                           <span v-if="isLoading">Loading...</span>
-                                          <span v-else>{{ formattedFriendsBoost }}<span style="font-size: 12px;"> TOKEN</span></span>
+                                           <span v-else>
+                                            <AnimatedNumber :value="friendsBoost" :decimals="6" /> TOKEN
+                                          </span>
                                         </p>
 
                                         <fieldset class="field-bottom button-add-pool">
@@ -169,12 +173,8 @@ import {
   computed,
   watch,
   onMounted,
-  onUnmounted,
-  reactive
+  onUnmounted
 } from 'vue';
-import {
-  gsap
-} from 'gsap';
 import {
   walletState
 } from '../services/wallet';
@@ -186,38 +186,18 @@ import {
 import {
   showToast
 } from '../services/notification';
+import AnimatedNumber from './AnimatedNumber.vue'; // Import the new component
 
 const emits = defineEmits(['open-inject-modal']);
 
-const stakedBalance = ref('0');
-const friendsBoost = ref('0');
-const animatedValues = reactive({
-  stakedBalance: 0,
-  friendsBoost: 0,
-});
+const stakedBalance = ref(0); // Use number type
+const friendsBoost = ref(0); // Use number type
 let fetchInterval = null;
 const isInitialFetch = ref(true); // Flag for the first fetch
 
 const isAuthenticated = computed(() => walletState.isAuthenticated);
 const isLoading = computed(() => isAuthenticated.value && isInitialFetch.value);
 
-const formattedStakedBalance = computed(() => {
-  const value = animatedValues.stakedBalance;
-  if (value === 0) return '0';
-  return value.toLocaleString('en-US', {
-    minimumFractionDigits: 6,
-    maximumFractionDigits: 6,
-  });
-});
-
-const formattedFriendsBoost = computed(() => {
-  const value = animatedValues.friendsBoost;
-  if (value === 0) return '0';
-  return value.toLocaleString('en-US', {
-    minimumFractionDigits: 6,
-    maximumFractionDigits: 6,
-  });
-});
 
 const fetchHeroData = async () => {
   if (!isAuthenticated.value) return;
@@ -233,18 +213,22 @@ const fetchHeroData = async () => {
       getUserStakedBalance(),
       getFriendsBoost(),
     ]);
-    stakedBalance.value = newStakedBalance;
-    friendsBoost.value = newFriendsBoost;
+    // Convert string from contract to number for the component
+    stakedBalance.value = parseFloat(newStakedBalance) || 0;
+    friendsBoost.value = parseFloat(newFriendsBoost) || 0;
   } catch (error) {
     console.error("刷新数据失败:", error);
+  } finally {
+    // This logic ensures the initial "Loading..." state is cleared
+    if (isInitialFetch.value) {
+      isInitialFetch.value = false;
+    }
   }
 };
 
 const resetData = () => {
-  stakedBalance.value = '0';
-  friendsBoost.value = '0';
-  animatedValues.stakedBalance = 0;
-  animatedValues.friendsBoost = 0;
+  stakedBalance.value = 0;
+  friendsBoost.value = 0;
   isInitialFetch.value = true; // Reset flag on disconnect
 };
 
@@ -298,31 +282,6 @@ watch(isAuthenticated, (isAuth) => {
   }
 });
 
-watch(stakedBalance, (newValue) => {
-  if (isInitialFetch.value) {
-    // For the first fetch, set value directly without animation
-    animatedValues.stakedBalance = Number(newValue) || 0;
-  } else {
-    gsap.to(animatedValues, {
-      duration: 1,
-      stakedBalance: Number(newValue) || 0,
-    });
-  }
-});
-
-watch(friendsBoost, (newValue) => {
-  if (isInitialFetch.value) {
-    // For the first fetch, set value directly without animation
-    animatedValues.friendsBoost = Number(newValue) || 0;
-    // After the very first data is set, subsequent fetches should be animated
-    isInitialFetch.value = false;
-  } else {
-    gsap.to(animatedValues, {
-      duration: 1,
-      friendsBoost: Number(newValue) || 0,
-    });
-  }
-});
 
 onMounted(() => {
   if (isAuthenticated.value) {

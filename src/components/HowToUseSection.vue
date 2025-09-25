@@ -116,11 +116,15 @@
                                         <div class="card-content">
                                             <div style="display: flex; flex-direction: row; justify-content: space-between;">
                                                 <h5 class="name h5-list-style" :data-text="`CODE-${String(((currentPage - 1) * itemsPerPage) + index + 1).padStart(2, '0')}`">STAKING-CODE-{{ String(((currentPage - 1) * itemsPerPage) + index + 1).padStart(2, '0') }}</h5>
-                                                <h5 class="name h5-list-style" :data-text="item.stakeDate">{{ item.stakeDate }}</h5>
+                                                <h5 class="name h5-list-style" :data-text="item.stakeDate" style="min-width: 125px;">{{ item.stakeDate }}</h5>
                                             </div>
                                             <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                                                <p class="desc p-list-style">母金：$ {{ parseFloat(item.principal).toFixed(4) }}</p>
-                                                <p class="desc p-list-style">子金：$ {{ parseFloat(item.interest).toFixed(4) }}</p>
+                                                <p class="desc p-list-style">母金：$ <span style="margin-left: 0px;">{{ parseFloat(item.principal).toFixed(4) }}</span></p>
+                                                <div class="desc p-list-style" style="display: flex; flex-direction: row; justify-content: space-between; min-width: 125px;">
+                                                    <div style="width: 49%;">子金：$</div>
+                                                    <div style="width: 51%; margin-left: 2px;"><AnimatedNumber :value="parseFloat(item.interest)" :decimals="4" /></div>
+                                                     
+                                                </div>
                                             </div>
 
                                             <div class="status-box">
@@ -173,7 +177,9 @@
 import {
   ref,
   computed,
-  watch
+  watch,
+  onMounted,
+  onUnmounted
 } from 'vue';
 import {
   walletState
@@ -182,6 +188,7 @@ import {
   getUserStakingData
 } from '../services/contracts';
 import CountdownTimer from './CountdownTimer.vue';
+import AnimatedNumber from './AnimatedNumber.vue'; // Import the new component
 
 const allStakingItems = ref([]);
 const isLoading = ref(true);
@@ -189,31 +196,52 @@ const activeTab = ref('investment'); // 'investment' or 'redemption'
 const currentPage = ref(1);
 const itemsPerPage = ref(4); // 3 items per page as per current UI
 const listMode = ref('show'); // 'show' or 'hide' for transitions
+let pollingInterval = null; // For the 6-second refresh
 
 const fetchStakingData = async () => {
-  console.log('[订单列表-检查] fetchStakingData 被调用。认证状态:', walletState.isAuthenticated, '合约初始化状态:', walletState.contractsInitialized);
-  // Now we check both authentication and contract initialization
+  // Only log on initial fetch to avoid console spam
+  if (isLoading.value) {
+    console.log('[订单列表-检查] fetchStakingData 被调用。认证状态:', walletState.isAuthenticated, '合约初始化状态:', walletState.contractsInitialized);
+  }
   if (!walletState.isAuthenticated || !walletState.contractsInitialized) {
     allStakingItems.value = [];
     isLoading.value = false;
     return;
   }
-  isLoading.value = true;
+  // No need to set isLoading to true on polling, only on initial load
   try {
-    console.log('[订单列表-检查] 条件满足，准备调用 getUserStakingData...');
     allStakingItems.value = await getUserStakingData();
   } finally {
-    isLoading.value = false;
+    if (isLoading.value) {
+      isLoading.value = false;
+    }
   }
 };
+
+const startPolling = () => {
+  stopPolling(); // Ensure no multiple intervals are running
+  console.log('[订单列表] 启动轮询，每6秒刷新一次数据...');
+  pollingInterval = setInterval(fetchStakingData, 6000);
+};
+
+const stopPolling = () => {
+  if (pollingInterval) {
+    console.log('[订单列表] 停止轮询。');
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+};
+
 
 watch(() => [walletState.isAuthenticated, walletState.address, walletState.contractsInitialized], ([isAuth, address, contractsReady]) => {
   console.log(`[订单列表-检查] 监听到状态变化 -> isAuth: ${isAuth}, address: ${address}, contractsReady: ${contractsReady}`);
   // Only fetch data when both authenticated and contracts are ready
   if (isAuth && contractsReady) {
-    fetchStakingData();
+    fetchStakingData(); // Initial fetch
+    startPolling();
   } else {
     // Clear data if user disconnects or contracts fail
+    stopPolling();
     allStakingItems.value = [];
     isLoading.value = false;
     activeTab.value = 'investment'; // Reset tab on disconnect
@@ -222,6 +250,11 @@ watch(() => [walletState.isAuthenticated, walletState.address, walletState.contr
 }, {
   immediate: true
 });
+
+onUnmounted(() => {
+  stopPolling();
+});
+
 
 const toggleTab = () => {
   listMode.value = 'hide'; // Start fade out animation
