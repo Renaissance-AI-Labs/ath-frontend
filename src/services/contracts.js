@@ -25,15 +25,15 @@ const uniswapV2RouterAbi = [
 const contractAddresses = {
   referral: {
     production: '', // To be deployed
-    development: '0x20B0850f3B888B4C2494E7C7fbcF9808C6e82F77',
+    development: '0x1Ad59D67a7D413b0F053d33cf4Ec1FC92190C83A',
   },
   staking: {
     production: '', // To be deployed
-    development: '0xE8bF70FCcdA199A1CC2F90412e6Ab13779F95B3F',
+    development: '0xFBCe1D735ce96ebe570C9cBe1c0afB838aE561Fc',
   },
   ath: {
     production: '', // To be deployed
-    development: '0x705c99F6C25056cC73B299dFe209d80455FA7D63',
+    development: '0xfE410F750F84D83F44EFd75a6e90Efe242c2E4F7',
   },
   usdt: {
     production: '0x55d398326f99059fF775485246999027B3197955', // BNB Mainnet USDT
