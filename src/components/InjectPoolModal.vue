@@ -9,7 +9,7 @@
       </div>
       <div class="modal-body">
         <div class="title_holder">
-          <h3>注入资产</h3>
+          <h3>注入底池</h3>
         </div>
 
         <!-- Amount Input Group -->
