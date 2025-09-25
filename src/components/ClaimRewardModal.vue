@@ -18,22 +18,40 @@
         <div class="reward-content">
             <div class="hexagon-container">
                 <div class="hexagon-wrapper">
-                    <div class="hexagon">
+                    <div class="hexagon" :class="{ 'is-unlocked': s5_kpiMet }">
                         <span class="level-text level-s5">S5</span>
                     </div>
-                    <button class="tf-btn text-body-3 style-2 animate-btn animate-dark btn-claim" disabled>领取</button>
+                    <div class="reward-display">
+                        <span v-if="isLoading">加载中...</span>
+                        <span v-else>{{ parseFloat(s5_rewards) > 0 ? parseFloat(s5_rewards).toFixed(2) + ' ATH' : '暂无' }}</span>
+                    </div>
+                    <button @click="claim(5)" :disabled="parseFloat(s5_rewards) <= 0 || isClaiming[5]" class="tf-btn text-body-3 style-2 animate-btn animate-dark btn-claim">
+                        {{ isClaiming[5] ? '领取中...' : '领取' }}
+                    </button>
                 </div>
                 <div class="hexagon-wrapper">
-                    <div class="hexagon">
+                    <div class="hexagon" :class="{ 'is-unlocked': s6_kpiMet }">
                         <span class="level-text level-s6">S6</span>
                     </div>
-                    <button class="tf-btn text-body-3 style-2 animate-btn animate-dark btn-claim" disabled>领取</button>
+                    <div class="reward-display">
+                        <span v-if="isLoading">加载中...</span>
+                        <span v-else>{{ parseFloat(s6_rewards) > 0 ? parseFloat(s6_rewards).toFixed(2) + ' ATH' : '暂无' }}</span>
+                    </div>
+                    <button @click="claim(6)" :disabled="parseFloat(s6_rewards) <= 0 || isClaiming[6]" class="tf-btn text-body-3 style-2 animate-btn animate-dark btn-claim">
+                        {{ isClaiming[6] ? '领取中...' : '领取' }}
+                    </button>
                 </div>
                 <div class="hexagon-wrapper">
-                    <div class="hexagon">
+                    <div class="hexagon" :class="{ 'is-unlocked': s7_kpiMet }">
                         <span class="level-text level-s7">S7</span>
                     </div>
-                    <button class="tf-btn text-body-3 style-2 animate-btn animate-dark btn-claim" disabled>领取</button>
+                    <div class="reward-display">
+                        <span v-if="isLoading">加载中...</span>
+                        <span v-else>{{ parseFloat(s7_rewards) > 0 ? parseFloat(s7_rewards).toFixed(2) + ' ATH' : '暂无' }}</span>
+                    </div>
+                    <button @click="claim(7)" :disabled="parseFloat(s7_rewards) <= 0 || isClaiming[7]" class="tf-btn text-body-3 style-2 animate-btn animate-dark btn-claim">
+                        {{ isClaiming[7] ? '领取中...' : '领取' }}
+                    </button>
                 </div>
             </div>
         </div>
@@ -51,7 +69,121 @@
 </template>
 
 <script setup>
-defineEmits(['close']);
+import {
+    ref,
+    onMounted,
+    watch
+} from 'vue';
+import {
+    walletState
+} from '../services/wallet';
+import {
+    getTeamKpiBigNumber,
+    getS5PendingRewards,
+    getS6PendingRewards,
+    getS7PendingRewards,
+    claimS5Rewards,
+    claimS6Rewards,
+    claimS7Rewards,
+    S5_THRESHOLD,
+    S6_THRESHOLD,
+    S7_THRESHOLD
+} from '../services/contracts';
+
+const isLoading = ref(true);
+const s5_kpiMet = ref(false);
+const s6_kpiMet = ref(false);
+const s7_kpiMet = ref(false);
+const s5_rewards = ref('0');
+const s6_rewards = ref('0');
+const s7_rewards = ref('0');
+const isClaiming = ref({
+    5: false,
+    6: false,
+    7: false
+});
+
+const fetchRewardData = async () => {
+    if (!walletState.isAuthenticated || !walletState.contractsInitialized) return;
+    isLoading.value = true;
+    try {
+        const [kpi, s5Rewards, s6Rewards, s7Rewards] = await Promise.all([
+            getTeamKpiBigNumber(),
+            getS5PendingRewards(),
+            getS6PendingRewards(),
+            getS7PendingRewards(),
+        ]);
+
+        s5_kpiMet.value = kpi >= S5_THRESHOLD;
+        s6_kpiMet.value = kpi >= S6_THRESHOLD;
+        s7_kpiMet.value = kpi >= S7_THRESHOLD;
+
+        s5_rewards.value = s5Rewards;
+        s6_rewards.value = s6Rewards;
+        s7_rewards.value = s7Rewards;
+
+        console.log(`[等级奖励数据] 获取成功:
+          - 用户KPI (原始值): ${kpi.toString()}
+          - S5门槛: ${S5_THRESHOLD.toString()} -> 是否达到: ${s5_kpiMet.value}
+          - S6门槛: ${S6_THRESHOLD.toString()} -> 是否达到: ${s6_kpiMet.value}
+          - S7门槛: ${S7_THRESHOLD.toString()} -> 是否达到: ${s7_kpiMet.value}
+          - S5待领奖励: ${s5_rewards.value} ATH
+          - S6待领奖励: ${s6_rewards.value} ATH
+          - S7待领奖励: ${s7_rewards.value} ATH
+        `);
+
+    } catch (error) {
+        console.error("Failed to fetch reward data:", error);
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+const claim = async (level) => {
+    if (isClaiming.value[level]) return; // Prevent double clicks
+    isClaiming.value[level] = true;
+    console.log(`[领取操作] 开始为 S${level} 领取奖励...`);
+
+    let success = false;
+    try {
+        switch (level) {
+            case 5:
+                success = await claimS5Rewards();
+                break;
+            case 6:
+                success = await claimS6Rewards();
+                break;
+            case 7:
+                success = await claimS7Rewards();
+                break;
+            default:
+                console.error("Invalid level for claim:", level);
+        }
+
+        if (success) {
+            console.log(`[领取操作] S${level} 奖励领取成功, 正在刷新数据...`);
+            // The success toast is shown in contracts.js, just refetch data here.
+            await fetchRewardData(); // Refetch data to update the UI
+        } else {
+            console.log(`[领取操作] S${level} 奖励领取失败或用户取消。`);
+            // Failure toast is also handled in contracts.js
+        }
+    } catch (error) {
+        console.error(`[领取操作] S${level} 领取过程中发生意外错误:`, error);
+    } finally {
+        isClaiming.value[level] = false;
+    }
+};
+
+// Fetch data when the modal becomes visible and contracts are ready.
+watch(() => [walletState.isAuthenticated, walletState.contractsInitialized], (newVals) => {
+    const [isAuth, contractsReady] = newVals;
+    if (isAuth && contractsReady) {
+        fetchRewardData();
+    }
+}, {
+    immediate: true
+});
 </script>
 
 <style scoped>
@@ -122,7 +254,7 @@ defineEmits(['close']);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px; /* Space between hexagon and button */
+    gap: 15px; /* Space between hexagon and button */
 }
 
 .hexagon {
@@ -138,6 +270,7 @@ defineEmits(['close']);
     overflow: hidden; /* Crucial for containing the shine effect */
 }
 
+/* Plain border for locked state (default) */
 .hexagon::before {
     content: '';
     position: absolute;
@@ -147,12 +280,21 @@ defineEmits(['close']);
     bottom: -2px;
     clip-path: inherit;
     background-color: transparent;
-    border: 2px solid white;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease-in-out;
+}
+
+/* --- UNLOCKED (ENHANCED) STATE STYLES --- */
+
+/* Glowing border for unlocked state */
+.hexagon.is-unlocked::before {
+    border-color: white;
     filter: drop-shadow(0 0 5px white) drop-shadow(0 0 10px white);
     opacity: 0.8;
 }
 
-.hexagon::after {
+/* Shine effect for unlocked state */
+.hexagon.is-unlocked::after {
     content: '';
     position: absolute;
     top: 0;
@@ -165,11 +307,12 @@ defineEmits(['close']);
     animation: shine-effect 4s ease-in-out infinite;
 }
 
-.hexagon:nth-child(2)::after {
+/* Staggered animation delay for the shine effect */
+.hexagon-wrapper:nth-child(2) .hexagon.is-unlocked::after {
     animation-delay: 0.3s;
 }
 
-.hexagon:nth-child(3)::after {
+.hexagon-wrapper:nth-child(3) .hexagon.is-unlocked::after {
     animation-delay: 0.6s;
 }
 
@@ -189,30 +332,40 @@ defineEmits(['close']);
     /* The disabled styles are now handled by the .tf-btn[disabled] selector from the global CSS */
 }
 
-.btn-claim[disabled], .tf-btn.style-2[disabled] {
+.btn-claim[disabled],
+.tf-btn.style-2[disabled] {
     background-image: none !important;
     background-color: #21212B !important;
     opacity: 0.6 !important;
     cursor: not-allowed !important;
 }
 
+/* Plain text style for locked state (default) */
 .level-text {
     font-family: 'ChillRoundF', sans-serif; /* Using a cool, rounded font */
     font-size: 28px;
     z-index: 2; /* Ensure text is above the background effects */
+    color: rgba(255, 255, 255, 0.6);
+    text-shadow: none;
+    transition: all 0.3s ease-in-out;
 }
 
-.level-s5 { /* Copper */
+/* --- UNLOCKED (ENHANCED) TEXT STYLES --- */
+
+.hexagon.is-unlocked .level-s5 {
+    /* Copper */
     color: #bba89a;
     text-shadow: 0 0 4px #bba89a, 0 0 8px #ffb366;
 }
 
-.level-s6 { /* Silver */
+.hexagon.is-unlocked .level-s6 {
+    /* Silver */
     color: #ccdfe6;
     text-shadow: 0 0 4px #ffffff, 0 0 8px #d7d7d7, 0 0 12px #c0c0c0;
 }
 
-.level-s7 { /* Gold */
+.hexagon.is-unlocked .level-s7 {
+    /* Gold */
     color: #d8d2be;
     text-shadow: 0 0 4px #f0c43c, 0 0 8px #ffd700, 0 0 12px #fff8dc;
 }
@@ -268,5 +421,13 @@ defineEmits(['close']);
 @keyframes animStar {
   from { transform: translateY(0px); }
   to { transform: translateY(-500px); }
+}
+
+.reward-display {
+    color: #fff;
+    font-size: 14px;
+    min-height: 20px;
+    font-family: 'ChillRoundF', sans-serif;
+    text-shadow: 0 0 4px var(--primary);
 }
 </style>

@@ -73,6 +73,11 @@ let s7poolContract;
 // We need to export these for other modules to use them.
 export { referralContract, stakingContract, athContract, usdtContract, s5poolContract, s6poolContract, s7poolContract };
 
+// --- KPI Thresholds (as per Staking.sol) ---
+export const S5_THRESHOLD = 1000000n * (10n ** 18n); // 1 Million USDT value
+export const S6_THRESHOLD = 3000000n * (10n ** 18n); // 3 Million USDT value
+export const S7_THRESHOLD = 5000000n * (10n ** 18n); // 5 Million USDT value
+
 /**
  * Initializes all contract instances with the current signer from walletState.
  * This should be called after a successful wallet connection.
@@ -140,6 +145,23 @@ export const resetContracts = () => {
   console.log("Contract instances have been reset.");
 };
 
+/**
+ * Fetches the user's raw team KPI as a BigInt for comparisons.
+ * @returns {Promise<bigint>} The user's team KPI as a BigInt.
+ */
+export const getTeamKpiBigNumber = async () => {
+    if (!stakingContract || !walletState.address) {
+        console.warn("Staking contract not initialized or user not connected.");
+        return 0n;
+    }
+    try {
+        return await stakingContract.getTeamKpi(walletState.address);
+    } catch (error) {
+        console.error("Error fetching team KPI BigNumber:", error);
+        return 0n;
+    }
+};
+
 
 /**
  * Fetches the total real-time value (principal + interest) of the current user's stakes.
@@ -184,6 +206,102 @@ export const getFriendsBoost = async () => {
     return "0";
   }
 };
+
+/**
+ * Generic function to fetch pending rewards from a pool contract.
+ * @param {ethers.Contract} poolContract The contract instance (e.g., s5poolContract).
+ * @returns {Promise<string>} Formatted pending rewards.
+ */
+const getPendingRewards = async (poolContract) => {
+    if (!poolContract || !walletState.address) {
+        // This is a normal state if contracts are not yet initialized, so using console.log
+        // console.log("Pool contract not initialized or user not connected for rewards check.");
+        return "0";
+    }
+    try {
+        const isProduction = import.meta.env.PROD;
+        const env = isProduction ? 'production' : 'development';
+        const athAddress = contractAddresses.ath[env];
+
+        // The correct function name from the ABI is getTokenRewards
+        const rewards = await poolContract.getTokenRewards(walletState.address, athAddress);
+        return ethers.formatUnits(rewards, 18);
+    } catch (error) {
+        console.error(`Error fetching pending rewards from ${await poolContract.getAddress()}:`, error);
+        return "0";
+    }
+};
+
+/**
+ * Fetches pending rewards from the S5 pool for the current user.
+ * @returns {Promise<string>} Formatted S5 pending rewards.
+ */
+export const getS5PendingRewards = async () => getPendingRewards(s5poolContract);
+
+/**
+ * Fetches pending rewards from the S6 pool for the current user.
+ * @returns {Promise<string>} Formatted S6 pending rewards.
+ */
+export const getS6PendingRewards = async () => getPendingRewards(s6poolContract);
+
+/**
+ * Fetches pending rewards from the S7 pool for the current user.
+ * @returns {Promise<string>} Formatted S7 pending rewards.
+ */
+export const getS7PendingRewards = async () => getPendingRewards(s7poolContract);
+
+
+/**
+ * Generic function to claim rewards from a pool contract.
+ * @param {ethers.Contract} poolContract The contract instance (e.g., s5poolContract).
+ * @returns {Promise<boolean>} True if the claim was successful.
+ */
+const claimRewards = async (poolContract) => {
+    if (!poolContract || !walletState.address) {
+        showToast("奖金池合约未初始化或钱包未连接");
+        return false;
+    }
+    try {
+        const isProduction = import.meta.env.PROD;
+        const env = isProduction ? 'production' : 'development';
+        const athAddress = contractAddresses.ath[env];
+
+        // The claim function from the ABI is harvest(tokenAddress)
+        const tx = await poolContract.harvest(athAddress);
+        showToast("交易已发送，等待确认...");
+        await tx.wait();
+        showToast("奖励领取成功！");
+        return true;
+    } catch (error) {
+        if (error.code === 'ACTION_REJECTED') {
+            console.log("User rejected the transaction.");
+            // No toast for user rejection
+        } else {
+            console.error(`Error claiming rewards from ${await poolContract.getAddress()}:`, error);
+            showToast(`领取失败: ${error.reason || '未知错误'}`);
+        }
+        return false;
+    }
+};
+
+/**
+ * Claims rewards from the S5 pool.
+ * @returns {Promise<boolean>} True if successful.
+ */
+export const claimS5Rewards = async () => claimRewards(s5poolContract);
+
+/**
+ * Claims rewards from the S6 pool.
+ * @returns {Promise<boolean>} True if successful.
+ */
+export const claimS6Rewards = async () => claimRewards(s6poolContract);
+
+/**
+ * Claims rewards from the S7 pool.
+ * @returns {Promise<boolean>} True if successful.
+ */
+export const claimS7Rewards = async () => claimRewards(s7poolContract);
+
 
 export const getUserStakingData = async () => {
   if (!stakingContract || !walletState.address) {

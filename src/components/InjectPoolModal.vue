@@ -29,7 +29,7 @@
             </div>
             <div class="balance-info">
               <a href="#" @click.prevent="fillMax" class="btn-ip ip-modern text-body-3 balance-btn">
-                余额: {{ formattedUsdtBalance }} USDT
+              最大: {{ formattedUsdtBalance }} USDT
               </a>
             </div>
           </div>
