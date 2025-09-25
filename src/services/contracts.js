@@ -308,16 +308,16 @@ export const getUserStakingData = async () => {
     console.warn("Staking contract not initialized or user not connected.");
     return [];
   }
-  console.log(`[质押列表] 开始获取数据, 用户地址: ${walletState.address}`);
+  // console.log(`[质押列表] 开始获取数据, 用户地址: ${walletState.address}`);
 
   try {
     const count = await stakingContract.stakeCount(walletState.address);
     const stakeCount = Number(count);
-    console.log(`[质押列表] 获取到总质押笔数: ${stakeCount}`);
+    // console.log(`[质押列表] 获取到总质押笔数: ${stakeCount}`);
 
 
     if (stakeCount === 0) {
-      console.log("[质押列表] 用户无质押记录, 停止获取.");
+      // console.log("[质押列表] 用户无质押记录, 停止获取.");
       return [];
     }
 
@@ -335,8 +335,8 @@ export const getUserStakingData = async () => {
     const records = await Promise.all(recordPromises);
     const rewards = await Promise.all(rewardPromises);
 
-    console.log("[质押列表] 批量获取到原始Record数据:", records);
-    console.log("[质押列表] 批量获取到原始Reward数据:", rewards);
+    // console.log("[质押列表] 批量获取到原始Record数据:", records);
+    // console.log("[质押列表] 批量获取到原始Reward数据:", rewards);
 
     const stakeDurations = [86400, 1296000, 2592000]; // 1, 15, 30 days in seconds
 
@@ -377,7 +377,7 @@ export const getUserStakingData = async () => {
       };
     });
 
-    console.log("[质押列表] 数据处理完成, 最终格式化后数据:", formattedData);
+    // console.log("[质押列表] 数据处理完成, 最终格式化后数据:", formattedData);
     return formattedData;
 
   } catch (error) {

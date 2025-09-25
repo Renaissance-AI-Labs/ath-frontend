@@ -63,7 +63,8 @@ import {
 import {
   getUsdtBalance,
   getUsdtAllowance,
-  approveUsdt
+  approveUsdt,
+  getMaxStakeAmount
 } from '../services/contracts';
 import CustomSelect from './CustomSelect.vue';
 import {
@@ -95,6 +96,7 @@ export default {
         value: 2,
         text: '30天，复利1.2%'
       }, ],
+      maxStakeAmount: '0',
     };
   },
   computed: {
@@ -102,7 +104,7 @@ export default {
       return this.walletState.address;
     },
     isAmountInvalid() {
-      return parseFloat(this.amount) > parseFloat(this.usdtBalance);
+      return parseFloat(this.amount) > parseFloat(this.maxStakeAmount);
     },
     mainButtonState() {
       const amountNum = parseFloat(this.amount);
@@ -128,12 +130,22 @@ export default {
       }
     },
     formattedUsdtBalance() {
-      const number = parseFloat(this.usdtBalance);
-      if (isNaN(number)) return '0.00';
-      return number.toLocaleString('en-US', {
+      const maxAllowedByContract = parseFloat(this.maxStakeAmount);
+      const hardCap = 1000;
+      const displayValue = Math.min(maxAllowedByContract, hardCap);
+      
+      console.log(`[余额日志] 开始格式化 (修正逻辑): maxStakeAmount=${maxAllowedByContract}, hardCap=${hardCap}, displayValue=${displayValue}`);
+
+      if (isNaN(displayValue)) {
+           console.log(`[余额日志] 格式化失败: 解析结果为NaN, 返回 '0.00'`);
+           return '0.00';
+      }
+      const formatted = displayValue.toLocaleString('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       });
+      console.log(`[余额日志] 格式化成功: toLocaleString结果='${formatted}'`);
+      return formatted;
     }
   },
   watch: {
@@ -143,6 +155,7 @@ export default {
       } else {
         this.resetBalance();
         this.usdtAllowance = '0';
+        this.maxStakeAmount = '0';
       }
     }
   },
@@ -152,20 +165,26 @@ export default {
       this.isLoading = true;
       await Promise.all([
         this.fetchUsdtBalance(),
-        this.fetchUsdtAllowance()
+        this.fetchUsdtAllowance(),
+        this.fetchMaxStakeAmount()
       ]);
       
       const allowanceNum = parseFloat(this.usdtAllowance);
       const isApproved = allowanceNum > 0;
-      console.log(`注入资产弹窗: 用户USDT授权状态: ${isApproved}, 授权额度: ${this.usdtAllowance}`);
+      console.log(`[注入资产弹窗] 数据获取: 用户余额=${this.usdtBalance}, 允许额度=${this.usdtAllowance}, 合约最大可注入=${this.maxStakeAmount}`);
 
       this.isLoading = false;
     },
     async fetchUsdtBalance() {
-      this.usdtBalance = await getUsdtBalance();
+      const rawBalance = await getUsdtBalance();
+      console.log(`[余额日志] 从合约获取到的原始usdtBalance: ${rawBalance}`);
+      this.usdtBalance = rawBalance;
     },
     async fetchUsdtAllowance() {
       this.usdtAllowance = await getUsdtAllowance();
+    },
+    async fetchMaxStakeAmount() {
+      this.maxStakeAmount = await getMaxStakeAmount();
     },
     resetBalance() {
       this.usdtBalance = '0';
@@ -183,10 +202,25 @@ export default {
       this.amount = value;
     },
     fillMax() {
-      this.amount = this.usdtBalance;
+      this.amount = this.maxStakeAmount;
     },
     async handleMainAction() {
       if (this.mainButtonState.disabled) return;
+
+      // --- Validation Logic ---
+      const inputAmount = parseFloat(this.amount);
+      const userBalance = parseFloat(this.usdtBalance);
+      const maxAllowed = parseFloat(this.maxStakeAmount);
+
+      if (inputAmount > userBalance) {
+          showToast('您的USDT余额不足');
+          return;
+      }
+      if (inputAmount > maxAllowed) {
+          showToast(`当前最多可注入 ${parseFloat(this.maxStakeAmount).toFixed(4)} USDT`);
+          return;
+      }
+      // --- End Validation Logic ---
       
       console.log(`[注入资产弹窗] 主操作按钮被点击, 当前状态: '${this.mainButtonState.action}'`);
 
