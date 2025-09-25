@@ -106,7 +106,7 @@
                         <template v-else>
                             <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist" :class="`list-${listMode}`">
                                 <li v-for="(item, index) in paginatedItems" :key="((currentPage - 1) * itemsPerPage) + index" class="nav-tab-item li-style" role="presentation">
-                                    <li class="br-line has-dot"></li>
+                                    <!-- <li class="br-line has-dot"></li> -->
                                     <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true" role="tab">
                                         <div :class="`stars-bg stars-bg-${(index % 3) + 1}`">
                                             <div class="stars"></div>
