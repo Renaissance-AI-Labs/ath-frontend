@@ -225,6 +225,7 @@ export const getUserStakingData = async () => {
         }).replace(/\//g, '-'),
         expiryTimestamp: expiryTimestamp,
         displayStatus: displayStatus,
+        originalIndex: originalIndex, // Add the original index here
       };
     });
 
@@ -235,6 +236,45 @@ export const getUserStakingData = async () => {
     console.error("[质押列表] 获取数据时发生严重错误:", error);
     showToast("获取质押数据失败");
     return [];
+  }
+};
+
+export const unstake = async (index) => {
+  if (!stakingContract) {
+    showToast("质押合约未初始化");
+    return false;
+  }
+  if (typeof index !== 'number' || index < 0) {
+    showToast("无效的订单索引");
+    return false;
+  }
+
+  console.log(`[赎回操作] 准备为索引 ${index} 的订单发起交易...`);
+
+  try {
+    // Dry-run the transaction first to catch potential reverts without sending a transaction.
+    await stakingContract.unstake.staticCall(index);
+    console.log("[赎回操作] 静态调用检查通过，交易很可能会成功。");
+
+    const tx = await stakingContract.unstake(index);
+    console.log(`[赎回操作] 交易已发送, Hash: ${tx.hash}. 等待链上确认...`);
+    // showToast("交易已发送，等待确认...");
+
+    const receipt = await tx.wait();
+    console.log("[赎回操作] 交易成功!", receipt);
+    showToast("赎回成功！");
+
+    return true;
+  } catch (error) {
+    // Check if the error is due to user rejecting the transaction in their wallet.
+    if (error.code === 'ACTION_REJECTED') {
+      console.log("[赎回操作] 用户拒绝了交易。");
+      // No toast notification needed for user-initiated cancellation.
+    } else {
+      console.error("[赎回操作] 交易失败 (可能是静态调用检查时发现问题):", error);
+      showToast(`赎回失败: ${error.reason || error.message}`);
+    }
+    return false;
   }
 };
 

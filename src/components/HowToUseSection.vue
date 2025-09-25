@@ -130,7 +130,12 @@
                                             <div class="status-box">
                                                 <CountdownTimer :target-timestamp="item.expiryTimestamp" />
                                                 <div class="status-box-button">
-                                                    <button v-if="item.displayStatus === 'redeemable'" class="tf-btn text-body-3 style-2 animate-btn animate-dark">可赎回</button>
+                                                    <button v-if="item.displayStatus === 'redeemable'" 
+                                                            class="tf-btn text-body-3 style-2 animate-btn animate-dark" 
+                                                            :disabled="unstackingStates[item.originalIndex]"
+                                                            @click.prevent="handleUnstake(item.originalIndex)">
+                                                        {{ unstackingStates[item.originalIndex] ? '赎回中...' : '赎回' }}
+                                                    </button>
                                                     <button v-else-if="item.displayStatus === 'redeemed'" class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>已赎回</button>
                                                     <button v-else class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>等待赎回</button>
                                                 </div>
@@ -179,13 +184,15 @@ import {
   computed,
   watch,
   onMounted,
-  onUnmounted
+  onUnmounted,
+  reactive
 } from 'vue';
 import {
   walletState
 } from '../services/wallet';
 import {
-  getUserStakingData
+  getUserStakingData,
+  unstake
 } from '../services/contracts';
 import CountdownTimer from './CountdownTimer.vue';
 import AnimatedNumber from './AnimatedNumber.vue'; // Import the new component
@@ -197,6 +204,8 @@ const currentPage = ref(1);
 const itemsPerPage = ref(4); // 3 items per page as per current UI
 const listMode = ref('show'); // 'show' or 'hide' for transitions
 let pollingInterval = null; // For the 6-second refresh
+const unstackingStates = reactive({}); // To track loading state for each button
+
 
 const fetchStakingData = async () => {
   // Only log on initial fetch to avoid console spam
@@ -215,6 +224,19 @@ const fetchStakingData = async () => {
     if (isLoading.value) {
       isLoading.value = false;
     }
+  }
+};
+
+const handleUnstake = async (index) => {
+  unstackingStates[index] = true;
+  try {
+    const success = await unstake(index);
+    if (success) {
+      // Refresh the entire list to get the latest state from the blockchain
+      await fetchStakingData();
+    }
+  } finally {
+    unstackingStates[index] = false;
   }
 };
 
