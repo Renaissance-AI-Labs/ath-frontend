@@ -106,6 +106,10 @@
                                                     <i class="icon-arrow-caret-down  fs-8"></i>
                                                     分享好友
                                                 </a>
+                                                <a href="#" @click.prevent="handleClaimLevelReward" class="btn-ip ip-modern text-body-3">
+                                                    <!-- <i class="icon-gift fs-10"></i> -->
+                                                    领等级奖
+                                                </a>
                                             </div>
                                         </fieldset>
                                     </div>
@@ -188,7 +192,7 @@ import {
 } from '../services/notification';
 import AnimatedNumber from './AnimatedNumber.vue'; // Import the new component
 
-const emits = defineEmits(['open-inject-modal']);
+const emits = defineEmits(['open-inject-modal', 'open-claim-reward-modal']);
 
 const stakedBalance = ref(0); // Use number type
 const friendsBoost = ref(0); // Use number type
@@ -271,6 +275,10 @@ const shareFriendLink = async () => {
     console.error('无法复制链接: ', err);
     showToast('复制失败，请检查浏览器权限');
   }
+};
+
+const handleClaimLevelReward = () => {
+  emits('open-claim-reward-modal');
 };
 
 watch(isAuthenticated, (isAuth) => {
