@@ -14,6 +14,9 @@ const getUsdtDecimals = () => {
 import referralAbi from '../abis/referral.json';
 import stakingAbi from '../abis/staking.json';
 import athAbi from '../abis/ath.json';
+import s5poolAbi from '../abis/s5pool.json';
+import s6poolAbi from '../abis/s6pool.json';
+import s7poolAbi from '../abis/s7pool.json';
 // No need for a separate USDT ABI if it follows ERC20 standard like `ath.json`
 // import usdtAbi from '../abis/usdt.json';
 
@@ -42,6 +45,18 @@ const contractAddresses = {
   router: {
     production: '0x10ED43C718714eb63d5aA57B78B54704E256024E', // PancakeSwap Router V2 on BNB Mainnet
     development: '0xD99D1c33F9fC3444f8101754aBC46c52416550D1', // PancakeSwap Router V2 on BNB Testnet
+  },
+  s5pool: {
+    production: '', // To be deployed
+    development: '0xb65b398eB4d9FcAeaC8046A3c9Eb84d4eA60ed2d',
+  },
+  s6pool: {
+    production: '', // To be deployed
+    development: '0xa28CC3Ea8E349c41bfDd4eE84d99C224e31620c9',
+  },
+  s7pool: {
+    production: '', // To be deployed
+    development: '0x1041DDd9585387BC4Aad8bc914db26d1FBbf2D00',
   }
 };
 
@@ -51,9 +66,12 @@ let stakingContract;
 let athContract;
 let usdtContract;
 let routerContract;
+let s5poolContract;
+let s6poolContract;
+let s7poolContract;
 
 // We need to export these for other modules to use them.
-export { referralContract, stakingContract, athContract, usdtContract };
+export { referralContract, stakingContract, athContract, usdtContract, s5poolContract, s6poolContract, s7poolContract };
 
 /**
  * Initializes all contract instances with the current signer from walletState.
@@ -77,6 +95,9 @@ export const initializeContracts = async () => {
   const athAddress = contractAddresses.ath[env];
   const usdtAddress = contractAddresses.usdt[env];
   const routerAddress = contractAddresses.router[env];
+  const s5poolAddress = contractAddresses.s5pool[env];
+  const s6poolAddress = contractAddresses.s6pool[env];
+  const s7poolAddress = contractAddresses.s7pool[env];
 
   // Create new contract instances using the raw, unwrapped signer
   referralContract = new ethers.Contract(referralAddress, referralAbi, rawSigner);
@@ -84,6 +105,9 @@ export const initializeContracts = async () => {
   athContract = new ethers.Contract(athAddress, athAbi, rawSigner);
   usdtContract = new ethers.Contract(usdtAddress, athAbi, rawSigner);
   routerContract = new ethers.Contract(routerAddress, uniswapV2RouterAbi, rawSigner);
+  s5poolContract = new ethers.Contract(s5poolAddress, s5poolAbi, rawSigner);
+  s6poolContract = new ethers.Contract(s6poolAddress, s6poolAbi, rawSigner);
+  s7poolContract = new ethers.Contract(s7poolAddress, s7poolAbi, rawSigner);
 
   console.log("Contracts initialized:", {
     referral: await referralContract.getAddress(),
@@ -91,6 +115,9 @@ export const initializeContracts = async () => {
     ath: await athContract.getAddress(),
     usdt: await usdtContract.getAddress(),
     router: await routerContract.getAddress(),
+    s5pool: await s5poolContract.getAddress(),
+    s6pool: await s6poolContract.getAddress(),
+    s7pool: await s7poolContract.getAddress(),
   });
 
   walletState.contractsInitialized = true;
@@ -107,6 +134,9 @@ export const resetContracts = () => {
   athContract = null;
   usdtContract = null;
   routerContract = null;
+  s5poolContract = null;
+  s6poolContract = null;
+  s7poolContract = null;
   console.log("Contract instances have been reset.");
 };
 

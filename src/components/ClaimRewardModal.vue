@@ -17,14 +17,23 @@
         <!-- Body Content (Placeholder for now) -->
         <div class="reward-content">
             <div class="hexagon-container">
-                <div class="hexagon">
-                    <span class="level-text level-s5">S5</span>
+                <div class="hexagon-wrapper">
+                    <div class="hexagon">
+                        <span class="level-text level-s5">S5</span>
+                    </div>
+                    <button class="tf-btn text-body-3 style-2 animate-btn animate-dark btn-claim" disabled>领取</button>
                 </div>
-                <div class="hexagon">
-                    <span class="level-text level-s6">S6</span>
+                <div class="hexagon-wrapper">
+                    <div class="hexagon">
+                        <span class="level-text level-s6">S6</span>
+                    </div>
+                    <button class="tf-btn text-body-3 style-2 animate-btn animate-dark btn-claim" disabled>领取</button>
                 </div>
-                <div class="hexagon">
-                    <span class="level-text level-s7">S7</span>
+                <div class="hexagon-wrapper">
+                    <div class="hexagon">
+                        <span class="level-text level-s7">S7</span>
+                    </div>
+                    <button class="tf-btn text-body-3 style-2 animate-btn animate-dark btn-claim" disabled>领取</button>
                 </div>
             </div>
         </div>
@@ -106,7 +115,14 @@ defineEmits(['close']);
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 40px; /* Space between hexagons */
+    gap: 20px; /* Space between hexagons */
+}
+
+.hexagon-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px; /* Space between hexagon and button */
 }
 
 .hexagon {
@@ -164,6 +180,20 @@ defineEmits(['close']);
     100% {
         transform: translateX(250%) skewX(-30deg);
     }
+}
+
+.btn-claim {
+    padding: 8px 24px;
+    font-size: 14px;
+    min-width: 100px;
+    /* The disabled styles are now handled by the .tf-btn[disabled] selector from the global CSS */
+}
+
+.btn-claim[disabled], .tf-btn.style-2[disabled] {
+    background-image: none !important;
+    background-color: #21212B !important;
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
 }
 
 .level-text {
