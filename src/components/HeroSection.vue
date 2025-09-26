@@ -106,7 +106,7 @@
                                                     <i class="icon-arrow-caret-down  fs-8"></i>
                                                     分享好友
                                                 </a>
-                                                <a href="#" @click.prevent="handleClaimLevelReward" class="btn-ip ip-modern text-body-3">
+                                                <a href="#" @click.prevent="handleClaimLevelReward" class="btn-ip ip-modern text-body-3" v-if="isAuthenticated">
                                                     <i class="icon-arrow-top fs-14"></i>
                                                     等级奖励
                                                 </a>

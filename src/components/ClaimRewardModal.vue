@@ -14,16 +14,18 @@
           <h3>领取您的等级奖励</h3>
         </div>
 
-        <!-- Body Content (Placeholder for now) -->
-        <div class="reward-content">
-            <div class="hexagon-container">
+        <!-- Authenticated View -->
+        <div v-if="walletState.isAuthenticated" class="reward-content">
+            <div v-if="isLoading" class="loading-state-rewards">
+                <p>正在查询您的等级奖励...</p>
+            </div>
+            <div v-else class="hexagon-container">
                 <div class="hexagon-wrapper">
                     <div class="hexagon" :class="{ 'is-unlocked': s5_kpiMet }">
                         <span class="level-text level-s5">S5</span>
                     </div>
                     <div class="reward-display">
-                        <span v-if="isLoading">加载中...</span>
-                        <span v-else>{{ parseFloat(s5_rewards) > 0 ? parseFloat(s5_rewards).toFixed(2) + ' ATH' : '暂无奖励' }}</span>
+                        <span>{{ parseFloat(s5_rewards) > 0 ? parseFloat(s5_rewards).toFixed(2) + ' ATH' : '暂无' }}</span>
                     </div>
                     <button @click="claim(5)" :disabled="parseFloat(s5_rewards) <= 0 || isClaiming[5]" class="tf-btn text-body-3 style-2 animate-btn animate-dark btn-claim">
                         {{ isClaiming[5] ? '领取中...' : '领取' }}
@@ -34,8 +36,7 @@
                         <span class="level-text level-s6">S6</span>
                     </div>
                     <div class="reward-display">
-                        <span v-if="isLoading">加载中...</span>
-                        <span v-else>{{ parseFloat(s6_rewards) > 0 ? parseFloat(s6_rewards).toFixed(2) + ' ATH' : '暂无奖励' }}</span>
+                        <span>{{ parseFloat(s6_rewards) > 0 ? parseFloat(s6_rewards).toFixed(2) + ' ATH' : '暂无' }}</span>
                     </div>
                     <button @click="claim(6)" :disabled="parseFloat(s6_rewards) <= 0 || isClaiming[6]" class="tf-btn text-body-3 style-2 animate-btn animate-dark btn-claim">
                         {{ isClaiming[6] ? '领取中...' : '领取' }}
@@ -46,14 +47,18 @@
                         <span class="level-text level-s7">S7</span>
                     </div>
                     <div class="reward-display">
-                        <span v-if="isLoading">加载中...</span>
-                        <span v-else>{{ parseFloat(s7_rewards) > 0 ? parseFloat(s7_rewards).toFixed(2) + ' ATH' : '暂无奖励' }}</span>
+                        <span>{{ parseFloat(s7_rewards) > 0 ? parseFloat(s7_rewards).toFixed(2) + ' ATH' : '暂无' }}</span>
                     </div>
                     <button @click="claim(7)" :disabled="parseFloat(s7_rewards) <= 0 || isClaiming[7]" class="tf-btn text-body-3 style-2 animate-btn animate-dark btn-claim">
                         {{ isClaiming[7] ? '领取中...' : '领取' }}
                     </button>
                 </div>
             </div>
+        </div>
+
+        <!-- Unauthenticated View -->
+        <div v-else class="unauthenticated-view">
+            <p>请先连接并授权您的钱包</p>
         </div>
 
         <!-- Footer -->
@@ -104,7 +109,9 @@ const isClaiming = ref({
 });
 
 const fetchRewardData = async () => {
+    // This check is now slightly redundant due to the watcher, but good for safety.
     if (!walletState.isAuthenticated || !walletState.contractsInitialized) return;
+
     isLoading.value = true;
     try {
         const [kpi, s5Rewards, s6Rewards, s7Rewards] = await Promise.all([
@@ -175,11 +182,19 @@ const claim = async (level) => {
     }
 };
 
-// Fetch data when the modal becomes visible and contracts are ready.
-watch(() => [walletState.isAuthenticated, walletState.contractsInitialized], (newVals) => {
-    const [isAuth, contractsReady] = newVals;
-    if (isAuth && contractsReady) {
+// Fetch data when the modal becomes visible and the user is authenticated.
+watch(() => walletState.isAuthenticated, (isAuth) => {
+    if (isAuth && walletState.contractsInitialized) {
         fetchRewardData();
+    } else {
+        // Reset data if user disconnects
+        isLoading.value = true;
+        s5_kpiMet.value = false;
+        s6_kpiMet.value = false;
+        s7_kpiMet.value = false;
+        s5_rewards.value = '0';
+        s6_rewards.value = '0';
+        s7_rewards.value = '0';
     }
 }, {
     immediate: true
@@ -241,6 +256,24 @@ watch(() => [walletState.isAuthenticated, walletState.contractsInitialized], (ne
     align-items: center;
     margin-bottom: 30px;
     margin: 70px 0;
+}
+
+.unauthenticated-view {
+    margin: 90px 0;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 16px;
+    font-family: 'ChillRoundF', sans-serif;
+}
+
+.loading-state-rewards {
+    min-height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 16px;
+    font-family: 'ChillRoundF', sans-serif;
 }
 
 .hexagon-container {
