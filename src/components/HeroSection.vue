@@ -108,7 +108,7 @@
                                                 </a>
                                                 <a href="#" @click.prevent="handleClaimLevelReward" class="btn-ip ip-modern text-body-3" v-if="isAuthenticated">
                                                     <i class="icon-arrow-top fs-14"></i>
-                                                    等级奖励
+                                                    成就奖励
                                                 </a>
                                             </div>
                                         </fieldset>

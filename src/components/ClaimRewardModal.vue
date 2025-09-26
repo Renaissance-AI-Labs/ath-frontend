@@ -11,13 +11,13 @@
       <div class="modal-body-custom">
         <!-- Header -->
         <div class="title_holder">
-          <h3>领取您的等级奖励</h3>
+          <h3>领取您的成就奖励</h3>
         </div>
 
         <!-- Authenticated View -->
         <div v-if="walletState.isAuthenticated" class="reward-content">
             <div v-if="isLoading" class="loading-state-rewards">
-                <p>正在查询您的等级奖励...</p>
+                <p>正在查询您的成就奖励...</p>
             </div>
             <div v-else class="hexagon-container">
                 <div class="hexagon-wrapper">
@@ -129,7 +129,7 @@ const fetchRewardData = async () => {
         s6_rewards.value = s6Rewards;
         s7_rewards.value = s7Rewards;
 
-        console.log(`[等级奖励数据] 获取成功:
+        console.log(`[成就奖励数据] 获取成功:
           - 用户KPI (原始值): ${kpi.toString()}
           - S5门槛: ${S5_THRESHOLD.toString()} -> 是否达到: ${s5_kpiMet.value}
           - S6门槛: ${S6_THRESHOLD.toString()} -> 是否达到: ${s6_kpiMet.value}
