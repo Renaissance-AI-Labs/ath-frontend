@@ -25,7 +25,7 @@
                         <span class="level-text level-s5">S5</span>
                     </div>
                     <div class="reward-display">
-                        <span>{{ parseFloat(s5_rewards) > 0 ? parseFloat(s5_rewards).toFixed(2) + ' ATH' : '暂无' }}</span>
+                        <span>{{ parseFloat(s5_rewards) > 0 ? parseFloat(s5_rewards).toFixed(2) + ' ATH' : '暂无奖励' }}</span>
                     </div>
                     <button @click="claim(5)" :disabled="parseFloat(s5_rewards) <= 0 || isClaiming[5]" class="tf-btn text-body-3 style-2 animate-btn animate-dark btn-claim">
                         {{ isClaiming[5] ? '领取中...' : '领取' }}
@@ -36,7 +36,7 @@
                         <span class="level-text level-s6">S6</span>
                     </div>
                     <div class="reward-display">
-                        <span>{{ parseFloat(s6_rewards) > 0 ? parseFloat(s6_rewards).toFixed(2) + ' ATH' : '暂无' }}</span>
+                        <span>{{ parseFloat(s6_rewards) > 0 ? parseFloat(s6_rewards).toFixed(2) + ' ATH' : '暂无奖励' }}</span>
                     </div>
                     <button @click="claim(6)" :disabled="parseFloat(s6_rewards) <= 0 || isClaiming[6]" class="tf-btn text-body-3 style-2 animate-btn animate-dark btn-claim">
                         {{ isClaiming[6] ? '领取中...' : '领取' }}
@@ -47,7 +47,7 @@
                         <span class="level-text level-s7">S7</span>
                     </div>
                     <div class="reward-display">
-                        <span>{{ parseFloat(s7_rewards) > 0 ? parseFloat(s7_rewards).toFixed(2) + ' ATH' : '暂无' }}</span>
+                        <span>{{ parseFloat(s7_rewards) > 0 ? parseFloat(s7_rewards).toFixed(2) + ' ATH' : '暂无奖励' }}</span>
                     </div>
                     <button @click="claim(7)" :disabled="parseFloat(s7_rewards) <= 0 || isClaiming[7]" class="tf-btn text-body-3 style-2 animate-btn animate-dark btn-claim">
                         {{ isClaiming[7] ? '领取中...' : '领取' }}
