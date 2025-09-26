@@ -32,11 +32,11 @@ const contractAddresses = {
   },
   staking: {
     production: '', // To be deployed
-    development: '0xFBCe1D735ce96ebe570C9cBe1c0afB838aE561Fc',
+    development: '0x17D719DF4187B28C13fa1a407aC4D2a514ab6e3c',
   },
   ath: {
     production: '', // To be deployed
-    development: '0xfE410F750F84D83F44EFd75a6e90Efe242c2E4F7',
+    development: '0xd2B5d7a164f3d435BD5794E0B0442136D393692c',
   },
   usdt: {
     production: '0x55d398326f99059fF775485246999027B3197955', // BNB Mainnet USDT
