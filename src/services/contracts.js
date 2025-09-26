@@ -4,7 +4,7 @@ import { toRaw } from 'vue';
 import { showToast } from '../services/notification';
 
 // --- Helper to get USDT decimals based on environment ---
-const getUsdtDecimals = () => {
+export const getUsdtDecimals = () => {
   const isProduction = import.meta.env.PROD;
   // Production (Mainnet) USDT uses 6 decimals, Development (Testnet) test USDT uses 18
   return isProduction ? 6 : 18;
@@ -361,7 +361,13 @@ export const getUserStakingData = async () => {
       const originalIndex = indices[index];
       const totalValue = rewards[index];
 
-      const interest = totalValue - record.amount;
+      let interest;
+      if (record.status === true) { // Redeemed
+        interest = record.finalReward > 0 ? record.finalReward - record.amount : 0n;
+      } else { // In-progress
+        const totalValue = totalValue ? BigInt(totalValue.toString()) : 0n;
+        interest = totalValue > record.amount ? totalValue - record.amount : 0n;
+      }
 
       const stakeTimeInSeconds = Number(record.stakeTime);
       const stakeDurationInSeconds = stakeDurations[Number(record.stakeIndex)];
@@ -677,6 +683,25 @@ export const getMaxStakeAmount = async () => {
     console.error("Error fetching max stake amount:", error);
     return "0";
   }
+};
+
+/**
+ * Fetches the reward for a single stake record by its index.
+ * Note: This is now a standalone function as it's called from HowToUseSection.vue
+ * @param {number} index The absolute index of the stake record.
+ * @returns {Promise<BigInt>} The total reward value as a BigInt.
+ */
+export const rewardOfSlot = async (index) => {
+    if (!stakingContract) {
+        console.warn("Staking contract not initialized for rewardOfSlot call.");
+        return 0n;
+    }
+    try {
+        return await stakingContract.rewardOfSlot(walletState.address, index);
+    } catch (error) {
+        console.error(`Error fetching reward for slot ${index}:`, error);
+        return 0n;
+    }
 };
 
 // --- Exported Functions to get contract instances (optional, but good practice) ---

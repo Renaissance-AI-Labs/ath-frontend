@@ -94,19 +94,19 @@
                             </div>
                             <p>合约初始化失败，请刷新重试</p>
                         </div>
-                        <div v-else-if="filteredItems.length === 0" class="empty-state" :class="`list-${listMode}`">
+                        <div v-else-if="stakingItems.length === 0" class="empty-state" :class="`list-${listMode}`">
                             <div class="stars-bg stars-bg-1">
                                 <div class="stars"></div>
                                 <div class="stars2"></div>
                                 <div class="stars3"></div>
                             </div>
-                            <p v-if="activeTab === 'investment'">您还没有任何质押订单</p>
-                            <p v-else>您还没有已赎回订单</p>
+                            <p v-if="activeTab === 'investment'">您还没有任何进行中的质押订单</p>
+                            <p v-else>您还没有已赎回的订单</p>
                         </div>
                         <template v-else>
                             <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist" :class="`list-${listMode}`">
-                                <li v-for="(item, index) in paginatedItems" :key="((currentPage - 1) * itemsPerPage) + index" class="nav-tab-item li-style" role="presentation">
-                                    <!-- <li class="br-line has-dot"></li> -->
+                                <li v-for="(item, index) in stakingItems" :key="item.originalIndex" class="nav-tab-item li-style" role="presentation">
+                                    <div class="br-line has-dot"></div>
                                     <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true" role="tab">
                                         <div :class="`stars-bg stars-bg-${(index % 3) + 1}`">
                                             <div class="stars"></div>
@@ -115,7 +115,7 @@
                                         </div>
                                         <div class="card-content">
                                             <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                                                <h5 class="name h5-list-style" :data-text="`CODE-${String(((currentPage - 1) * itemsPerPage) + index + 1).padStart(2, '0')}`">STAKING-CODE-{{ String(((currentPage - 1) * itemsPerPage) + index + 1).padStart(2, '0') }}</h5>
+                                                <h5 class="name h5-list-style" :data-text="`CODE-${String(item.originalIndex + 1).padStart(2, '0')}`">STAKING-CODE-{{ String(item.originalIndex + 1).padStart(2, '0') }}</h5>
                                                 <h5 class="name h5-list-style" :data-text="item.stakeDate" style="min-width: 125px;">{{ item.stakeDate }}</h5>
                                             </div>
                                             <div style="display: flex; flex-direction: row; justify-content: space-between;">
@@ -183,7 +183,6 @@ import {
   ref,
   computed,
   watch,
-  onMounted,
   onUnmounted,
   reactive
 } from 'vue';
@@ -191,41 +190,118 @@ import {
   walletState
 } from '../services/wallet';
 import {
-  getUserStakingData,
-  unstake
+  unstake,
+  getUsdtDecimals,
+  stakingContract,
+  rewardOfSlot // Import the new function
 } from '../services/contracts';
 import CountdownTimer from './CountdownTimer.vue';
-import AnimatedNumber from './AnimatedNumber.vue'; // Import the new component
+import AnimatedNumber from './AnimatedNumber.vue';
+import {
+  ethers
+} from 'ethers';
 
-const allStakingItems = ref([]);
+const stakingItems = ref([]); // Renamed from allStakingItems, now holds only current page data
+const totalItems = ref(0); // New state for total records from contract
 const isLoading = ref(true);
 const activeTab = ref('investment'); // 'investment' or 'redemption'
 const currentPage = ref(1);
-const itemsPerPage = ref(4); // 3 items per page as per current UI
-const listMode = ref('show'); // 'show' or 'hide' for transitions
-let pollingInterval = null; // For the 6-second refresh
-const unstackingStates = reactive({}); // To track loading state for each button
-
+const itemsPerPage = ref(4);
+const listMode = ref('show');
+let pollingInterval = null;
+const unstackingStates = reactive({});
 
 const fetchStakingData = async () => {
-  // Only log on initial fetch to avoid console spam
-  if (isLoading.value) {
-    console.log('[订单列表-检查] fetchStakingData 被调用。认证状态:', walletState.isAuthenticated, '合约初始化状态:', walletState.contractsInitialized);
-  }
-  if (!walletState.isAuthenticated || !walletState.contractsInitialized) {
-    allStakingItems.value = [];
-    isLoading.value = false;
-    return;
-  }
-  // No need to set isLoading to true on polling, only on initial load
-  try {
-    allStakingItems.value = await getUserStakingData();
-  } finally {
-    if (isLoading.value) {
-      isLoading.value = false;
+    if (!walletState.isAuthenticated || !walletState.contractsInitialized || !stakingContract) {
+        stakingItems.value = [];
+        totalItems.value = 0;
+        isLoading.value = false; // Ensure loading is off if prerequisites aren't met
+        return;
     }
-  }
+
+    try {
+        const status = activeTab.value === 'investment' ? 0 : 1;
+        const offset = (currentPage.value - 1) * itemsPerPage.value;
+
+        console.log(`[订单列表] 正在请求数据... offset=${offset}, limit=${itemsPerPage.value}, status=${status}`);
+
+        const [pageRecords, total] = await stakingContract.getUserRecords(
+            walletState.address,
+            offset,
+            itemsPerPage.value,
+            status
+        );
+
+        console.log(`[订单列表] 从合约获取到原始数据: total=${total.toString()}, records=`, pageRecords);
+
+        totalItems.value = Number(total);
+
+        const decimals = getUsdtDecimals();
+        const stakeDurations = [86400, 1296000, 2592000]; // 1, 15, 30 days in seconds
+
+        // --- Conditional Interest Fetching ---
+        let liveRewards = [];
+        if (status === 0 && pageRecords.length > 0) { // Only for "investment" (in-progress) list
+            const rewardPromises = pageRecords.map((record, index) => {
+                const originalIndex = Number(total) - 1 - offset - index;
+                return rewardOfSlot(originalIndex);
+            });
+            liveRewards = await Promise.all(rewardPromises);
+            console.log('[订单列表] 获取到进行中列表的实时奖励数据:', liveRewards);
+        }
+
+        stakingItems.value = pageRecords.map((record, index) => {
+            const originalIndex = Number(total) - 1 - offset - index;
+
+            let interest;
+            if (status === 0) { // In-progress
+                const totalValue = liveRewards[index] ? BigInt(liveRewards[index].toString()) : 0n;
+                interest = totalValue > record.amount ? totalValue - record.amount : 0n;
+            } else { // Redeemed
+                interest = record.finalReward > 0 ? record.finalReward - record.amount : 0n;
+            }
+
+            const stakeTimeInSeconds = Number(record.stakeTime);
+            const stakeDurationInSeconds = stakeDurations[Number(record.stakeIndex)];
+            const expiryTimestamp = (stakeTimeInSeconds + stakeDurationInSeconds) * 1000;
+
+            let displayStatus = 'waiting';
+            if (record.status === true) {
+                displayStatus = 'redeemed';
+            } else if (expiryTimestamp <= Date.now()) {
+                displayStatus = 'redeemable';
+            }
+
+            return {
+                principal: ethers.formatUnits(record.amount, decimals),
+                interest: ethers.formatUnits(interest, decimals),
+                stakeDate: new Date(stakeTimeInSeconds * 1000).toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                }).replace(/\//g, '-'),
+                expiryTimestamp: expiryTimestamp,
+                displayStatus: displayStatus,
+                originalIndex: originalIndex,
+            };
+        });
+
+        console.log('[订单列表] 数据处理完成, 最终用于渲染的数据:', stakingItems.value);
+        // --- End of New Logic ---
+
+    } catch (error) {
+        console.error("[订单列表] 获取新版质押数据时发生错误:", error);
+        stakingItems.value = [];
+        totalItems.value = 0;
+    } finally {
+        isLoading.value = false; // Always turn off loading after a fetch attempt
+    }
 };
+
 
 const handleUnstake = async (index) => {
   unstackingStates[index] = true;
@@ -259,14 +335,18 @@ watch(() => [walletState.isAuthenticated, walletState.address, walletState.contr
   console.log(`[订单列表-检查] 监听到状态变化 -> isAuth: ${isAuth}, address: ${address}, contractsReady: ${contractsReady}`);
   // Only fetch data when both authenticated and contracts are ready
   if (isAuth && contractsReady) {
-    fetchStakingData(); // Initial fetch
+    // Set loading to true only for the initial fetch after connection, not for polling.
+    if (stakingItems.value.length === 0 && totalItems.value === 0) {
+      isLoading.value = true;
+    }
+    fetchStakingData();
     startPolling();
   } else {
-    // Clear data if user disconnects or contracts fail
     stopPolling();
-    allStakingItems.value = [];
-    isLoading.value = false;
-    activeTab.value = 'investment'; // Reset tab on disconnect
+    stakingItems.value = [];
+    totalItems.value = 0;
+    isLoading.value = false; // Correctly set loading to false on disconnect
+    activeTab.value = 'investment';
     currentPage.value = 1;
   }
 }, {
@@ -283,47 +363,39 @@ const toggleTab = () => {
   setTimeout(() => {
     activeTab.value = activeTab.value === 'investment' ? 'redemption' : 'investment';
     currentPage.value = 1; // Reset to first page on tab switch
+    fetchStakingData(); // Refetch data when tab changes
     listMode.value = 'show'; // Start fade in animation
   }, 150); // This duration should match the CSS transition duration
 };
 
 
-const filteredItems = computed(() => {
-  if (activeTab.value === 'investment') {
-    // Investment list shows non-redeemed items
-    return allStakingItems.value.filter(item => item.displayStatus !== 'redeemed');
-  } else { // redemption list
-    // Redemption list shows redeemed items
-    return allStakingItems.value.filter(item => item.displayStatus === 'redeemed');
-  }
+const totalPages = computed(() => {
+    if (totalItems.value === 0) return 1; // Prevent division by zero
+    return Math.ceil(totalItems.value / itemsPerPage.value);
 });
 
-// Calculate total pages based on the filtered list
-const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPerPage.value));
-
-// Create a computed property for the items on the current page from the filtered list
-const paginatedItems = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value;
-  const end = start + itemsPerPage.value;
-  return filteredItems.value.slice(start, end);
-});
+// This computed property is no longer needed as the contract returns paginated data directly.
+// const paginatedItems = computed(() => { ... });
 
 // Methods to change the page
 const goToPage = (page) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
+    fetchStakingData(); // Refetch data for the new page
   }
 };
 
 const prevPage = () => {
   if (currentPage.value > 1) {
     currentPage.value--;
+    fetchStakingData(); // Refetch data for the new page
   }
 };
 
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
     currentPage.value++;
+    fetchStakingData(); // Refetch data for the new page
   }
 };
 
