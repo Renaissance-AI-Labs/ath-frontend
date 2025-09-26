@@ -74,9 +74,26 @@ let s7poolContract;
 export { referralContract, stakingContract, athContract, usdtContract, s5poolContract, s6poolContract, s7poolContract };
 
 // --- KPI Thresholds (as per Staking.sol) ---
-export const S5_THRESHOLD = 1000000n * (10n ** 18n); // 1 Million USDT value
-export const S6_THRESHOLD = 3000000n * (10n ** 18n); // 3 Million USDT value
-export const S7_THRESHOLD = 5000000n * (10n ** 18n); // 5 Million USDT value
+const THRESHOLDS = {
+  production: {
+    S5: 1000000n * (10n ** 18n), // 1 Million USDT value
+    S6: 3000000n * (10n ** 18n), // 3 Million USDT value
+    S7: 5000000n * (10n ** 18n), // 5 Million USDT value
+  },
+  development: {
+    S5: 15000n * (10n ** 18n),   // Test: 15,000 USDT value
+    S6: 18000n * (10n ** 18n),   // Test: 18,000 USDT value
+    S7: 21000n * (10n ** 18n),   // Test: 21,000 USDT value
+  }
+};
+
+const isProduction = import.meta.env.PROD;
+const env = isProduction ? 'production' : 'development';
+
+export const S5_THRESHOLD = THRESHOLDS[env].S5;
+export const S6_THRESHOLD = THRESHOLDS[env].S6;
+export const S7_THRESHOLD = THRESHOLDS[env].S7;
+
 
 /**
  * Initializes all contract instances with the current signer from walletState.

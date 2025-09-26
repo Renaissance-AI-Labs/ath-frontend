@@ -242,8 +242,8 @@ const handleUnstake = async (index) => {
 
 const startPolling = () => {
   stopPolling(); // Ensure no multiple intervals are running
-  console.log('[订单列表] 启动轮询，每6秒刷新一次数据...');
-  pollingInterval = setInterval(fetchStakingData, 6000);
+  console.log('[订单列表] 启动轮询，每15秒刷新一次数据...');
+  pollingInterval = setInterval(fetchStakingData, 15000);
 };
 
 const stopPolling = () => {

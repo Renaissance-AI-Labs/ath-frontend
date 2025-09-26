@@ -107,8 +107,8 @@
                                                     分享好友
                                                 </a>
                                                 <a href="#" @click.prevent="handleClaimLevelReward" class="btn-ip ip-modern text-body-3">
-                                                    <!-- <i class="icon-gift fs-10"></i> -->
-                                                    领等级奖
+                                                    <i class="icon-arrow-top fs-14"></i>
+                                                    等级奖励
                                                 </a>
                                             </div>
                                         </fieldset>
