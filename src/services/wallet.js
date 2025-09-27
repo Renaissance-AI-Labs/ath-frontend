@@ -55,6 +55,7 @@ export const walletState = reactive({
   walletType: null, // To store the type of the connected wallet
   isNewUser: null, // null: unknown, true: new, false: old
   contractsInitialized: false, // <-- Add this new state
+  hasClaimableRewards: false, // New state for the red dot indicator
 });
 
 // Utility function to format wallet address
@@ -281,6 +282,7 @@ export const disconnectWallet = () => {
   walletState.signer = null;
   walletState.walletType = null;
   walletState.isNewUser = null; // Reset user status on disconnect
+  walletState.hasClaimableRewards = false; // Reset on disconnect
   localStorage.removeItem('ath_walletAddress');
   localStorage.removeItem('ath_walletType'); // Also remove wallet type
   

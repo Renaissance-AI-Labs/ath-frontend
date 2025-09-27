@@ -319,6 +319,35 @@ export const claimS6Rewards = async () => claimRewards(s6poolContract);
  */
 export const claimS7Rewards = async () => claimRewards(s7poolContract);
 
+/**
+ * Checks all reward pools to see if the user has any pending rewards.
+ * Updates the global walletState.hasClaimableRewards.
+ * @returns {Promise<boolean>} True if there are any claimable rewards.
+ */
+export const checkAllClaimableRewards = async () => {
+    if (!walletState.isAuthenticated || !walletState.contractsInitialized) {
+        walletState.hasClaimableRewards = false;
+        return false;
+    }
+    try {
+        // We can run these checks in parallel for performance
+        const [s5, s6, s7] = await Promise.all([
+            getS5PendingRewards(),
+            getS6PendingRewards(),
+            getS7PendingRewards(),
+        ]);
+
+        const hasRewards = parseFloat(s5) > 0 || parseFloat(s6) > 0 || parseFloat(s7) > 0;
+        walletState.hasClaimableRewards = hasRewards;
+        console.log(`[小红点检查] 检查完成. 是否有奖励可领: ${hasRewards}`);
+        return hasRewards;
+    } catch (error) {
+        console.error("[小红点检查] 检查可领奖励时出错:", error);
+        walletState.hasClaimableRewards = false;
+        return false;
+    }
+};
+
 
 export const getUserStakingData = async () => {
   if (!stakingContract || !walletState.address) {

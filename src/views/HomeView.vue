@@ -53,11 +53,16 @@ import {
   getReferrer,
   isReferrerValid,
   getMaxStakeAmount,
-  getUsdtBalance
+  getUsdtBalance,
+  checkAllClaimableRewards
 } from '../services/contracts';
 import {
   showToast
 } from '../services/notification';
+import {
+    onMounted,
+    watch
+} from 'vue';
 
 
 export default {
@@ -97,6 +102,8 @@ export default {
     },
     closeClaimRewardModal() {
       this.isClaimRewardModalVisible = false;
+      // When the modal is closed, re-check for rewards to update the red dot
+      checkAllClaimableRewards();
     },
     async handleInjectionConfirm(data) {
       console.log('Injection data received:', data);
@@ -213,6 +220,22 @@ export default {
       }
       this.isStaking = false;
     }
+  },
+  mounted() {
+    // autoConnectWallet(); // This line is removed as per the new_code, as autoConnectWallet is no longer imported.
+  },
+  setup() {
+    // Watch for authentication changes to update the red dot indicator
+    watch(() => [walletState.isAuthenticated, walletState.contractsInitialized], ([isAuth, contractsReady]) => {
+      if (isAuth && contractsReady) {
+        checkAllClaimableRewards();
+      }
+    });
+
+    // This is needed for the template to access walletState
+    return {
+      walletState
+    };
   }
 };
 </script>
