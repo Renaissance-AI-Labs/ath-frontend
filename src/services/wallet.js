@@ -331,6 +331,13 @@ const handleAccountsChanged = async (accounts) => {
     disconnectWallet();
   } else {
     const newAddress = accounts[0];
+    // --- Smart Check to Prevent Unnecessary Re-signing ---
+    // Only proceed if the new address is different from the current one.
+    if (newAddress.toLowerCase() === walletState.address.toLowerCase()) {
+      console.log('accountsChanged event fired, but address is the same. Ignoring.');
+      return;
+    }
+
     console.log(`Switched to new address: ${newAddress}`);
 
     // Critical Step 1: Immediately de-authenticate the old session.

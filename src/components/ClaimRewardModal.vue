@@ -121,9 +121,15 @@ const fetchRewardData = async () => {
             getS7PendingRewards(),
         ]);
 
-        s5_kpiMet.value = kpi >= S5_THRESHOLD;
-        s6_kpiMet.value = kpi >= S6_THRESHOLD;
-        s7_kpiMet.value = kpi >= S7_THRESHOLD;
+        // --- Exclusive Level Check Logic ---
+        // A user can only be at one level at a time.
+        const kpiMetS7 = kpi >= S7_THRESHOLD;
+        const kpiMetS6 = kpi >= S6_THRESHOLD;
+        const kpiMetS5 = kpi >= S5_THRESHOLD;
+
+        s7_kpiMet.value = kpiMetS7;
+        s6_kpiMet.value = kpiMetS6 && !kpiMetS7;
+        s5_kpiMet.value = kpiMetS5 && !kpiMetS6;
 
         s5_rewards.value = s5Rewards;
         s6_rewards.value = s6Rewards;
