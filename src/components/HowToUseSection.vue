@@ -115,7 +115,9 @@
                                         </div>
                                         <div class="card-content">
                                             <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                                                <h5 class="name h5-list-style" :data-text="`CODE-${String(item.originalIndex + 1).padStart(2, '0')}`">STAKING-CODE-{{ String(item.originalIndex + 1).padStart(2, '0') }}</h5>
+                                                <h5 class="name h5-list-style" :data-text="`${activeTab === 'investment' ? 'STAKING' : 'REDEEMED'}-CODE-${String(item.originalIndex + 1).padStart(2, '0')}`">
+                                                    {{ activeTab === 'investment' ? 'STAKING' : 'REDEEMED' }}-CODE-{{ String(item.originalIndex + 1).padStart(2, '0') }}
+                                                </h5>
                                                 <h5 class="name h5-list-style" :data-text="item.stakeDate" style="min-width: 125px;">{{ item.stakeDate }}</h5>
                                             </div>
                                             <div style="display: flex; flex-direction: row; justify-content: space-between;">
@@ -128,7 +130,8 @@
                                             </div>
 
                                             <div class="status-box">
-                                                <CountdownTimer :target-timestamp="item.expiryTimestamp" />
+                                                <CountdownTimer v-if="activeTab === 'investment'" :target-timestamp="item.expiryTimestamp" />
+                                                <span v-else class="desc clock"></span>
                                                 <div class="status-box-button">
                                                     <button v-if="item.displayStatus === 'redeemable'" 
                                                             class="tf-btn text-body-3 style-2 animate-btn animate-dark" 

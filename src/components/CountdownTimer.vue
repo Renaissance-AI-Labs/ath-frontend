@@ -34,7 +34,7 @@ const seconds = computed(() => Math.floor((timeRemaining.value % (1000 * 60)) / 
 
 const displayTime = computed(() => {
   if (isExpired.value) {
-    return '已到期';
+    return '已到期可赎回';
   }
   return `${days.value}天${hours.value}时${minutes.value}分${seconds.value}秒`;
 });
