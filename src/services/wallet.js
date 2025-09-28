@@ -55,6 +55,7 @@ export const walletState = reactive({
   walletType: null, // To store the type of the connected wallet
   isNewUser: null, // null: unknown, true: new, false: old
   contractsInitialized: false, // <-- Add this new state
+  hasClaimableRewards: false, // New state for the red dot indicator
 });
 
 // Utility function to format wallet address
@@ -281,6 +282,7 @@ export const disconnectWallet = () => {
   walletState.signer = null;
   walletState.walletType = null;
   walletState.isNewUser = null; // Reset user status on disconnect
+  walletState.hasClaimableRewards = false; // Reset on disconnect
   localStorage.removeItem('ath_walletAddress');
   localStorage.removeItem('ath_walletType'); // Also remove wallet type
   
@@ -329,6 +331,13 @@ const handleAccountsChanged = async (accounts) => {
     disconnectWallet();
   } else {
     const newAddress = accounts[0];
+    // --- Smart Check to Prevent Unnecessary Re-signing ---
+    // Only proceed if the new address is different from the current one.
+    if (newAddress.toLowerCase() === walletState.address.toLowerCase()) {
+      console.log('accountsChanged event fired, but address is the same. Ignoring.');
+      return;
+    }
+
     console.log(`Switched to new address: ${newAddress}`);
 
     // Critical Step 1: Immediately de-authenticate the old session.

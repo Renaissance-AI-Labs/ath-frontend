@@ -106,6 +106,13 @@
                                                     <i class="icon-arrow-caret-down  fs-8"></i>
                                                     分享好友
                                                 </a>
+                                                <div class="reward-button-wrapper">
+                                                    <a href="#" @click.prevent="handleClaimLevelReward" class="btn-ip ip-modern text-body-3" v-if="isAuthenticated">
+                                                        <i class="icon-arrow-top fs-14"></i>
+                                                        成就奖励
+                                                    </a>
+                                                    <div v-if="walletState.hasClaimableRewards" class="red-dot"></div>
+                                                </div>
                                             </div>
                                         </fieldset>
                                     </div>
@@ -188,7 +195,7 @@ import {
 } from '../services/notification';
 import AnimatedNumber from './AnimatedNumber.vue'; // Import the new component
 
-const emits = defineEmits(['open-inject-modal']);
+const emits = defineEmits(['open-inject-modal', 'open-claim-reward-modal']);
 
 const stakedBalance = ref(0); // Use number type
 const friendsBoost = ref(0); // Use number type
@@ -273,6 +280,10 @@ const shareFriendLink = async () => {
   }
 };
 
+const handleClaimLevelReward = () => {
+  emits('open-claim-reward-modal');
+};
+
 watch(isAuthenticated, (isAuth) => {
   if (isAuth) {
     startFetching();
@@ -344,6 +355,22 @@ onUnmounted(() => {
 
 .form-ask-bg {
     background-color: #11111300;
+}
+
+.reward-button-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.red-dot {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 10px;
+  height: 10px;
+  background-color: #101e2e;
+  border-radius: 50%;
+  border: 1px solid white;
 }
 </style>
 

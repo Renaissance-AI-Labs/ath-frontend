@@ -87,7 +87,7 @@ export default {
         copyrightText() {
             const isProduction = import.meta.env.PROD;
             const envPrefix = isProduction ? 'M' : 'T';
-            const version = '1.0.0'; // Version is now hardcoded here
+            const version = '1.0.6'; // Version is now hardcoded here
             return `© 2025 Athena Protocol. ALL RIGHTS RESERVED. ${envPrefix}-${version}`;
         }
     }
