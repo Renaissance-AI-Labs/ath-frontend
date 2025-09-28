@@ -1,13 +1,13 @@
 import { ethers } from 'ethers';
 import { walletState } from './wallet';
+import { APP_ENV } from './environment'; // Import from the new centralized file
 import { toRaw } from 'vue';
 import { showToast } from '../services/notification';
 
 // --- Helper to get USDT decimals based on environment ---
 export const getUsdtDecimals = () => {
-  const isProduction = import.meta.env.PROD;
   // Production (Mainnet) USDT uses 6 decimals, Development (Testnet) test USDT uses 18
-  return isProduction ? 6 : 18;
+  return APP_ENV === 'PROD' ? 6 : 18;
 };
 
 // --- Import ABIs ---
@@ -87,8 +87,7 @@ const THRESHOLDS = {
   }
 };
 
-const isProduction = import.meta.env.PROD;
-const env = isProduction ? 'production' : 'development';
+const env = APP_ENV === 'PROD' ? 'production' : 'development';
 
 export const S5_THRESHOLD = THRESHOLDS[env].S5;
 export const S6_THRESHOLD = THRESHOLDS[env].S6;
@@ -106,8 +105,7 @@ export const initializeContracts = async () => {
     return;
   }
 
-  const isProduction = import.meta.env.PROD;
-  const env = isProduction ? 'production' : 'development';
+  const env = APP_ENV === 'PROD' ? 'production' : 'development';
 
   console.log(`Initializing contracts for ${env} environment.`);
 
@@ -236,8 +234,7 @@ const getPendingRewards = async (poolContract) => {
         return "0";
     }
     try {
-        const isProduction = import.meta.env.PROD;
-        const env = isProduction ? 'production' : 'development';
+        const env = APP_ENV === 'PROD' ? 'production' : 'development';
         const athAddress = contractAddresses.ath[env];
 
         // The correct function name from the ABI is getTokenRewards
@@ -279,8 +276,7 @@ const claimRewards = async (poolContract) => {
         return false;
     }
     try {
-        const isProduction = import.meta.env.PROD;
-        const env = isProduction ? 'production' : 'development';
+        const env = APP_ENV === 'PROD' ? 'production' : 'development';
         const athAddress = contractAddresses.ath[env];
 
         // The claim function from the ABI is harvest(tokenAddress)
@@ -525,8 +521,7 @@ const getExpectedAthAmount = async (usdtAmountIn) => {
     console.error("Router contract not initialized.");
     return 0n;
   }
-  const isProduction = import.meta.env.PROD;
-  const env = isProduction ? 'production' : 'development';
+  const env = APP_ENV === 'PROD' ? 'production' : 'development';
   const usdtAddress = contractAddresses.usdt[env];
   const athAddress = contractAddresses.ath[env];
   
@@ -554,7 +549,7 @@ const getExpectedAthAmount = async (usdtAmountIn) => {
  * @returns {Promise<string>} The allowance amount in ethers (string).
  */
 export const getUsdtAllowance = async () => {
-  const stakingAddress = contractAddresses.staking[import.meta.env.PROD ? 'production' : 'development'];
+  const stakingAddress = contractAddresses.staking[APP_ENV === 'PROD' ? 'production' : 'development'];
   if (!usdtContract || !walletState.address || !stakingAddress) {
     console.warn("USDT contract not initialized, wallet not connected, or staking address missing.");
     return "0";
@@ -574,7 +569,7 @@ export const getUsdtAllowance = async () => {
  * @returns {Promise<boolean>} True if the approval transaction was successful, false otherwise.
  */
 export const approveUsdt = async () => {
-  const stakingAddress = contractAddresses.staking[import.meta.env.PROD ? 'production' : 'development'];
+  const stakingAddress = contractAddresses.staking[APP_ENV === 'PROD' ? 'production' : 'development'];
   if (!usdtContract || !stakingAddress) {
     console.error("USDT contract not initialized or staking address missing.");
     return false;
