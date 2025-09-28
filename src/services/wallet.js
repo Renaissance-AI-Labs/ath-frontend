@@ -1,5 +1,6 @@
 import { reactive } from 'vue';
 import { ethers } from 'ethers';
+import { APP_ENV } from './environment'; // Import from the new centralized file
 // REMOVED: import { MetaMaskSDK } from "@metamask/sdk";
 import {
   initializeContracts,
@@ -55,6 +56,7 @@ export const walletState = reactive({
   walletType: null, // To store the type of the connected wallet
   isNewUser: null, // null: unknown, true: new, false: old
   contractsInitialized: false, // <-- Add this new state
+  hasClaimableRewards: false, // New state for the red dot indicator
 });
 
 // Utility function to format wallet address
@@ -110,13 +112,10 @@ const authenticateWallet = async (address, signer) => {
 
 // --- New Network Management Function ---
 const switchNetwork = async (rawProvider) => {
-  // Read from Vite's environment variables to determine the network.
-  // Vercel will set NODE_ENV to 'production' for production builds.
-  // We can use this as a reliable indicator.
-  const isProduction = import.meta.env.PROD; 
-  const targetNetwork = isProduction ? networks.bnbMainnet : networks.bnbTestnet;
-  
-  console.log(`Environment: ${isProduction ? 'Production' : 'Development'}. Targeting BNB ${isProduction ? 'Mainnet' : 'Testnet'}.`);
+  // Use the new APP_ENV to determine the target network
+  const targetNetwork = APP_ENV === 'PROD' ? networks.bnbMainnet : networks.bnbTestnet;
+
+  console.log(`Application Environment: '${APP_ENV}'. Targeting BNB ${APP_ENV === 'PROD' ? 'Mainnet' : 'Testnet'}.`);
 
   try {
     await rawProvider.request({
@@ -281,6 +280,7 @@ export const disconnectWallet = () => {
   walletState.signer = null;
   walletState.walletType = null;
   walletState.isNewUser = null; // Reset user status on disconnect
+  walletState.hasClaimableRewards = false; // Reset on disconnect
   localStorage.removeItem('ath_walletAddress');
   localStorage.removeItem('ath_walletType'); // Also remove wallet type
   
@@ -329,6 +329,13 @@ const handleAccountsChanged = async (accounts) => {
     disconnectWallet();
   } else {
     const newAddress = accounts[0];
+    // --- Smart Check to Prevent Unnecessary Re-signing ---
+    // Only proceed if the new address is different from the current one.
+    if (newAddress.toLowerCase() === walletState.address.toLowerCase()) {
+      console.log('accountsChanged event fired, but address is the same. Ignoring.');
+      return;
+    }
+
     console.log(`Switched to new address: ${newAddress}`);
 
     // Critical Step 1: Immediately de-authenticate the old session.
