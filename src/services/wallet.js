@@ -1,5 +1,6 @@
 import { reactive } from 'vue';
 import { ethers } from 'ethers';
+import { APP_ENV } from './environment'; // Import from the new centralized file
 // REMOVED: import { MetaMaskSDK } from "@metamask/sdk";
 import {
   initializeContracts,
@@ -111,13 +112,10 @@ const authenticateWallet = async (address, signer) => {
 
 // --- New Network Management Function ---
 const switchNetwork = async (rawProvider) => {
-  // Read from Vite's environment variables to determine the network.
-  // Vercel will set NODE_ENV to 'production' for production builds.
-  // We can use this as a reliable indicator.
-  const isProduction = import.meta.env.PROD; 
-  const targetNetwork = isProduction ? networks.bnbMainnet : networks.bnbTestnet;
-  
-  console.log(`Environment: ${isProduction ? 'Production' : 'Development'}. Targeting BNB ${isProduction ? 'Mainnet' : 'Testnet'}.`);
+  // Use the new APP_ENV to determine the target network
+  const targetNetwork = APP_ENV === 'PROD' ? networks.bnbMainnet : networks.bnbTestnet;
+
+  console.log(`Application Environment: '${APP_ENV}'. Targeting BNB ${APP_ENV === 'PROD' ? 'Mainnet' : 'Testnet'}.`);
 
   try {
     await rawProvider.request({

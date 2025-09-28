@@ -31,7 +31,7 @@
                         </svg>
                     </div>
                     <div class="footer-inner_link tf-grid-layout tf-col-2 lg-col-4">
-                        <a href="index.html" class="footer-logo logo-site">
+                        <a class="footer-logo logo-site">
                             <img class="lazyload" src="/asset/images/logo/ATNENA-logo-icon.png" data-src="/asset/images/logo/ATNENA-logo-icon.png"
                                 alt="LOGO" style="width: 70px; height: 70px;">
                         </a>
@@ -81,12 +81,20 @@
     </footer>
 </template>
 <script>
+import { APP_ENV } from '../services/environment'; // Import the environment variable
+
 export default {
     name: 'Footer',
     computed: {
         copyrightText() {
-            const isProduction = import.meta.env.PROD;
-            const envPrefix = isProduction ? 'M' : 'T';
+            let envPrefix;
+            if (APP_ENV === 'PROD') {
+                envPrefix = 'M'; // Mainnet/Production
+            } else if (APP_ENV === 'test') {
+                envPrefix = 'T'; // Test/Preview
+            } else {
+                envPrefix = 'D'; // Dev/Local
+            }
             const version = '1.0.6'; // Version is now hardcoded here
             return `© 2025 Athena Protocol. ALL RIGHTS RESERVED. ${envPrefix}-${version}`;
         }
