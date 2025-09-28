@@ -105,7 +105,7 @@
                         </div>
                         <template v-else>
                             <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist" :class="`list-${listMode}`">
-                                <li v-for="(item, index) in stakingItems" :key="item.originalIndex" class="nav-tab-item li-style" role="presentation">
+                                <li v-for="(item, index) in stakingItems" :key="item.id" class="nav-tab-item li-style" role="presentation">
                                     <div class="br-line has-dot"></div>
                                     <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true" role="tab">
                                         <div :class="`stars-bg stars-bg-${(index % 3) + 1}`">
@@ -115,8 +115,8 @@
                                         </div>
                                         <div class="card-content">
                                             <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                                                <h5 class="name h5-list-style" :data-text="`${activeTab === 'investment' ? 'STAKING' : 'REDEEMED'}-CODE-${String(item.originalIndex + 1).padStart(2, '0')}`">
-                                                    {{ activeTab === 'investment' ? 'STAKING' : 'REDEEMED' }}-CODE-{{ String(item.originalIndex + 1).padStart(2, '0') }}
+                                                <h5 class="name h5-list-style" :data-text="`${activeTab === 'investment' ? 'STAKING' : 'REDEEMED'}-CODE-${String(item.id + 1).padStart(2, '0')}`">
+                                                    {{ activeTab === 'investment' ? 'STAKING' : 'REDEEMED' }}-CODE-{{ String(item.id + 1).padStart(2, '0') }}
                                                 </h5>
                                                 <h5 class="name h5-list-style" :data-text="item.stakeDate" style="min-width: 125px;">{{ item.stakeDate }}</h5>
                                             </div>
@@ -135,9 +135,9 @@
                                                 <div class="status-box-button">
                                                     <button v-if="item.displayStatus === 'redeemable'" 
                                                             class="tf-btn text-body-3 style-2 animate-btn animate-dark" 
-                                                            :disabled="unstackingStates[item.originalIndex]"
-                                                            @click.prevent="handleUnstake(item.originalIndex)">
-                                                        {{ unstackingStates[item.originalIndex] ? '赎回中...' : '赎回' }}
+                                                            :disabled="unstackingStates[item.id]"
+                                                            @click.prevent="handleUnstake(item.id)">
+                                                        {{ unstackingStates[item.id] ? '赎回中...' : '赎回' }}
                                                     </button>
                                                     <button v-else-if="item.displayStatus === 'redeemed'" class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>已赎回</button>
                                                     <button v-else class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>等待赎回</button>
@@ -245,16 +245,16 @@ const fetchStakingData = async () => {
         // --- Conditional Interest Fetching ---
         let liveRewards = [];
         if (status === 0 && pageRecords.length > 0) { // Only for "investment" (in-progress) list
-            const rewardPromises = pageRecords.map((record, index) => {
-                const originalIndex = Number(total) - 1 - offset - index;
-                return rewardOfSlot(originalIndex);
+            const rewardPromises = pageRecords.map(record => {
+                // Now we use the permanent record.id
+                return rewardOfSlot(Number(record.id));
             });
             liveRewards = await Promise.all(rewardPromises);
             console.log('[订单列表] 获取到进行中列表的实时奖励数据:', liveRewards);
         }
 
         stakingItems.value = pageRecords.map((record, index) => {
-            const originalIndex = Number(total) - 1 - offset - index;
+            const id = Number(record.id);
 
             let interest;
             if (status === 0) { // In-progress
@@ -289,7 +289,7 @@ const fetchStakingData = async () => {
                 }).replace(/\//g, '-'),
                 expiryTimestamp: expiryTimestamp,
                 displayStatus: displayStatus,
-                originalIndex: originalIndex,
+                id: id,
             };
         });
 
@@ -306,17 +306,17 @@ const fetchStakingData = async () => {
 };
 
 
-const handleUnstake = async (index) => {
-  unstackingStates[index] = true;
-  try {
-    const success = await unstake(index);
-    if (success) {
-      // Refresh the entire list to get the latest state from the blockchain
-      await fetchStakingData();
+const handleUnstake = async (id) => {
+    unstackingStates[id] = true;
+    try {
+        const success = await unstake(id);
+        if (success) {
+            // Refresh the entire list to get the latest state from the blockchain
+            await fetchStakingData();
+        }
+    } finally {
+        unstackingStates[id] = false;
     }
-  } finally {
-    unstackingStates[index] = false;
-  }
 };
 
 const startPolling = () => {

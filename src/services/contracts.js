@@ -439,24 +439,24 @@ export const getUserStakingData = async () => {
   }
 };
 
-export const unstake = async (index) => {
+export const unstake = async (id) => {
   if (!stakingContract) {
     showToast("质押合约未初始化");
     return false;
   }
-  if (typeof index !== 'number' || index < 0) {
-    showToast("无效的订单索引");
+  if (typeof id !== 'number' || id < 0) {
+    showToast("无效的订单ID");
     return false;
   }
 
-  console.log(`[赎回操作] 准备为索引 ${index} 的订单发起交易...`);
+  console.log(`[赎回操作] 准备为 ID 为 ${id} 的订单发起交易...`);
 
   try {
     // Dry-run the transaction first to catch potential reverts without sending a transaction.
-    await stakingContract.unstake.staticCall(index);
+    await stakingContract.unstake.staticCall(id);
     console.log("[赎回操作] 静态调用检查通过，交易很可能会成功。");
 
-    const tx = await stakingContract.unstake(index);
+    const tx = await stakingContract.unstake(id);
     console.log(`[赎回操作] 交易已发送, Hash: ${tx.hash}. 等待链上确认...`);
     // showToast("交易已发送，等待确认...");
 
@@ -691,7 +691,13 @@ export const stakeWithInviter = async (amount, stakeIndex, parentAddress) => {
     console.log("Staking successful, transaction hash:", tx.hash);
     return true;
   } catch (error) {
-    console.error("Error during stakeWithInviter call:", error);
+    if (error.code === 'ACTION_REJECTED') {
+        console.log('[质押操作] 用户在钱包中拒绝了交易。');
+        // No toast notification for user rejection
+    } else {
+        console.error("Error during stakeWithInviter call:", error);
+        showToast(`质押失败: ${error.reason || '未知错误'}`);
+    }
     return false;
   }
 };
@@ -717,18 +723,19 @@ export const getMaxStakeAmount = async () => {
 /**
  * Fetches the reward for a single stake record by its index.
  * Note: This is now a standalone function as it's called from HowToUseSection.vue
- * @param {number} index The absolute index of the stake record.
+ * @param {number} id The permanent ID of the stake record.
  * @returns {Promise<BigInt>} The total reward value as a BigInt.
  */
-export const rewardOfSlot = async (index) => {
+export const rewardOfSlot = async (id) => {
     if (!stakingContract) {
         console.warn("Staking contract not initialized for rewardOfSlot call.");
         return 0n;
     }
     try {
-        return await stakingContract.rewardOfSlot(walletState.address, index);
+        // The contract function signature has changed from index to id.
+        return await stakingContract.rewardOfSlot(walletState.address, id);
     } catch (error) {
-        console.error(`Error fetching reward for slot ${index}:`, error);
+        console.error(`Error fetching reward for slot with ID ${id}:`, error);
         return 0n;
     }
 };
