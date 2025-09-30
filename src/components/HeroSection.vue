@@ -98,16 +98,16 @@
 
                                         <fieldset class="field-bottom button-add-pool">
                                             <div class="field_left">
-                                                <a href="#" @click.prevent="handleInjectPoolClick" class="btn-ip ip-modern text-body-3">
+                                                <a href="#" @click.prevent="handleInjectPoolClick" class="btn-ip ip-modern text-body-3" style="padding: 7px 7px !important; gap: 4px !important;">
                                                     <i class="icon-plus fs-10"></i>
                                                     注入底池
                                                 </a>
-                                                <a href="#" @click.prevent="shareFriendLink" class="btn-ip ip-modern text-body-3">
+                                                <a href="#" @click.prevent="shareFriendLink" class="btn-ip ip-modern text-body-3" style="padding: 7px 7px !important; gap: 4px !important;">
                                                     <i class="icon-arrow-caret-down  fs-8"></i>
                                                     分享好友
                                                 </a>
                                                 <div class="reward-button-wrapper">
-                                                    <a href="#" @click.prevent="handleClaimLevelReward" class="btn-ip ip-modern text-body-3" v-if="isAuthenticated">
+                                                    <a href="#" @click.prevent="handleClaimLevelReward" class="btn-ip ip-modern text-body-3" v-if="isAuthenticated" style="padding: 7px 7px !important; gap: 4px !important;">
                                                         <i class="icon-arrow-top fs-14"></i>
                                                         成就奖励
                                                     </a>
