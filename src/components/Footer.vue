@@ -60,8 +60,8 @@
                             <div class="tf-collapse-content">
                                 <ul class="footer-menu-list">
                                     <li><a href="https://athena-protocol-official.gitbook.io/athena-protocol-cn/" class="link text-main-2">白皮书</a></li>
-                                    <li><a href="#" class="link text-main-2">X/Twitter</a></li>
-                                    <li><a href="#" class="link text-main-2">Telegram</a></li>
+                                    <li><a href="https://x.com/Athena_Aigent" class="link text-main-2">X/Twitter</a></li>
+                                    <li><a href="https://t.me/athena_aigent" class="link text-main-2">Telegram</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -95,7 +95,7 @@ export default {
             } else {
                 envPrefix = 'D'; // Dev/Local
             }
-            const version = '1.0.6'; // Version is now hardcoded here
+            const version = '1.0.7'; // Version is now hardcoded here
             return `© 2025 Athena Protocol. ALL RIGHTS RESERVED. ${envPrefix}-${version}`;
         }
     }
