@@ -28,7 +28,7 @@
           </div>
           <div v-else class="no-wallet-view">
             <p>未检测到钱包。</p>
-            <p>请安装 <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">MetaMask</a> 或其他兼容的钱包后重试。</p>
+            <p>请安装 <a href="https://www.okx.com/web3" target="_blank" rel="noopener noreferrer">OKX Wallet</a> 或 <a href="https://www.tokenpocket.pro/" target="_blank" rel="noopener noreferrer">TokenPocket</a> 后重试。</p>
           </div>
         </div>
 
@@ -307,10 +307,6 @@ export default {
 }
 .btn-ip:hover {
     color: var(--primary);
-}
-
-.disconnect-btn {
-    /* No width property, so it shrinks to content size */
 }
 
 .no-wallet-view {
