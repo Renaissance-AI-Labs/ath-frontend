@@ -64,8 +64,13 @@ import {
   getUsdtBalance,
   getUsdtAllowance,
   approveUsdt,
-  getMaxStakeAmount
+  getMaxStakeAmount,
+  getUserStakedBalance
 } from '../services/contracts';
+import {
+  ENABLE_TEMPORARY_STAKE_LIMIT,
+  TEMPORARY_STAKE_LIMIT
+} from '../services/environment';
 import CustomSelect from './CustomSelect.vue';
 import {
   showToast
@@ -83,6 +88,7 @@ export default {
       selectedDuration: 0, // Default to 1 day (index 0)
       usdtBalance: '0',
       usdtAllowance: '0',
+      userStakedBalance: '0', // User's current staked balance
       isApproving: false,
       isLoading: true, // Start with loading true to fetch allowance
       walletState: walletState,
@@ -103,8 +109,20 @@ export default {
     walletAddress() {
       return this.walletState.address;
     },
+    // Calculate the effective maximum stake amount based on temporary limit settings
+    effectiveMaxStakeAmount() {
+      const maxAllowedByContract = parseFloat(this.maxStakeAmount);
+      
+      if (ENABLE_TEMPORARY_STAKE_LIMIT) {
+        const userStaked = parseFloat(this.userStakedBalance);
+        const remainingQuota = Math.max(0, TEMPORARY_STAKE_LIMIT - userStaked);
+        return Math.min(maxAllowedByContract, remainingQuota);
+      }
+      
+      return maxAllowedByContract;
+    },
     isAmountInvalid() {
-      return parseFloat(this.amount) > parseFloat(this.maxStakeAmount);
+      return parseFloat(this.amount) > this.effectiveMaxStakeAmount;
     },
     mainButtonState() {
       const amountNum = parseFloat(this.amount);
@@ -130,11 +148,16 @@ export default {
       }
     },
     formattedUsdtBalance() {
-      const maxAllowedByContract = parseFloat(this.maxStakeAmount);
-      const hardCap = 1000;
-      const displayValue = Math.min(maxAllowedByContract, hardCap);
-      
-      console.log(`[余额日志] 开始格式化 (修正逻辑): maxStakeAmount=${maxAllowedByContract}, hardCap=${hardCap}, displayValue=${displayValue}`);
+      const displayValue = this.effectiveMaxStakeAmount;
+
+      if (ENABLE_TEMPORARY_STAKE_LIMIT) {
+        const userStaked = parseFloat(this.userStakedBalance);
+        const maxAllowedByContract = parseFloat(this.maxStakeAmount);
+        const remainingQuota = Math.max(0, TEMPORARY_STAKE_LIMIT - userStaked);
+        console.log(`[余额日志] 限时限额逻辑: 合约最大=${maxAllowedByContract}, 用户已质押=${userStaked}, 限额=${TEMPORARY_STAKE_LIMIT}, 剩余额度=${remainingQuota}, 最终显示=${displayValue}`);
+      } else {
+        console.log(`[余额日志] 无限额限制: 合约最大=${parseFloat(this.maxStakeAmount)}, 最终显示=${displayValue}`);
+      }
 
       if (isNaN(displayValue)) {
            console.log(`[余额日志] 格式化失败: 解析结果为NaN, 返回 '0.00'`);
@@ -156,6 +179,7 @@ export default {
         this.resetBalance();
         this.usdtAllowance = '0';
         this.maxStakeAmount = '0';
+        this.userStakedBalance = '0';
       }
     }
   },
@@ -166,12 +190,13 @@ export default {
       await Promise.all([
         this.fetchUsdtBalance(),
         this.fetchUsdtAllowance(),
-        this.fetchMaxStakeAmount()
+        this.fetchMaxStakeAmount(),
+        this.fetchUserStakedBalance()
       ]);
       
       const allowanceNum = parseFloat(this.usdtAllowance);
       const isApproved = allowanceNum > 0;
-      console.log(`[注入资产弹窗] 数据获取: 用户余额=${this.usdtBalance}, 允许额度=${this.usdtAllowance}, 合约最大可注入=${this.maxStakeAmount}`);
+      console.log(`[注入资产弹窗] 数据获取: 用户余额=${this.usdtBalance}, 允许额度=${this.usdtAllowance}, 合约最大可注入=${this.maxStakeAmount}, 用户已质押=${this.userStakedBalance}`);
 
       this.isLoading = false;
     },
@@ -185,6 +210,9 @@ export default {
     },
     async fetchMaxStakeAmount() {
       this.maxStakeAmount = await getMaxStakeAmount();
+    },
+    async fetchUserStakedBalance() {
+      this.userStakedBalance = await getUserStakedBalance();
     },
     resetBalance() {
       this.usdtBalance = '0';
@@ -202,7 +230,7 @@ export default {
       this.amount = value;
     },
     fillMax() {
-      this.amount = this.maxStakeAmount;
+      this.amount = this.effectiveMaxStakeAmount.toString();
     },
     async handleMainAction() {
       if (this.mainButtonState.disabled) return;
@@ -210,14 +238,14 @@ export default {
       // --- Validation Logic ---
       const inputAmount = parseFloat(this.amount);
       const userBalance = parseFloat(this.usdtBalance);
-      const maxAllowed = parseFloat(this.maxStakeAmount);
+      const maxAllowed = this.effectiveMaxStakeAmount;
 
       if (inputAmount > userBalance) {
           showToast('您的USDT余额不足');
           return;
       }
       if (inputAmount > maxAllowed) {
-          showToast(`当前最多可注入 ${parseFloat(this.maxStakeAmount).toFixed(4)} USDT`);
+          showToast(`当前最多可注入 ${maxAllowed.toFixed(2)} USDT`);
           return;
       }
       // --- End Validation Logic ---
