@@ -40,3 +40,9 @@ export const ENABLE_TEMPORARY_STAKE_LIMIT = true;
  * Only applies when ENABLE_TEMPORARY_STAKE_LIMIT is true
  */
 export const TEMPORARY_STAKE_LIMIT = 10;
+
+/**
+ * Disable console logs in production
+ * Set to true to disable console.log/debug/info in production environment
+ */
+export const DISABLE_CONSOLE_IN_PROD = true;
