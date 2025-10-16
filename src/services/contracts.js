@@ -12,13 +12,18 @@ export const getUsdtDecimals = () => {
 
 // --- Import ABIs ---
 import referralAbi from '../abis/referral.json';
-import stakingAbi from '../abis/staking.json';
+// Import different staking ABIs based on environment
+import stakingAbiTest from '../abis/staking_test.json';
+import stakingAbiMain from '../abis/staking_main.json';
 import athAbi from '../abis/ath.json';
 import s5poolAbi from '../abis/s5pool.json';
 import s6poolAbi from '../abis/s6pool.json';
 import s7poolAbi from '../abis/s7pool.json';
 // No need for a separate USDT ABI if it follows ERC20 standard like `ath.json`
 // import usdtAbi from '../abis/usdt.json';
+
+// Select staking ABI based on environment
+const stakingAbi = APP_ENV === 'PROD' ? stakingAbiMain : stakingAbiTest;
 
 const uniswapV2RouterAbi = [
   "function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts)"
