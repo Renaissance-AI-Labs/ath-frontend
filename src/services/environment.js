@@ -27,3 +27,16 @@ const getAppEnv = () => {
  * environment-specific logic.
  */
 export const APP_ENV = getAppEnv();
+
+/**
+ * Temporary stake limit configuration
+ * Set to true to enable the 10 USDT per-user stake limit
+ * Set to false to remove this limit (use only contract's maxStakeAmount)
+ */
+export const ENABLE_TEMPORARY_STAKE_LIMIT = true;
+
+/**
+ * The temporary maximum stake amount per user (in USDT)
+ * Only applies when ENABLE_TEMPORARY_STAKE_LIMIT is true
+ */
+export const TEMPORARY_STAKE_LIMIT = 10;
