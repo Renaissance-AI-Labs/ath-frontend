@@ -95,7 +95,7 @@ export default {
             } else {
                 envPrefix = 'D'; // Dev/Local
             }
-            const version = '1.0.7'; // Version is now hardcoded here
+            const version = '1.0.8'; // Version is now hardcoded here
             return `© 2025 Athena Protocol. ALL RIGHTS RESERVED. ${envPrefix}-${version}`;
         }
     }

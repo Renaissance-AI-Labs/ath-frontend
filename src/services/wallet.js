@@ -1,30 +1,11 @@
 import { reactive } from 'vue';
 import { ethers } from 'ethers';
 import { APP_ENV } from './environment'; // Import from the new centralized file
-// REMOVED: import { MetaMaskSDK } from "@metamask/sdk";
 import {
   initializeContracts,
   resetContracts,
   checkIfUserHasReferrer
 } from './contracts';
-
-
-let MMSDK;
-
-// Helper to initialize MetaMask SDK - NOW ASYNC
-const getMMSDK = async () => {
-    if (!MMSDK) {
-        // Dynamically import the SDK only when needed
-        const { MetaMaskSDK } = await import('@metamask/sdk');
-        MMSDK = new MetaMaskSDK({
-            dappMetadata: {
-                name: "ATH Platform",
-                url: window.location.href,
-            },
-        });
-    }
-    return MMSDK;
-}
 
 // --- Network Configurations ---
 const networks = {
@@ -123,7 +104,7 @@ const switchNetwork = async (rawProvider) => {
       params: [{ chainId: targetNetwork.chainId }],
     });
   } catch (switchError) {
-    // This error code indicates that the chain has not been added to MetaMask.
+    // This error code indicates that the chain has not been added to the wallet.
     if (switchError.code === 4902) {
       try {
         await rawProvider.request({
@@ -162,17 +143,7 @@ export const connectWallet = async (walletType) => {
 
   try {
     // --- Step 1: Get the raw provider based on walletType ---
-    if (walletType === 'metamask') {
-        // When user explicitly selects MetaMask, always use the SDK.
-        console.log("Connecting with MetaMask SDK to ensure correct wallet is triggered.");
-        const sdk = await getMMSDK();
-        accounts = await sdk.connect(); // The SDK handles getting accounts
-        rawProvider = sdk.getProvider();
-        if (!rawProvider) {
-            alert('Could not initialize MetaMask. Please install the extension or try again.');
-            return false;
-        }
-    } else if (walletType === 'tokenpocket') {
+    if (walletType === 'tokenpocket') {
         if (!window.tokenpocket?.ethereum) {
             alert('TokenPocket wallet not detected!');
             return false;
@@ -184,12 +155,10 @@ export const connectWallet = async (walletType) => {
             return false;
         }
         rawProvider = window.okexchain;
-    } else { // Fallback to default
-        if (typeof window.ethereum === 'undefined') {
-            alert('Please install a wallet extension like MetaMask!');
-            return false;
-        }
-        rawProvider = window.ethereum;
+    } else {
+        // No valid wallet type provided
+        alert('Please select a valid wallet (OKX or TokenPocket)!');
+        return false;
     }
 
     // --- Step 2: Use the raw provider for network management ---
@@ -309,7 +278,8 @@ export const autoConnectWallet = async () => {
     const savedWalletType = localStorage.getItem('ath_walletType');
     if (savedAddress && savedWalletType) {
       // Check for provider existence *inside* the timeout to ensure it has loaded.
-      if (window.ethereum || window.tokenpocket || window.okexchain) {
+      // Only support OKX and TokenPocket
+      if (window.tokenpocket || window.okexchain) {
           console.log(`Attempting to auto-connect with ${savedWalletType}...`);
           // Use the saved wallet type for reconnection
           await connectWallet(savedWalletType);
@@ -399,18 +369,21 @@ export const setupWalletListeners = (provider) => {
   console.log('Wallet event listeners initialized on the correct provider.');
 };
 
-// --- New Wallet Detection Function ---
+// --- Wallet Detection Function (OKX and TokenPocket only) ---
 export const detectWallets = () => {
   const wallets = [];
-  if (window.ethereum?.isMetaMask) {
-      wallets.push({ id: 'metamask', name: 'MetaMask' });
-  }
-  if (window.tokenpocket) {
+  
+  // Check for TokenPocket
+  // TokenPocket injects window.tokenpocket and may set window.ethereum.isTokenPocket
+  if (window.tokenpocket || window.ethereum?.isTokenPocket) {
       wallets.push({ id: 'tokenpocket', name: 'TokenPocket' });
   }
-  if (window.okexchain) {
+  
+  // Check for OKX Wallet
+  // OKX injects both window.okexchain and sets window.ethereum.isOkxWallet
+  if (window.okexchain || window.ethereum?.isOkxWallet) {
       wallets.push({ id: 'okx', name: 'OKX Wallet' });
   }
-  // You can add more wallet detections here
+  
   return wallets;
 };

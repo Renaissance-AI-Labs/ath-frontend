@@ -20,8 +20,8 @@
         </div>
 
         <div class="button-group">
-          <button class="btn-ip btn-cancel" @click="$emit('close')">取消</button>
-          <button class="btn-ip btn-confirm" @click="handleConfirm" :disabled="isLoading || !pendingReferrer">确认推荐人并质押</button>
+          <button class="btn-ip btn-cancel" style="font-size: 14px !important;" @click="$emit('close')">取消</button>
+          <button class="btn-ip btn-confirm" style="font-size: 14px !important;" @click="handleConfirm" :disabled="isLoading || !pendingReferrer">确认推荐人并质押</button>
         </div>
       </div>
     </div>
