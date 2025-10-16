@@ -27,15 +27,15 @@ const uniswapV2RouterAbi = [
 // --- Contract Addresses ---
 const contractAddresses = {
   referral: {
-    production: '', // To be deployed
+    production: '0xE8bF70FCcdA199A1CC2F90412e6Ab13779F95B3F', // To be deployed
     development: '0x1Ad59D67a7D413b0F053d33cf4Ec1FC92190C83A',
   },
   staking: {
-    production: '', // To be deployed
+    production: '0x705c99F6C25056cC73B299dFe209d80455FA7D63', // To be deployed
     development: '0x13FdD65cfC3CbC91609aD1Ea642312Aa682760c7',
   },
   ath: {
-    production: '', // To be deployed
+    production: '0xc30ba330aE7f4921c06C1D9B4605540503EFBf10', // To be deployed
     development: '0x72CfC4eE2620019aD2d90abF51a0B6fF673456c6',
   },
   usdt: {
@@ -47,15 +47,15 @@ const contractAddresses = {
     development: '0xD99D1c33F9fC3444f8101754aBC46c52416550D1', // PancakeSwap Router V2 on BNB Testnet
   },
   s5pool: {
-    production: '', // To be deployed
+    production: '0x20B0850f3B888B4C2494E7C7fbcF9808C6e82F77', // To be deployed
     development: '0xb65b398eB4d9FcAeaC8046A3c9Eb84d4eA60ed2d',
   },
   s6pool: {
-    production: '', // To be deployed
+    production: '0x71b935C4a14b14b9E894CAeCcC9CF7E39379007b', // To be deployed
     development: '0xa28CC3Ea8E349c41bfDd4eE84d99C224e31620c9',
   },
   s7pool: {
-    production: '', // To be deployed
+    production: '0x0A9267E219ce6eb099881f3Df651333BE7742C2e', // To be deployed
     development: '0x1041DDd9585387BC4Aad8bc914db26d1FBbf2D00',
   }
 };
