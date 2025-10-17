@@ -3,6 +3,7 @@ import { walletState } from './wallet';
 import { APP_ENV } from './environment'; // Import from the new centralized file
 import { toRaw } from 'vue';
 import { showToast } from '../services/notification';
+import { t } from '../i18n';
 
 // --- Helper to get USDT decimals based on environment ---
 export const getUsdtDecimals = () => {
@@ -277,7 +278,7 @@ export const getS7PendingRewards = async () => getPendingRewards(s7poolContract)
  */
 const claimRewards = async (poolContract) => {
     if (!poolContract || !walletState.address) {
-        showToast("奖金池合约未初始化或钱包未连接");
+        showToast(t('toast.poolNotInitialized'));
         return false;
     }
     try {
@@ -286,9 +287,9 @@ const claimRewards = async (poolContract) => {
 
         // The claim function from the ABI is harvest(tokenAddress)
         const tx = await poolContract.harvest(athAddress);
-        showToast("交易已发送，等待确认...");
+        showToast(t('toast.txSent'));
         await tx.wait();
-        showToast("奖励领取成功！");
+        showToast(t('toast.claimSuccess'));
         return true;
     } catch (error) {
         if (error.code === 'ACTION_REJECTED') {
@@ -296,7 +297,7 @@ const claimRewards = async (poolContract) => {
             // No toast for user rejection
         } else {
             console.error(`Error claiming rewards from ${await poolContract.getAddress()}:`, error);
-            showToast(`领取失败: ${error.reason || '未知错误'}`);
+            showToast(t('toast.claimFailed', { reason: error.reason || error.message || 'Unknown error' }));
         }
         return false;
     }
@@ -435,18 +436,18 @@ export const getUserStakingData = async () => {
 
   } catch (error) {
     console.error("[质押列表] 获取数据时发生严重错误:", error);
-    showToast("获取质押数据失败");
+    showToast(t('toast.fetchDataFailed'));
     return [];
   }
 };
 
 export const unstake = async (id) => {
   if (!stakingContract) {
-    showToast("质押合约未初始化");
+    showToast(t('toast.stakingNotInitialized'));
     return false;
   }
   if (typeof id !== 'number' || id < 0) {
-    showToast("无效的订单ID");
+    showToast(t('toast.invalidOrderId'));
     return false;
   }
 
@@ -463,7 +464,7 @@ export const unstake = async (id) => {
 
     const receipt = await tx.wait();
     console.log("[赎回操作] 交易成功!", receipt);
-    showToast("赎回成功！");
+    showToast(t('toast.unstakeSuccess'));
 
     return true;
   } catch (error) {
@@ -473,7 +474,7 @@ export const unstake = async (id) => {
       // No toast notification needed for user-initiated cancellation.
     } else {
       console.error("[赎回操作] 交易失败 (可能是静态调用检查时发现问题):", error);
-      showToast(`赎回失败: ${error.reason || error.message}`);
+      showToast(t('toast.unstakeFailed', { reason: error.reason || error.message || 'Unknown error' }));
     }
     return false;
   }
@@ -651,7 +652,7 @@ export const isReferrerValid = async (referrerAddress) => {
  */
 export const stakeWithInviter = async (amount, stakeIndex, parentAddress) => {
   if (!stakingContract) {
-    showToast("质押合约未初始化");
+    showToast(t('toast.stakingNotInitialized'));
     return false;
   }
   try {
@@ -662,7 +663,7 @@ export const stakeWithInviter = async (amount, stakeIndex, parentAddress) => {
     const expectedAth = await getExpectedAthAmount(amountInWei / 2n); // Only half is swapped
     if (expectedAth === 0n) {
       console.error("Could not calculate expected ATH amount, aborting stake.");
-      showToast("无法计算预期输出，质押中止");
+      showToast(t('toast.calculateFailed'));
       return false;
     }
     const slippageTolerance = 10n; // 10%
@@ -696,7 +697,7 @@ export const stakeWithInviter = async (amount, stakeIndex, parentAddress) => {
         // No toast notification for user rejection
     } else {
         console.error("Error during stakeWithInviter call:", error);
-        showToast(`质押失败: ${error.reason || '未知错误'}`);
+        showToast(t('toast.stakeFailed', { reason: error.reason || error.message || 'Unknown error' }));
     }
     return false;
   }

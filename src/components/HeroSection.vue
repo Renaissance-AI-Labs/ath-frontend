@@ -50,7 +50,7 @@
                         </span> -->
                     </h1>
                     <p class="s-sub_title" style="color: #fff;">
-                        只有代码、数学，以及一个由 AI 驱动的、不可阻挡的<br class="d-none d-sm-block">价值创造机器
+                        {{ t('hero.subtitle') }}
                     </p>
                 </div>
             </div>
@@ -74,25 +74,25 @@
                                     <div class="form-content" style="margin-bottom: 20px;">
                                         <div class="tf-brand assets-title">
                                             <div class="container">
-                                                <h5 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content">您的资产在此处安睡 </h5>
+                                                <h5 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content">{{ t('hero.assetsTitle') }}</h5>
                                             </div>
                                         </div>
                                         <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px;">
-                                          <span v-if="isLoading">Loading...</span>
+                                          <span v-if="isLoading">{{ t('common.loading') }}</span>
                                           <span v-else>
-                                            <AnimatedNumber :value="stakedBalance" :decimals="6" /> TOKEN
+                                            <AnimatedNumber :value="stakedBalance" :decimals="6" /> {{ t('common.token') }}
                                           </span>
                                         </p>
 
                                         <div class="tf-brand assets-title">
                                             <div class="container">
-                                                <h3 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content" style="font-size: 16px !important;"> 好友带来的助力 </h3>
+                                                <h3 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content" style="font-size: 16px !important;">{{ t('hero.friendsBoost') }}</h3>
                                             </div>
                                         </div>
                                         <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px; font-size: 14px !important;">
-                                          <span v-if="isLoading">Loading...</span>
+                                          <span v-if="isLoading">{{ t('common.loading') }}</span>
                                            <span v-else>
-                                            <AnimatedNumber :value="friendsBoost" :decimals="6" /> TOKEN
+                                            <AnimatedNumber :value="friendsBoost" :decimals="6" /> {{ t('common.token') }}
                                           </span>
                                         </p>
 
@@ -100,16 +100,16 @@
                                             <div class="field_left">
                                                 <a href="#" @click.prevent="handleInjectPoolClick" class="btn-ip ip-modern text-body-3" style="padding: 7px 7px !important; gap: 4px !important;">
                                                     <i class="icon-plus fs-10"></i>
-                                                    注入底池
+                                                    {{ t('hero.injectPool') }}
                                                 </a>
                                                 <a href="#" @click.prevent="shareFriendLink" class="btn-ip ip-modern text-body-3" style="padding: 7px 7px !important; gap: 4px !important;">
                                                     <i class="icon-arrow-caret-down  fs-8"></i>
-                                                    分享好友
+                                                    {{ t('hero.shareFriend') }}
                                                 </a>
                                                 <div class="reward-button-wrapper">
                                                     <a href="#" @click.prevent="handleClaimLevelReward" class="btn-ip ip-modern text-body-3" v-if="isAuthenticated" style="padding: 7px 7px !important; gap: 4px !important;">
                                                         <i class="icon-arrow-top fs-14"></i>
-                                                        成就奖励
+                                                        {{ t('hero.achievementReward') }}
                                                     </a>
                                                     <div v-if="walletState.hasClaimableRewards" class="red-dot"></div>
                                                 </div>
@@ -194,6 +194,7 @@ import {
   showToast
 } from '../services/notification';
 import AnimatedNumber from './AnimatedNumber.vue'; // Import the new component
+import { t } from '@/i18n';
 
 const emits = defineEmits(['open-inject-modal', 'open-claim-reward-modal']);
 
@@ -254,7 +255,7 @@ const stopFetching = () => {
 
 const handleInjectPoolClick = () => {
   if (!isAuthenticated.value) {
-    showToast('请先连接并授权您的钱包');
+    showToast(t('toast.connectWalletFirst'));
     return;
   }
   emits('open-inject-modal');
@@ -262,21 +263,21 @@ const handleInjectPoolClick = () => {
 
 const shareFriendLink = async () => {
   if (!isAuthenticated.value) {
-    showToast('请先连接并授权您的钱包');
+    showToast(t('toast.connectWalletFirst'));
     return;
   }
   const isEligible = await checkIfUserHasReferrer();
   if (!isEligible) {
-    showToast('请先进行质押并绑定您的推荐好友');
+    showToast(t('toast.stakeAndBindFirst'));
     return;
   }
   const referralLink = `${window.location.origin}?ref=${walletState.address}`;
   try {
     await navigator.clipboard.writeText(referralLink);
-    showToast('复制成功！链接已复制到剪贴板');
+    showToast(t('toast.copySuccess'));
   } catch (err) {
     console.error('无法复制链接: ', err);
-    showToast('复制失败，请检查浏览器权限');
+    showToast(t('toast.copyFailed'));
   }
 };
 

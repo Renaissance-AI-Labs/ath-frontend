@@ -8,20 +8,20 @@
       </div>
       <div class="modal-body-custom">
         <div class="title_holder">
-          <h3>请确认推荐人</h3>
+          <h3>{{ t('referrer.title') }}</h3>
         </div>
         
         <div class="form-group">
-          <label class="form-label">推荐人地址:</label>
+          <label class="form-label">{{ t('referrer.addressLabel') }}</label>
           <div class="address-box">
-            <span v-if="isLoading">加载中...</span>
+            <span v-if="isLoading">{{ t('referrer.loading') }}</span>
             <span v-else>{{ formattedReferrerAddress }}</span>
           </div>
         </div>
 
         <div class="button-group">
-          <button class="btn-ip btn-cancel" style="font-size: 14px !important;" @click="$emit('close')">取消</button>
-          <button class="btn-ip btn-confirm" style="font-size: 14px !important;" @click="handleConfirm" :disabled="isLoading || !pendingReferrer">确认推荐人并质押</button>
+          <button class="btn-ip btn-cancel" style="font-size: 14px !important;" @click="$emit('close')">{{ t('referrer.cancel') }}</button>
+          <button class="btn-ip btn-confirm" style="font-size: 14px !important;" @click="handleConfirm" :disabled="isLoading || !pendingReferrer">{{ t('referrer.confirm') }}</button>
         </div>
       </div>
     </div>
@@ -35,6 +35,7 @@ import {
 import {
   formatAddress
 } from '../services/wallet';
+import { t } from '@/i18n';
 
 export default {
   name: 'ConfirmReferrerModal',
@@ -42,6 +43,11 @@ export default {
     // referrerAddress prop is no longer needed as the component will fetch it.
   },
   emits: ['close', 'confirm'],
+  setup() {
+    return {
+      t,
+    };
+  },
   data() {
     return {
       pendingReferrer: null,
@@ -164,6 +170,7 @@ export default {
 }
 .btn-cancel {
   /* Inherits base .btn-ip style */
+  color: var(--text-2);
 }
 .btn-confirm {
     color: var(--white);
