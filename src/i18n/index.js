@@ -754,4 +754,10 @@ export function initializeLanguage() {
 
 // Computed properties
 export const currentLanguage = computed(() => i18nState.currentLanguage);
-export const availableLanguages = computed(() => Object.values(i18nState.languages));
+export const availableLanguages = computed(() => [
+  i18nState.languages['zh-tw'],
+  i18nState.languages['zh-cn'],
+  i18nState.languages['en'],
+  i18nState.languages['ko'],
+  i18nState.languages['ja'],
+]);

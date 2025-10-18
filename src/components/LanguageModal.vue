@@ -142,11 +142,7 @@ export default {
   color: var(--white);
   transition: all 0.3s ease-in-out;
   background: var(--bg-2);
-}
-
-.language-list a:hover {
-  border-color: var(--primary);
-  background-color: rgba(var(--primary-rgb), 0.1);
+  cursor: pointer;
 }
 
 .language-name {
@@ -158,11 +154,6 @@ export default {
 .language-list .icon-arrow-right {
   font-size: 20px;
   color: var(--text-2);
-  transition: color 0.3s ease;
-}
-
-.language-list a:hover .icon-arrow-right {
-  color: var(--primary);
 }
 
 /* Starry background effect */
