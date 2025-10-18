@@ -105,7 +105,8 @@ const languagePacks = {
     // Testimonial Section
     'testimonial.connectFuture': '连接未来',
     'testimonial.yourselfShapesFuture': 'Yourself shapes the future.',
-    'testimonial.futureJourney': '一同探索未来的旅途',
+    'testimonial.futureJourneyLine1': '一同探索',
+    'testimonial.futureJourneyLine2': '未来的旅途',
     'testimonial.genesis': '创世',
     'testimonial.genesisEn': 'Genesis',
     'testimonial.genesisDesc': '协议部署，LCC 功能上线，Athena AI™ v1.0 开始自主运行，开启一个前所未有的未来。',
@@ -224,7 +225,8 @@ const languagePacks = {
     // Testimonial Section
     'testimonial.connectFuture': '連接未來',
     'testimonial.yourselfShapesFuture': 'Yourself shapes the future.',
-    'testimonial.futureJourney': '一同探索未來的旅途',
+    'testimonial.futureJourneyLine1': '一同探索',
+    'testimonial.futureJourneyLine2': '未來的旅途',
     'testimonial.genesis': '創世',
     'testimonial.genesisEn': 'Genesis',
     'testimonial.genesisDesc': '協議部署，LCC 功能上線，Athena AI™ v1.0 開始自主運行，開啟一個前所未有的未來。',
@@ -363,7 +365,8 @@ const languagePacks = {
     // Testimonial Section
     'testimonial.connectFuture': 'Connect Future',
     'testimonial.yourselfShapesFuture': 'Yourself shapes the future.',
-    'testimonial.futureJourney': 'Let\'s Explore the Journey of the Future Together',
+    'testimonial.futureJourneyLine1': 'Let\'s Explore Together',
+    'testimonial.futureJourneyLine2': 'The Journey of the Future',
     'testimonial.genesis': 'Genesis',
     'testimonial.genesisEn': 'Genesis',
     'testimonial.genesisDesc': 'Protocol deployed, LCC functionality launched, Athena AI™ v1.0 begins autonomous operation, opening an unprecedented future.',
@@ -502,7 +505,8 @@ const languagePacks = {
     // Testimonial Section
     'testimonial.connectFuture': '未来を接続',
     'testimonial.yourselfShapesFuture': 'Yourself shapes the future.',
-    'testimonial.futureJourney': '共に未来への旅路を探索しましょう',
+    'testimonial.futureJourneyLine1': '共に探索しましょう',
+    'testimonial.futureJourneyLine2': '未来への旅路',
     'testimonial.genesis': '創世',
     'testimonial.genesisEn': 'Genesis',
     'testimonial.genesisDesc': 'プロトコル展開、LCC機能稼働開始、Athena AI™ v1.0が自律運転を開始し、前例のない未来を切り開きます。',
@@ -641,7 +645,8 @@ const languagePacks = {
     // Testimonial Section
     'testimonial.connectFuture': '미래 연결',
     'testimonial.yourselfShapesFuture': 'Yourself shapes the future.',
-    'testimonial.futureJourney': '함께 미래의 여정을 탐험하세요',
+    'testimonial.futureJourneyLine1': '함께 탐험하세요',
+    'testimonial.futureJourneyLine2': '미래의 여정',
     'testimonial.genesis': '창세',
     'testimonial.genesisEn': 'Genesis',
     'testimonial.genesisDesc': '프로토콜 배포, LCC 기능 출시, Athena AI™ v1.0이 자율 운영을 시작하여 전례 없는 미래를 엽니다.',
@@ -739,6 +744,8 @@ export function setLanguage(languageCode) {
     i18nState.currentLanguage = languageCode;
     localStorage.setItem('ath_language', languageCode);
     console.log(`Language switched to: ${languageCode}`);
+    // Refresh the page to ensure all components update properly
+    window.location.reload();
   } else {
     console.warn(`Language not supported: ${languageCode}`);
   }

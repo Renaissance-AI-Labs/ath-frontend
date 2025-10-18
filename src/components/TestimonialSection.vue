@@ -45,7 +45,8 @@
             <div class="container">
                 <div class="sect-title wow fadeInUp">
                     <h2 class="s-title font-3 m-0" style="color: #fff;">
-                        {{ t('testimonial.futureJourney') }}
+                        {{ t('testimonial.futureJourneyLine1') }} <br>
+                        {{ t('testimonial.futureJourneyLine2') }}
                     </h2>
                 </div>
 
