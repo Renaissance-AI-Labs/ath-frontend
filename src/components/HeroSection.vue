@@ -93,6 +93,7 @@
                                           <span v-if="isLoading">{{ t('common.loading') }}</span>
                                            <span v-else>
                                             <AnimatedNumber :value="friendsBoost" :decimals="6" /> {{ t('common.token') }}
+                                            <span v-if="userLevel" class="user-level-badge">{{ userLevel }}</span>
                                           </span>
                                         </p>
 
@@ -188,7 +189,15 @@ import {
 import {
   getUserStakedBalance,
   getFriendsBoost,
-  checkIfUserHasReferrer
+  checkIfUserHasReferrer,
+  getTeamKpiBigNumber,
+  S1_THRESHOLD,
+  S2_THRESHOLD,
+  S3_THRESHOLD,
+  S4_THRESHOLD,
+  S5_THRESHOLD,
+  S6_THRESHOLD,
+  S7_THRESHOLD
 } from '../services/contracts';
 import {
   showToast
@@ -200,6 +209,7 @@ const emits = defineEmits(['open-inject-modal', 'open-claim-reward-modal']);
 
 const stakedBalance = ref(0); // Use number type
 const friendsBoost = ref(0); // Use number type
+const userLevel = ref(''); // User's S level (e.g., 'S5', 'S6', 'S7')
 let fetchInterval = null;
 const isInitialFetch = ref(true); // Flag for the first fetch
 
@@ -217,13 +227,33 @@ const fetchHeroData = async () => {
   }
 
   try {
-    const [newStakedBalance, newFriendsBoost] = await Promise.all([
+    const [newStakedBalance, newFriendsBoost, kpi] = await Promise.all([
       getUserStakedBalance(),
       getFriendsBoost(),
+      getTeamKpiBigNumber(),
     ]);
     // Convert string from contract to number for the component
     stakedBalance.value = parseFloat(newStakedBalance) || 0;
     friendsBoost.value = parseFloat(newFriendsBoost) || 0;
+    
+    // Calculate user level based on KPI
+    if (kpi >= S7_THRESHOLD) {
+      userLevel.value = 'S7';
+    } else if (kpi >= S6_THRESHOLD) {
+      userLevel.value = 'S6';
+    } else if (kpi >= S5_THRESHOLD) {
+      userLevel.value = 'S5';
+    } else if (kpi >= S4_THRESHOLD) {
+      userLevel.value = 'S4';
+    } else if (kpi >= S3_THRESHOLD) {
+      userLevel.value = 'S3';
+    } else if (kpi >= S2_THRESHOLD) {
+      userLevel.value = 'S2';
+    } else if (kpi >= S1_THRESHOLD) {
+      userLevel.value = 'S1';
+    } else {
+      userLevel.value = ''; // No level if below S1 threshold
+    }
   } catch (error) {
     console.error("刷新数据失败:", error);
   } finally {
@@ -237,6 +267,7 @@ const fetchHeroData = async () => {
 const resetData = () => {
   stakedBalance.value = 0;
   friendsBoost.value = 0;
+  userLevel.value = '';
   isInitialFetch.value = true; // Reset flag on disconnect
 };
 
@@ -357,6 +388,30 @@ onUnmounted(() => {
 .form-ask-bg {
     background-color: #11111300;
 }
+
+.user-level-badge {
+    margin-left: 8px;
+    padding: 2px 8px;
+    background: linear-gradient(135deg, #e2e5eb 0%, #4b79a2 100%);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 1px 1px rgb(0 0 0 / 64%);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    display: inline-block;
+    vertical-align: middle;
+    animation: glow 2s ease-in-out infinite;
+}
+
+/* @keyframes glow {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    }
+    50% {
+        box-shadow: 0 2px 12px rgba(102, 164, 234, 0.8);
+    }
+} */
 
 .reward-button-wrapper {
     position: relative;

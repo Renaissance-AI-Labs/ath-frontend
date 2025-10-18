@@ -82,19 +82,31 @@ export { referralContract, stakingContract, athContract, usdtContract, s5poolCon
 // --- KPI Thresholds (as per Staking.sol) ---
 const THRESHOLDS = {
   production: {
-    S5: 1000000n * (10n ** 18n), // 1 Million USDT value
-    S6: 3000000n * (10n ** 18n), // 3 Million USDT value
-    S7: 5000000n * (10n ** 18n), // 5 Million USDT value
+    S1: 3000n * (10n ** 18n),      // 3,000 USDT value
+    S2: 30000n * (10n ** 18n),     // 30,000 USDT value
+    S3: 100000n * (10n ** 18n),    // 100,000 USDT value
+    S4: 500000n * (10n ** 18n),    // 500,000 USDT value
+    S5: 1000000n * (10n ** 18n),   // 1 Million USDT value
+    S6: 3000000n * (10n ** 18n),   // 3 Million USDT value
+    S7: 5000000n * (10n ** 18n),   // 5 Million USDT value
   },
   development: {
-    S5: 15000n * (10n ** 18n),   // Test: 15,000 USDT value
-    S6: 18000n * (10n ** 18n),   // Test: 18,000 USDT value
-    S7: 21000n * (10n ** 18n),   // Test: 21,000 USDT value
+    S1: 3000n * (10n ** 18n),      // Test: 3,000 USDT value
+    S2: 6000n * (10n ** 18n),      // Test: 6,000 USDT value
+    S3: 9000n * (10n ** 18n),      // Test: 9,000 USDT value
+    S4: 12000n * (10n ** 18n),     // Test: 12,000 USDT value
+    S5: 15000n * (10n ** 18n),     // Test: 15,000 USDT value
+    S6: 18000n * (10n ** 18n),     // Test: 18,000 USDT value
+    S7: 21000n * (10n ** 18n),     // Test: 21,000 USDT value
   }
 };
 
 const env = APP_ENV === 'PROD' ? 'production' : 'development';
 
+export const S1_THRESHOLD = THRESHOLDS[env].S1;
+export const S2_THRESHOLD = THRESHOLDS[env].S2;
+export const S3_THRESHOLD = THRESHOLDS[env].S3;
+export const S4_THRESHOLD = THRESHOLDS[env].S4;
 export const S5_THRESHOLD = THRESHOLDS[env].S5;
 export const S6_THRESHOLD = THRESHOLDS[env].S6;
 export const S7_THRESHOLD = THRESHOLDS[env].S7;
