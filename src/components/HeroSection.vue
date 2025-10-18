@@ -71,6 +71,12 @@
                         <div class="box-ask">
                             <form class="form-ask wow fadeInUp form-ask-bg">
                                 <div class="box-ask-inner">
+                                    <!-- S5~S7 Level Watermark -->
+                                    <div v-if="userLevel && ['S5', 'S6', 'S7'].includes(userLevel)" 
+                                         class="level-watermark"
+                                         :class="`level-${userLevel.toLowerCase()}`">
+                                        {{ userLevel }}
+                                    </div>
                                     <div class="form-content" style="margin-bottom: 20px;">
                                         <div class="tf-brand assets-title">
                                             <div class="container">
@@ -204,6 +210,7 @@ import {
 } from '../services/notification';
 import AnimatedNumber from './AnimatedNumber.vue'; // Import the new component
 import { t } from '@/i18n';
+import { ethers } from 'ethers';
 
 const emits = defineEmits(['open-inject-modal', 'open-claim-reward-modal']);
 
@@ -218,23 +225,29 @@ const isLoading = computed(() => isAuthenticated.value && isInitialFetch.value);
 
 
 const fetchHeroData = async () => {
-  if (!isAuthenticated.value) return;
+  if (!isAuthenticated.value || !walletState.contractsInitialized) {
+    console.log('[HeroSection] 跳过数据获取 - 未认证或合约未初始化');
+    return;
+  }
 
   if (isInitialFetch.value) {
-    // console.log("正在首次加载数据...");
+    console.log("[HeroSection] 正在首次加载数据...");
   } else {
     // console.log("每6秒刷新数据...");
   }
 
   try {
-    const [newStakedBalance, newFriendsBoost, kpi] = await Promise.all([
+    // Optimize: Only call getTeamKpiBigNumber once, use it for both friendsBoost and level calculation
+    const [newStakedBalance, kpi] = await Promise.all([
       getUserStakedBalance(),
-      getFriendsBoost(),
       getTeamKpiBigNumber(),
     ]);
+    
     // Convert string from contract to number for the component
     stakedBalance.value = parseFloat(newStakedBalance) || 0;
-    friendsBoost.value = parseFloat(newFriendsBoost) || 0;
+    
+    // Convert KPI BigInt to formatted number for friendsBoost display
+    friendsBoost.value = parseFloat(ethers.formatUnits(kpi, 18)) || 0;
     
     // Calculate user level based on KPI
     if (kpi >= S7_THRESHOLD) {
@@ -316,21 +329,18 @@ const handleClaimLevelReward = () => {
   emits('open-claim-reward-modal');
 };
 
-watch(isAuthenticated, (isAuth) => {
-  if (isAuth) {
+watch(() => [isAuthenticated.value, walletState.contractsInitialized], ([isAuth, contractsReady]) => {
+  console.log(`[HeroSection] 状态变化 - isAuth: ${isAuth}, contractsReady: ${contractsReady}`);
+  if (isAuth && contractsReady) {
     startFetching();
   } else {
     stopFetching();
-    resetData();
+    if (!isAuth) {
+      resetData();
+    }
   }
-});
+}, { immediate: true });
 
-
-onMounted(() => {
-  if (isAuthenticated.value) {
-    startFetching();
-  }
-});
 
 onUnmounted(() => {
   stopFetching();
@@ -389,6 +399,109 @@ onUnmounted(() => {
     background-color: #11111300;
 }
 
+.level-watermark {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 160px;
+    font-weight: 900;
+    z-index: 0;
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: 12px;
+}
+
+/* S5 - Light Blue (浅蓝色) */
+.level-s5 {
+    color: rgba(147, 197, 253, 0.12);
+    text-shadow: 
+        0 0 60px rgba(147, 197, 253, 0.28),
+        0 0 100px rgba(186, 230, 253, 0.2),
+        0 0 140px rgba(224, 242, 254, 0.15);
+    animation: glowLightBlueS5 6s ease-in-out infinite;
+}
+
+@keyframes glowLightBlueS5 {
+    0%, 100% {
+        text-shadow: 
+            0 0 60px rgba(147, 197, 253, 0.28),
+            0 0 100px rgba(186, 230, 253, 0.2),
+            0 0 140px rgba(224, 242, 254, 0.15);
+        opacity: 0.6;
+    }
+    50% {
+        text-shadow: 
+            0 0 80px rgba(147, 197, 253, 0.4),
+            0 0 120px rgba(186, 230, 253, 0.3),
+            0 0 160px rgba(224, 242, 254, 0.22);
+        opacity: 0.8;
+    }
+}
+
+/* S6 - Lighter Blue (更浅蓝色) */
+.level-s6 {
+    color: rgba(186, 230, 253, 0.12);
+    text-shadow: 
+        0 0 60px rgba(186, 230, 253, 0.25),
+        0 0 100px rgba(224, 242, 254, 0.18),
+        0 0 140px rgba(240, 249, 255, 0.12);
+    animation: glowLighterBlue 6s ease-in-out infinite;
+}
+
+@keyframes glowLighterBlue {
+    0%, 100% {
+        text-shadow: 
+            0 0 60px rgba(186, 230, 253, 0.25),
+            0 0 100px rgba(224, 242, 254, 0.18),
+            0 0 140px rgba(240, 249, 255, 0.12);
+        opacity: 0.6;
+    }
+    50% {
+        text-shadow: 
+            0 0 80px rgba(186, 230, 253, 0.38),
+            0 0 120px rgba(224, 242, 254, 0.28),
+            0 0 160px rgba(240, 249, 255, 0.2);
+        opacity: 0.8;
+    }
+}
+
+/* S7 - Silver White (银白色) */
+.level-s7 {
+    color: rgba(229, 228, 226, 0.12);
+    text-shadow: 
+        0 0 60px rgba(229, 228, 226, 0.35),
+        0 0 100px rgba(241, 245, 249, 0.25),
+        0 0 140px rgba(248, 250, 252, 0.18);
+    animation: glowSilverWhite 6s ease-in-out infinite;
+}
+
+@keyframes glowSilverWhite {
+    0%, 100% {
+        text-shadow: 
+            0 0 60px rgba(229, 228, 226, 0.35),
+            0 0 100px rgba(241, 245, 249, 0.25),
+            0 0 140px rgba(248, 250, 252, 0.18);
+        opacity: 0.6;
+    }
+    50% {
+        text-shadow: 
+            0 0 80px rgba(229, 228, 226, 0.5),
+            0 0 120px rgba(241, 245, 249, 0.38),
+            0 0 160px rgba(248, 250, 252, 0.28);
+        opacity: 0.8;
+    }
+}
+
+.box-ask-inner {
+    position: relative;
+}
+
+.form-content {
+    position: relative;
+    z-index: 1;
+}
+
 .user-level-badge {
     margin-left: 8px;
     padding: 2px 8px;
@@ -401,7 +514,7 @@ onUnmounted(() => {
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
     display: inline-block;
     vertical-align: middle;
-    animation: glow 2s ease-in-out infinite;
+    animation: glow 4s ease-in-out infinite;
 }
 
 /* @keyframes glow {
