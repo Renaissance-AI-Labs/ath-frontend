@@ -13,15 +13,24 @@
         
         <div class="form-group">
           <label class="form-label">{{ t('referrer.addressLabel') }}</label>
-          <div class="address-box">
-            <span v-if="isLoading">{{ t('referrer.loading') }}</span>
-            <span v-else>{{ formattedReferrerAddress }}</span>
+          <input 
+            v-if="!isLoading"
+            type="text" 
+            v-model="pendingReferrer" 
+            class="address-input"
+            :class="{ 'input-error': pendingReferrer && !isValidAddress }"
+            placeholder="0x..."
+            @input="validateAddress"
+          />
+          <div v-else class="address-box">
+            <span>{{ t('referrer.loading') }}</span>
           </div>
+          <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         </div>
 
         <div class="button-group">
           <button class="btn-ip btn-cancel" style="font-size: 14px !important;" @click="$emit('close')">{{ t('referrer.cancel') }}</button>
-          <button class="btn-ip btn-confirm" style="font-size: 14px !important;" @click="handleConfirm" :disabled="isLoading || !pendingReferrer">{{ t('referrer.confirm') }}</button>
+          <button class="btn-ip btn-confirm" style="font-size: 14px !important;" @click="handleConfirm" :disabled="isLoading || !isValidAddress">{{ t('referrer.confirm') }}</button>
         </div>
       </div>
     </div>
@@ -30,11 +39,11 @@
 
 <script>
 import {
-  getRootReferrer
+  getRootReferrer,
+  isReferrerValid
 } from '../services/contracts';
-import {
-  formatAddress
-} from '../services/wallet';
+import { walletState } from '../services/wallet';
+import { showToast } from '../services/notification';
 import { t } from '@/i18n';
 
 export default {
@@ -52,6 +61,8 @@ export default {
     return {
       pendingReferrer: null,
       isLoading: true,
+      isValidAddress: false,
+      errorMessage: '',
     };
   },
   computed: {
@@ -59,10 +70,48 @@ export default {
       if (!this.pendingReferrer) {
         return 'N/A';
       }
-      return formatAddress(this.pendingReferrer);
+      return this.pendingReferrer;  // Display full address
     }
   },
   methods: {
+    validateAddress() {
+      // Validate if the address is a valid Ethereum address
+      if (!this.pendingReferrer) {
+        this.isValidAddress = false;
+        this.errorMessage = '';
+        return;
+      }
+      
+      const address = this.pendingReferrer.trim();
+      
+      // 1. Check basic format (0x + 40 hex chars)
+      const isValidFormat = address.startsWith('0x') && address.length === 42 && /^0x[0-9a-fA-F]{40}$/.test(address);
+      if (!isValidFormat) {
+        this.isValidAddress = false;
+        this.errorMessage = this.t('referrer.errorFormat');
+        return;
+      }
+      
+      // 2. Check for zero address
+      const isZeroAddress = address === '0x0000000000000000000000000000000000000000';
+      if (isZeroAddress) {
+        this.isValidAddress = false;
+        this.errorMessage = this.t('referrer.errorZero');
+        return;
+      }
+      
+      // 3. Check for self-referral
+      const isSelfReferral = walletState.address && address.toLowerCase() === walletState.address.toLowerCase();
+      if (isSelfReferral) {
+        this.isValidAddress = false;
+        this.errorMessage = this.t('referrer.errorSelf');
+        return;
+      }
+      
+      // All validations passed
+      this.isValidAddress = true;
+      this.errorMessage = '';
+    },
     async fetchReferrer() {
       this.isLoading = true;
       // 1. Check URL for ?ref= parameter first
@@ -78,14 +127,28 @@ export default {
         this.pendingReferrer = await getRootReferrer();
         console.log(`[确认推荐人弹窗] 成功从合约获取到根推荐人地址: ${this.pendingReferrer}`);
       }
+      this.validateAddress();  // Validate after fetching
       this.isLoading = false;
     },
-    handleConfirm() {
-      // Pass the determined referrer address back to the parent
-      if (this.pendingReferrer) {
-        console.log(`[确认推荐人弹窗] 用户已确认推荐人地址: ${this.pendingReferrer}, 进入最终质押流程`);
-        this.$emit('confirm', this.pendingReferrer);
+    async handleConfirm() {
+      // Validate address format first
+      if (!this.isValidAddress) {
+        showToast(this.errorMessage || this.t('referrer.errorFormat'));
+        return;
       }
+      
+      // Check if the referrer is in the referral tree (has already staked)
+      console.log(`[确认推荐人弹窗] 正在验证推荐人地址是否在推荐树中: ${this.pendingReferrer}`);
+      const isValid = await isReferrerValid(this.pendingReferrer);
+      
+      if (!isValid) {
+        showToast(this.t('referrer.errorNotInTree'));
+        return;
+      }
+      
+      // All validations passed, proceed with staking
+      console.log(`[确认推荐人弹窗] 推荐人验证通过，进入最终质押流程`);
+      this.$emit('confirm', this.pendingReferrer);
     }
   },
   mounted() {
@@ -128,7 +191,47 @@ export default {
   padding-left: 5px;
 }
 
-/* This is the referrer address display, styled like an input */
+/* Editable address input */
+.address-input {
+  width: 100%;
+  padding: 15px 20px;
+  background-color: #0c0c0e;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--white);
+  font-size: 13px;
+  font-family: 'Courier New', Courier, monospace;
+  text-align: left;
+  line-height: 1.6;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.address-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
+}
+
+.address-input::placeholder {
+  color: var(--text-2);
+  opacity: 0.5;
+}
+
+.address-input.input-error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+}
+
+.error-message {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #ef4444;
+  text-align: left;
+  padding-left: 5px;
+}
+
+/* Loading state display */
 .address-box {
   width: 100%;
   padding: 15px 20px;
@@ -136,11 +239,11 @@ export default {
   border: 1px solid var(--line);
   border-radius: 12px;
   color: var(--white);
-  font-size: 14px; /* Slightly smaller for address */
+  font-size: 13px;
   font-family: 'Courier New', Courier, monospace;
   text-align: center;
-  word-wrap: break-word;
-  box-sizing: border-box; /* Ensures padding is included in width */
+  line-height: 1.6;
+  box-sizing: border-box;
 }
 
 .button-group {

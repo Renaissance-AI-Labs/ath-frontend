@@ -81,6 +81,10 @@ const languagePacks = {
     'referrer.loading': '加载中...',
     'referrer.cancel': '取消',
     'referrer.confirm': '确认推荐人并质押',
+    'referrer.errorFormat': '地址格式错误，请输入有效的以太坊地址',
+    'referrer.errorZero': '不能使用零地址作为推荐人',
+    'referrer.errorSelf': '不能推荐自己',
+    'referrer.errorNotInTree': '该地址不在推荐树中，推荐人必须已经质押过',
     
     // Toast Notifications
     'toast.connectWalletFirst': '请先连接并授权您的钱包',
@@ -221,6 +225,10 @@ const languagePacks = {
     'referrer.loading': '加載中...',
     'referrer.cancel': '取消',
     'referrer.confirm': '確認推薦人並質押',
+    'referrer.errorFormat': '地址格式錯誤，請輸入有效的以太坊地址',
+    'referrer.errorZero': '不能使用零地址作為推薦人',
+    'referrer.errorSelf': '不能推薦自己',
+    'referrer.errorNotInTree': '該地址不在推薦樹中，推薦人必須已經質押過',
     
     // Testimonial Section
     'testimonial.connectFuture': '連接未來',
@@ -361,6 +369,10 @@ const languagePacks = {
     'referrer.loading': 'Loading...',
     'referrer.cancel': 'Cancel',
     'referrer.confirm': 'Confirm Referrer and Stake',
+    'referrer.errorFormat': 'Invalid address format, please enter a valid Ethereum address',
+    'referrer.errorZero': 'Cannot use zero address as referrer',
+    'referrer.errorSelf': 'Cannot refer yourself',
+    'referrer.errorNotInTree': 'This address is not in the referral tree, referrer must have staked',
     
     // Testimonial Section
     'testimonial.connectFuture': 'Connect Future',
@@ -501,6 +513,10 @@ const languagePacks = {
     'referrer.loading': '読み込み中...',
     'referrer.cancel': 'キャンセル',
     'referrer.confirm': '紹介者を確認してステーキング',
+    'referrer.errorFormat': 'アドレス形式が無効です。有効なイーサリアムアドレスを入力してください',
+    'referrer.errorZero': 'ゼロアドレスは紹介者として使用できません',
+    'referrer.errorSelf': '自分自身を紹介することはできません',
+    'referrer.errorNotInTree': 'このアドレスは紹介ツリーにありません。紹介者はステーキング済みである必要があります',
     
     // Testimonial Section
     'testimonial.connectFuture': '未来を接続',
@@ -641,6 +657,10 @@ const languagePacks = {
     'referrer.loading': '로딩 중...',
     'referrer.cancel': '취소',
     'referrer.confirm': '추천인 확인 및 스테이킹',
+    'referrer.errorFormat': '주소 형식이 잘못되었습니다. 유효한 이더리움 주소를 입력하세요',
+    'referrer.errorZero': '제로 주소는 추천인으로 사용할 수 없습니다',
+    'referrer.errorSelf': '자신을 추천할 수 없습니다',
+    'referrer.errorNotInTree': '이 주소는 추천 트리에 없습니다. 추천인은 스테이킹을 완료해야 합니다',
     
     // Testimonial Section
     'testimonial.connectFuture': '미래 연결',
