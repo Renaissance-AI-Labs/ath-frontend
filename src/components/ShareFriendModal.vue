@@ -9,16 +9,16 @@
       </div>
       <div class="modal-body">
         <div class="title_holder">
-          <h3>分享链接给好友</h3>
+          <h3>{{ t('share.title') }}</h3>
         </div>
         
         <div class="share-content" style="margin-top: 30px;">
           <div class="input-wrapper">
             <textarea :value="referralLink" readonly class="share-link-input" @focus="$event.target.select()"></textarea>
           </div>
-          <p class="share-hint">如果复制失败可以长按链接选择复制</p>
+          <p class="share-hint">{{ t('share.hint') }}</p>
           <a href="#" @click.prevent="copyLink" class="btn-ip ip-modern text-body-3 copy-btn">
-            复制链接给好友
+            {{ t('share.button') }}
           </a>
         </div>
 
@@ -74,6 +74,7 @@ export default {
     return {
       close,
       copyLink,
+      t,
     };
   },
 };
