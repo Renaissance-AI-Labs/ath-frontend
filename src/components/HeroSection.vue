@@ -317,14 +317,20 @@ const shareFriendLink = async () => {
   }
   const referralLink = `${window.location.origin}?ref=${walletState.address}`;
   try {
-    // Create temporary textarea element for better compatibility (especially for mobile wallets like TP)
-    const textArea = document.createElement('textarea');
-    textArea.value = referralLink;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textArea);
-    showToast(t('toast.copySuccess'));
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(referralLink);
+      showToast(t('toast.copySuccess'));
+    } else {
+      const textArea = document.createElement('textarea');
+      textArea.value = referralLink;
+      textArea.style.position = 'absolute';
+      textArea.style.left = '-9999px';
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      showToast(t('toast.copySuccess'));
+    }
   } catch (err) {
     console.error('无法复制链接: ', err);
     showToast(t('toast.copyFailed'));
