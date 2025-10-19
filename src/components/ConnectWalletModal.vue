@@ -12,8 +12,8 @@
         <!-- Not Connected View -->
         <div v-if="!walletState.isConnected">
           <div class="title_holder">
-            <h3>连接钱包</h3>
-            <p class="connect-text-1">请选择一个钱包以继续</p>
+            <h3>{{ t('wallet.connectTitle') }}</h3>
+            <p class="connect-text-1">{{ t('wallet.connectSubtitle') }}</p>
           </div>
           <div class="wallet-list" v-if="availableWallets.length > 0">
             <ul>
@@ -27,28 +27,28 @@
             </ul>
           </div>
           <div v-else class="no-wallet-view">
-            <p>未检测到钱包。</p>
-            <p>请安装 <a href="https://www.okx.com/web3" target="_blank" rel="noopener noreferrer">OKX Wallet</a> 或 <a href="https://www.tokenpocket.pro/" target="_blank" rel="noopener noreferrer">TokenPocket</a> 后重试。</p>
+            <p>{{ t('wallet.noWalletDetected') }}</p>
+            <p>{{ t('wallet.installWallet') }}</p>
           </div>
         </div>
 
         <!-- Connected View -->
         <div v-else class="connected-view">
            <div class="title_holder">
-            <h3>钱包已连接</h3>
+            <h3>{{ t('wallet.connectedTitle') }}</h3>
           </div>
           <div class="info-group">
               <div class="info-item">
-                <h4 class="info-title">地址</h4>
+                <h4 class="info-title">{{ t('wallet.address') }}</h4>
                 <p class="s-sub_title info-content">{{ formattedAddress }}</p>
               </div>
               <div class="info-item">
-                <h4 class="info-title">网络</h4>
+                <h4 class="info-title">{{ t('wallet.network') }}</h4>
                 <p class="s-sub_title info-content">{{ uppercaseNetwork }}</p>
               </div>
           </div>
           <a href="#" @click.prevent="handleDisconnect" class="btn-ip ip-modern text-body-3 disconnect-btn">
-              断开连接
+              {{ t('wallet.disconnect') }}
           </a>
         </div>
 
@@ -63,6 +63,7 @@
 <script>
 import { reactive, onMounted, ref } from 'vue';
 import { walletState, connectWallet, disconnectWallet, detectWallets } from '@/services/wallet.js';
+import { t } from '@/i18n';
 
 export default {
   name: 'ConnectWalletModal',
@@ -105,6 +106,7 @@ export default {
       handleConnect,
       handleDisconnect,
       close,
+      t,
     };
   },
   computed: {

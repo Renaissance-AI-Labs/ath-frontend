@@ -7,8 +7,7 @@
                     <p class="s-number_order wg-counter">
                         [ <span class="text-white">02</span> / 04 ]
                     </p>
-                    <p class="s-label">[ <span class="text-white hacker-text_transform">治理未来
-</span> ]</p>
+                    <p class="s-label">[ <span class="text-white hacker-text_transform">{{ t('howToUse.governFuture') }}</span> ]</p>
                 </div>
             </div>
         </div>
@@ -24,7 +23,7 @@
                             <span class="bar_center"></span>
                         </span>
                         <span class="hacker-text_transform no-delay">
-                            Rule Over All
+                            {{ t('howToUse.ruleOverAll') }}
                         </span>
                         <span class="bar-group type-right">
                             <span class="bar_center"></span>
@@ -50,13 +49,10 @@
             <div class="container">
                 <div class="sect-title wow fadeInUp title-position">
                     <h2 class="s-title font-3 m-0" style="color: #fff;">
-                        在这里 — <br>
-                        掌控你的财富
+                        {{ t('howToUse.controlWealth') }}
                     </h2>
                     <p class="s-sub_title" style="margin-top: 14px; color: #fff;">
-                        捐赠至底池的资金，将依额度每日累积。 <br
-                            class="d-none d-lg-block">
-                        最高享 1.2% 自动复利，周期不超过 30 天。
+                        {{ t('howToUse.controlWealthDesc') }}
                     </p>
                 </div>
                 <div class="row">
@@ -64,9 +60,9 @@
 
                         <div class="tabs-container">
                             <button class="toggle-button" @click="toggleTab">
-                                <span class="tab-text" :class="{ active: activeTab === 'investment' }">投资列表</span>
+                                <span class="tab-text" :class="{ active: activeTab === 'investment' }">{{ t('howToUse.investmentList') }}</span>
                                 <span class="tab-divider"></span>
-                                <span class="tab-text" :class="{ active: activeTab === 'redemption' }">赎回列表</span>
+                                <span class="tab-text" :class="{ active: activeTab === 'redemption' }">{{ t('howToUse.redemptionList') }}</span>
                             </button>
                         </div>
 
@@ -76,7 +72,7 @@
                                 <div class="stars2"></div>
                                 <div class="stars3"></div>
                             </div>
-                            <p>正在加载质押数据...</p>
+                            <p>{{ t('howToUse.loadingStakingData') }}</p>
                         </div>
                         <div v-else-if="!walletState.isAuthenticated" class="empty-state" :class="`list-${listMode}`">
                             <div class="stars-bg stars-bg-1">
@@ -84,7 +80,7 @@
                                 <div class="stars2"></div>
                                 <div class="stars3"></div>
                             </div>
-                            <p>请先连接钱包以查看您的质押订单</p>
+                            <p>{{ t('howToUse.connectWalletFirst') }}</p>
                         </div>
                         <div v-else-if="!walletState.contractsInitialized" class="empty-state" :class="`list-${listMode}`">
                             <div class="stars-bg stars-bg-1">
@@ -92,7 +88,7 @@
                                 <div class="stars2"></div>
                                 <div class="stars3"></div>
                             </div>
-                            <p>合约初始化失败，请刷新重试</p>
+                            <p>{{ t('howToUse.contractInitFailed') }}</p>
                         </div>
                         <div v-else-if="stakingItems.length === 0" class="empty-state" :class="`list-${listMode}`">
                             <div class="stars-bg stars-bg-1">
@@ -100,8 +96,8 @@
                                 <div class="stars2"></div>
                                 <div class="stars3"></div>
                             </div>
-                            <p v-if="activeTab === 'investment'">您还没有任何进行中的质押订单</p>
-                            <p v-else>您还没有已赎回的订单</p>
+                            <p v-if="activeTab === 'investment'">{{ t('howToUse.noInvestmentOrders') }}</p>
+                            <p v-else>{{ t('howToUse.noRedemptionOrders') }}</p>
                         </div>
                         <template v-else>
                             <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist" :class="`list-${listMode}`">
@@ -115,15 +111,15 @@
                                         </div>
                                         <div class="card-content">
                                             <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                                                <h5 class="name h5-list-style" :data-text="`${activeTab === 'investment' ? 'STAKING' : 'REDEEMED'}-CODE-${String(item.id + 1).padStart(2, '0')}`">
-                                                    {{ activeTab === 'investment' ? 'STAKING' : 'REDEEMED' }}-CODE-{{ String(item.id + 1).padStart(2, '0') }}
+                                                <h5 class="name h5-list-style" :data-text="`${activeTab === 'investment' ? t('howToUse.staking') : t('howToUse.redeemedStatus')}-CODE-${String(item.id + 1).padStart(2, '0')}`">
+                                                    {{ activeTab === 'investment' ? t('howToUse.staking') : t('howToUse.redeemedStatus') }}-CODE-{{ String(item.id + 1).padStart(2, '0') }}
                                                 </h5>
                                                 <h5 class="name h5-list-style" :data-text="item.stakeDate" style="min-width: 125px;">{{ item.stakeDate }}</h5>
                                             </div>
                                             <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                                                <p class="desc p-list-style">母金：$ <span style="margin-left: 0px;">{{ parseFloat(item.principal).toFixed(4) }}</span></p>
+                                                <p class="desc p-list-style">{{ t('howToUse.principal') }}$ <span style="margin-left: 0px;">{{ parseFloat(item.principal).toFixed(4) }}</span></p>
                                                 <div class="desc p-list-style" style="display: flex; flex-direction: row; justify-content: space-between; min-width: 125px;">
-                                                    <div style="width: 49%;">子金：$</div>
+                                                    <div style="width: 49%;">{{ t('howToUse.interest') }}$</div>
                                                     <div style="width: 51%; margin-left: 2px;"><AnimatedNumber :value="parseFloat(item.interest)" :decimals="4" /></div>
                                                      
                                                 </div>
@@ -137,10 +133,10 @@
                                                             class="tf-btn text-body-3 style-2 animate-btn animate-dark" 
                                                             :disabled="unstackingStates[item.id]"
                                                             @click.prevent="handleUnstake(item.id)">
-                                                        {{ unstackingStates[item.id] ? '赎回中...' : '赎回' }}
+                                                        {{ unstackingStates[item.id] ? t('howToUse.redeeming') : t('howToUse.redeem') }}
                                                     </button>
-                                                    <button v-else-if="item.displayStatus === 'redeemed'" class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>已赎回</button>
-                                                    <button v-else class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>等待赎回</button>
+                                                    <button v-else-if="item.displayStatus === 'redeemed'" class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>{{ t('howToUse.redeemed') }}</button>
+                                                    <button v-else class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>{{ t('howToUse.waitingRedeem') }}</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -203,6 +199,7 @@ import AnimatedNumber from './AnimatedNumber.vue';
 import {
   ethers
 } from 'ethers';
+import { t } from '@/i18n';
 
 const stakingItems = ref([]); // Renamed from allStakingItems, now holds only current page data
 const totalItems = ref(0); // New state for total records from contract

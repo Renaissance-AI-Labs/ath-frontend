@@ -1,5 +1,5 @@
 <template>
-  <span class="desc clock">剩余：{{ displayTime }}</span>
+  <span class="desc clock">{{ t('countdown.remaining') }}{{ displayTime }}</span>
 </template>
 
 <script setup>
@@ -9,6 +9,7 @@ import {
   onUnmounted,
   computed
 } from 'vue';
+import { t } from '@/i18n';
 
 const props = defineProps({
   targetTimestamp: {
@@ -34,9 +35,9 @@ const seconds = computed(() => Math.floor((timeRemaining.value % (1000 * 60)) / 
 
 const displayTime = computed(() => {
   if (isExpired.value) {
-    return '已到期可赎回';
+    return t('countdown.expired');
   }
-  return `${days.value}天${hours.value}时${minutes.value}分${seconds.value}秒`;
+  return `${days.value}${t('countdown.days')}${hours.value}${t('countdown.hours')}${minutes.value}${t('countdown.minutes')}${seconds.value}${t('countdown.seconds')}`;
 });
 
 const updateNow = () => {

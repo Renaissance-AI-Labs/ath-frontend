@@ -18,13 +18,16 @@
               <div class="video-fade-overlay"></div>
           </div>
       </div>
-      <Header @open-get-started-modal="openModal" />
+      <Header @open-get-started-modal="openModal" @open-language-modal="openLanguageModal" />
       <router-view />
       <Footer />
     </div>
     <MobileMenu @open-get-started-modal="openModal" />
     <transition name="modal">
       <ConnectWalletModal v-if="isModalVisible" @close="closeModal" />
+    </transition>
+    <transition name="modal">
+      <LanguageModal v-if="isLanguageModalVisible" @close="closeLanguageModal" />
     </transition>
   </div>
 </template>
@@ -35,8 +38,10 @@ import Footer from './components/Footer.vue';
 import GoTop from './components/GoTop.vue';
 import MobileMenu from './components/MobileMenu.vue';
 import ConnectWalletModal from './components/ConnectWalletModal.vue';
+import LanguageModal from './components/LanguageModal.vue';
 import { autoConnectWallet } from './services/wallet.js';
 import ToastNotification from './components/ToastNotification.vue';
+import { initializeLanguage } from './i18n';
 
 export default {
   name: 'App',
@@ -46,11 +51,13 @@ export default {
     GoTop,
     MobileMenu,
     ConnectWalletModal,
+    LanguageModal,
     ToastNotification
   },
   data() {
     return {
       isModalVisible: false,
+      isLanguageModalVisible: false,
     };
   },
   methods: {
@@ -59,9 +66,16 @@ export default {
     },
     closeModal() {
       this.isModalVisible = false;
+    },
+    openLanguageModal() {
+      this.isLanguageModalVisible = true;
+    },
+    closeLanguageModal() {
+      this.isLanguageModalVisible = false;
     }
   },
   mounted() {
+    initializeLanguage();
     autoConnectWallet();
 
     // Check for referral code in URL

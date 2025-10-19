@@ -9,12 +9,12 @@
       </div>
       <div class="modal-body">
         <div class="title_holder">
-          <h3>注入底池</h3>
+          <h3>{{ t('inject.title') }}</h3>
         </div>
 
         <!-- Amount Input Group -->
         <div class="form-group">
-          <label class="form-label">投资数量：</label>
+          <label class="form-label">{{ t('inject.amountLabel') }}</label>
           <div class="amount-input-group">
             <div class="input-wrapper">
               <input 
@@ -22,14 +22,14 @@
                 inputmode="decimal"
                 :value="amount"
                 @input="handleAmountInput"
-                placeholder="输入数量" 
+                :placeholder="t('inject.amountPlaceholder')" 
                 class="form-input"
                 :class="{ 'input-error': isAmountInvalid }"
               >
             </div>
             <div class="balance-info">
               <a href="#" @click.prevent="fillMax" class="btn-ip ip-modern text-body-3 balance-btn">
-              最大: {{ formattedUsdtBalance }} USDT
+              {{ t('inject.maxAmount', { amount: formattedUsdtBalance }) }}
               </a>
             </div>
           </div>
@@ -37,14 +37,14 @@
 
         <!-- Duration Dropdown Group -->
         <div class="form-group">
-          <label class="form-label">投资天数：</label>
+          <label class="form-label">{{ t('inject.durationLabel') }}</label>
           <CustomSelect :options="durationOptions" v-model="selectedDuration" />
         </div>
 
         <!-- Action Buttons -->
         <div class="button-group">
           <a href="#" @click.prevent="close" class="btn-ip ip-modern text-body-3 btn-cancel">
-            取消
+            {{ t('inject.cancel') }}
           </a>
           <a href="#" @click.prevent="handleMainAction" class="btn-ip ip-modern text-body-3 btn-confirm">
             {{ mainButtonState.text }}
@@ -75,12 +75,18 @@ import CustomSelect from './CustomSelect.vue';
 import {
   showToast
 } from '../services/notification';
+import { t } from '@/i18n';
 
 
 export default {
   name: 'InjectPoolModal',
   components: {
     CustomSelect,
+  },
+  setup() {
+    return {
+      t,
+    };
   },
   data() {
     return {
@@ -92,20 +98,26 @@ export default {
       isApproving: false,
       isLoading: true, // Start with loading true to fetch allowance
       walletState: walletState,
-      durationOptions: [{
-        value: 0,
-        text: '1天，复利0.3%'
-      }, {
-        value: 1,
-        text: '15天，复利0.6%'
-      }, {
-        value: 2,
-        text: '30天，复利1.2%'
-      }, ],
       maxStakeAmount: '0',
     };
   },
   computed: {
+    durationOptions() {
+      return [
+        {
+          value: 0,
+          text: this.t('inject.duration1Day')
+        },
+        {
+          value: 1,
+          text: this.t('inject.duration15Days')
+        },
+        {
+          value: 2,
+          text: this.t('inject.duration30Days')
+        }
+      ];
+    },
     walletAddress() {
       return this.walletState.address;
     },
@@ -129,22 +141,22 @@ export default {
       const allowanceNum = parseFloat(this.usdtAllowance);
 
       if (this.isApproving) {
-        return { text: '授权中...', action: 'approving', disabled: true };
+        return { text: this.t('inject.approving'), action: 'approving', disabled: true };
       }
       
       if (!this.amount || amountNum <= 0) {
         // Default state when no amount is entered
-        return { text: '请输入数量', action: 'idle', disabled: true };
+        return { text: this.t('inject.enterAmount'), action: 'idle', disabled: true };
       }
 
       if (allowanceNum < amountNum) {
-        return { text: '请授权USDT', action: 'approve', disabled: false };
+        return { text: this.t('inject.approveUsdt'), action: 'approve', disabled: false };
       }
 
       if (this.walletState.isNewUser) {
-        return { text: '下一步', action: 'next_step', disabled: false };
+        return { text: this.t('inject.nextStep'), action: 'next_step', disabled: false };
       } else {
-        return { text: '确认质押', action: 'stake', disabled: false };
+        return { text: this.t('inject.confirmStake'), action: 'stake', disabled: false };
       }
     },
     formattedUsdtBalance() {
@@ -241,11 +253,11 @@ export default {
       const maxAllowed = this.effectiveMaxStakeAmount;
 
       if (inputAmount > userBalance) {
-          showToast('您的USDT余额不足');
+          showToast(this.t('inject.insufficientBalance'));
           return;
       }
       if (inputAmount > maxAllowed) {
-          showToast(`当前最多可注入 ${maxAllowed.toFixed(2)} USDT`);
+          showToast(this.t('inject.maxAmountExceeded', { amount: maxAllowed.toFixed(2) }));
           return;
       }
       // --- End Validation Logic ---
@@ -258,10 +270,10 @@ export default {
           this.isApproving = true;
           const success = await approveUsdt();
           if (success) {
-            showToast("授权成功！");
+            showToast(this.t('inject.approveSuccess'));
             await this.fetchUsdtAllowance();
           } else {
-            showToast("授权失败或被拒绝");
+            showToast(this.t('inject.approveFailed'));
           }
           this.isApproving = false;
           break;
