@@ -14,7 +14,7 @@
         
         <div class="share-content" style="margin-top: 30px;">
           <div class="input-wrapper">
-            <textarea :value="referralLink" readonly class="share-link-input"></textarea>
+            <textarea :value="referralLink" readonly class="share-link-input" @focus="$event.target.select()"></textarea>
           </div>
           <p class="share-hint">如果复制失败可以长按链接选择复制</p>
           <a href="#" @click.prevent="copyLink" class="btn-ip ip-modern text-body-3 copy-btn">
@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import { onMounted, onUnmounted } from 'vue';
 import { showToast } from '@/services/notification';
 import { t } from '@/i18n';
 
@@ -61,6 +62,14 @@ export default {
         showToast(t('toast.copyFailed'));
       }
     };
+
+    onMounted(() => {
+      document.body.style.overflow = 'hidden';
+    });
+
+    onUnmounted(() => {
+      document.body.style.overflow = '';
+    });
 
     return {
       close,
