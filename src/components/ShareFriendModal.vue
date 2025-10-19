@@ -155,6 +155,8 @@ export default {
   font-size: 14px;
   text-align: center;
   overflow-x: auto;
+  -webkit-user-select: text; /* For Safari/iOS */
+  user-select: text; /* Standard */
 }
 
 .share-link-input:focus {
