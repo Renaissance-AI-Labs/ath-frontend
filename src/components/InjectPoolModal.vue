@@ -69,7 +69,9 @@ import {
 } from '../services/contracts';
 import {
   ENABLE_TEMPORARY_STAKE_LIMIT,
-  TEMPORARY_STAKE_LIMIT
+  TEMPORARY_STAKE_LIMIT,
+  ENABLE_SINGLE_PURCHASE_LIMIT,
+  SINGLE_PURCHASE_LIMIT,
 } from '../services/environment';
 import CustomSelect from './CustomSelect.vue';
 import {
@@ -124,14 +126,20 @@ export default {
     // Calculate the effective maximum stake amount based on temporary limit settings
     effectiveMaxStakeAmount() {
       const maxAllowedByContract = parseFloat(this.maxStakeAmount);
-      
+      let effectiveAmount = maxAllowedByContract;
+
       if (ENABLE_TEMPORARY_STAKE_LIMIT) {
         const userStaked = parseFloat(this.userStakedBalance);
         const remainingQuota = Math.max(0, TEMPORARY_STAKE_LIMIT - userStaked);
-        return Math.min(maxAllowedByContract, remainingQuota);
+        effectiveAmount = Math.min(effectiveAmount, remainingQuota);
+      }
+
+      // Apply the single transaction limit if it's enabled
+      if (ENABLE_SINGLE_PURCHASE_LIMIT) {
+        return Math.min(effectiveAmount, SINGLE_PURCHASE_LIMIT);
       }
       
-      return maxAllowedByContract;
+      return effectiveAmount;
     },
     isAmountInvalid() {
       return parseFloat(this.amount) > this.effectiveMaxStakeAmount;

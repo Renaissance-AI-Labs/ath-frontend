@@ -33,13 +33,24 @@ export const APP_ENV = getAppEnv();
  * Set to true to enable the 10 USDT per-user stake limit
  * Set to false to remove this limit (use only contract's maxStakeAmount)
  */
-export const ENABLE_TEMPORARY_STAKE_LIMIT = true;
+export const ENABLE_TEMPORARY_STAKE_LIMIT = false;
 
 /**
  * The temporary maximum stake amount per user (in USDT)
  * Only applies when ENABLE_TEMPORARY_STAKE_LIMIT is true
  */
 export const TEMPORARY_STAKE_LIMIT = 10;
+
+/**
+ * Enable single purchase limit configuration
+ */
+export const ENABLE_SINGLE_PURCHASE_LIMIT = true;
+
+/**
+ * Single purchase limit configuration
+ * The maximum amount (in USDT) for a single stake transaction.
+ */
+export const SINGLE_PURCHASE_LIMIT = 200;
 
 /**
  * Disable console logs in production
