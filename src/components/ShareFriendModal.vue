@@ -92,6 +92,7 @@ export default {
   justify-content: center;
   align-items: center;
   z-index: 1050;
+  height: 100vh; /* Use viewport height to ensure full screen coverage */
 }
 
 .modal-content {
