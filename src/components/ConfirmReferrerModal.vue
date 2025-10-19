@@ -97,7 +97,7 @@ export default {
 <style scoped>
 /* Styles copied from InjectPoolModal.vue for 100% consistency */
 .modal-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
   background-color: rgba(12, 12, 14, 0.8);
   display: flex; justify-content: center; align-items: center; z-index: 1050;
 }

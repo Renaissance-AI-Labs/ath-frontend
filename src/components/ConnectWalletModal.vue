@@ -131,7 +131,7 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   background-color: rgba(12, 12, 14, 0.8);
   display: flex;
   justify-content: center;
