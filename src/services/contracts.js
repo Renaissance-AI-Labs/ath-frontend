@@ -63,6 +63,10 @@ const contractAddresses = {
   s7pool: {
     production: '0x0A9267E219ce6eb099881f3Df651333BE7742C2e', // To be deployed
     development: '0x1041DDd9585387BC4Aad8bc914db26d1FBbf2D00',
+  },
+  lp: {
+    production: '0x1Cd9298c1c73F02D14EFcF23622352EB7308d700',
+    development: '0xCE8Ce1f5Fd5E67987c749783dA5E5861D7152262',
   }
 };
 
@@ -532,12 +536,14 @@ export const getUsdtBalance = async () => {
  * @returns {Promise<string>} The total USDT reserves, formatted as a string.
  */
 export const getPoolUsdtReserves = async () => {
-  if (!athContract) {
-    console.warn("ATH contract not initialized.");
+  if (!usdtContract) {
+    console.warn("USDT contract not initialized.");
     return "0";
   }
   try {
-    const reserves = await athContract.getReserveU();
+    const env = APP_ENV === 'PROD' ? 'production' : 'development';
+    const lpAddress = contractAddresses.lp[env];
+    const reserves = await usdtContract.balanceOf(lpAddress);
     return ethers.formatUnits(reserves, getUsdtDecimals());
   } catch (error) {
     console.error("Error fetching pool USDT reserves:", error);
