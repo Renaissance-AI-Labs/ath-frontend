@@ -317,7 +317,13 @@ const shareFriendLink = async () => {
   }
   const referralLink = `${window.location.origin}?ref=${walletState.address}`;
   try {
-    await navigator.clipboard.writeText(referralLink);
+    // Create temporary textarea element for better compatibility (especially for mobile wallets like TP)
+    const textArea = document.createElement('textarea');
+    textArea.value = referralLink;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
     showToast(t('toast.copySuccess'));
   } catch (err) {
     console.error('无法复制链接: ', err);
