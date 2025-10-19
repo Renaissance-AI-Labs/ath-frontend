@@ -212,7 +212,7 @@ import AnimatedNumber from './AnimatedNumber.vue'; // Import the new component
 import { t } from '@/i18n';
 import { ethers } from 'ethers';
 
-const emits = defineEmits(['open-inject-modal', 'open-claim-reward-modal']);
+const emits = defineEmits(['open-inject-modal', 'open-claim-reward-modal', 'open-share-friend-modal']);
 
 const stakedBalance = ref(0); // Use number type
 const friendsBoost = ref(0); // Use number type
@@ -316,38 +316,7 @@ const shareFriendLink = async () => {
     return;
   }
   const referralLink = `${window.location.origin}?ref=${walletState.address}`;
-
-  // Use modern clipboard API with fallback
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(referralLink).then(() => {
-      showToast(t('toast.copySuccess'));
-    }).catch(err => {
-      console.error('无法使用 Clipboard API 复制: ', err);
-      showToast(t('toast.copyFailed'));
-    });
-  } else {
-    // Fallback for older browsers or insecure contexts
-    const textArea = document.createElement('textarea');
-    textArea.value = referralLink;
-    textArea.style.position = 'fixed';
-    textArea.style.top = '-9999px';
-    textArea.style.left = '-9999px';
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    try {
-      const successful = document.execCommand('copy');
-      if (successful) {
-        showToast(t('toast.copySuccess'));
-      } else {
-        showToast(t('toast.copyFailed'));
-      }
-    } catch (err) {
-      console.error('无法使用 execCommand 复制: ', err);
-      showToast(t('toast.copyFailed'));
-    }
-    document.body.removeChild(textArea);
-  }
+  emits('open-share-friend-modal', referralLink);
 };
 
 const handleClaimLevelReward = () => {
