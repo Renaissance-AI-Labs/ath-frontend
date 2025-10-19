@@ -72,6 +72,7 @@ import {
     onMounted,
     watch
 } from 'vue';
+import { t } from '@/i18n';
 
 
 export default {
@@ -153,13 +154,13 @@ export default {
       if (this.isStaking) return;
       this.isStaking = true;
       console.log(`[指挥官] 开始为新用户执行质押流程...`);
-      showToast("正在处理质押请求...");
+      showToast(t("toast.stakingRequest"));
 
       // Final real-time balance check
       const realTimeBalance = await getUsdtBalance();
       const amountToStake = this.injectionData.amount;
       if (parseFloat(realTimeBalance) < parseFloat(amountToStake)) {
-        showToast(`错误：您的USDT余额不足 (当前: ${parseFloat(realTimeBalance).toFixed(4)})`);
+        showToast(t('toast.insufficientBalance', { balance: parseFloat(realTimeBalance).toFixed(4) }));
         this.isStaking = false;
         return;
       }
@@ -169,7 +170,7 @@ export default {
       const isParentValid = await isReferrerValid(parentAddress);
       if (!isParentValid) {
         console.error(`[指挥官] 推荐人地址校验失败: ${parentAddress}`);
-        showToast("错误：推荐人地址无效或未质押");
+        showToast(t("toast.invalidReferrer"));
         this.isStaking = false;
         return;
       }
@@ -186,11 +187,11 @@ export default {
 
       if (success) {
         console.log("[指挥官] 质押交易成功");
-        showToast("质押成功！页面即将刷新。");
+        showToast(t("toast.stakeSuccessRefresh"));
         setTimeout(() => window.location.reload(), 2000);
       } else {
         console.error("[指挥官] 质押交易失败");
-        showToast("质押失败，请稍后重试。");
+        showToast(t("toast.stakeFailedRetry"));
       }
       this.isStaking = false;
     },
@@ -205,7 +206,7 @@ export default {
       const realTimeBalance = await getUsdtBalance();
       const amountToStake = this.injectionData.amount;
       if (parseFloat(realTimeBalance) < parseFloat(amountToStake)) {
-        showToast(`错误：您的USDT余额不足 (当前: ${parseFloat(realTimeBalance).toFixed(4)})`);
+        showToast(t('toast.insufficientBalance', { balance: parseFloat(realTimeBalance).toFixed(4) }));
         this.isStaking = false;
         return;
       }
@@ -214,7 +215,7 @@ export default {
       const parentAddress = await getReferrer();
       if (!parentAddress || parentAddress.startsWith('0x000')) {
         console.error("[指挥官] 获取老用户的推荐人地址失败");
-        showToast("错误：无法获取您已绑定的推荐人地址。");
+        showToast(t("toast.fetchReferrerFailed"));
         this.isStaking = false;
         return;
       }
@@ -231,11 +232,11 @@ export default {
       
       if (success) {
         console.log("[指挥官] 质押交易成功");
-        showToast("质押成功！页面即将刷新。");
+        showToast(t("toast.stakeSuccessRefresh"));
         setTimeout(() => window.location.reload(), 2000);
       } else {
         console.error("[指挥官] 质押交易失败");
-        showToast("质押失败，请稍后重试。");
+        showToast(t("toast.stakeFailedRetry"));
       }
       this.isStaking = false;
     }
@@ -253,7 +254,8 @@ export default {
 
     // This is needed for the template to access walletState
     return {
-      walletState
+      walletState,
+      t, // Expose t function to the template
     };
   }
 };

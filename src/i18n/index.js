@@ -101,6 +101,12 @@ const languagePacks = {
     'toast.calculateFailed': '无法计算预期输出，质押中止',
     'toast.stakeFailed': '质押失败: {reason}',
     'toast.refreshData': '每6秒刷新数据...',
+    'toast.stakingRequest': '正在处理质押请求...',
+    'toast.insufficientBalance': '错误：您的USDT余额不足 (当前: {balance})',
+    'toast.invalidReferrer': '错误：推荐人地址无效或未质押',
+    'toast.stakeSuccessRefresh': '质押成功！页面即将刷新。',
+    'toast.stakeFailedRetry': '质押失败，请稍后重试。',
+    'toast.fetchReferrerFailed': '错误：无法获取您已绑定的推荐人地址。',
     
     // Testimonial Section
     'testimonial.connectFuture': '连接未来',
@@ -148,6 +154,11 @@ const languagePacks = {
     'howToUse.waitingRedeem': '等待赎回',
     'howToUse.staking': 'STAKING',
     'howToUse.redeemedStatus': 'REDEEMED',
+    
+    // Share Friend Modal
+    'share.title': '分享链接给好友',
+    'share.hint': '若复制失败请长按链接手动复制分享',
+    'share.button': '复制链接给好友',
     
     // Common
     'common.loading': 'Loading...',
@@ -288,6 +299,17 @@ const languagePacks = {
     'toast.calculateFailed': '無法計算預期輸出，質押中止',
     'toast.stakeFailed': '質押失敗: {reason}',
     'toast.refreshData': '每6秒刷新數據...',
+    'toast.stakingRequest': '正在處理質押請求...',
+    'toast.insufficientBalance': '錯誤：您的USDT餘額不足 (當前: {balance})',
+    'toast.invalidReferrer': '錯誤：推薦人地址無效或未質押',
+    'toast.stakeSuccessRefresh': '質押成功！頁面即將刷新。',
+    'toast.stakeFailedRetry': '質押失敗，請稍後重試。',
+    'toast.fetchReferrerFailed': '錯誤：無法獲取您已綁定的推薦人地址。',
+    
+    // Share Friend Modal
+    'share.title': '分享鏈接給好友',
+    'share.hint': '若複製失敗請長按鏈接手動複製分享',
+    'share.button': '複製鏈接給好友',
     
     // Common
     'common.loading': 'Loading...',
@@ -428,6 +450,17 @@ const languagePacks = {
     'toast.calculateFailed': 'Unable to calculate expected output, staking aborted',
     'toast.stakeFailed': 'Staking failed: {reason}',
     'toast.refreshData': 'Refreshing data every 6 seconds...',
+    'toast.stakingRequest': 'Processing stake request...',
+    'toast.insufficientBalance': 'Error: Insufficient USDT balance (Current: {balance})',
+    'toast.invalidReferrer': 'Error: Referrer address is invalid or has not staked',
+    'toast.stakeSuccessRefresh': 'Stake successful! The page will refresh shortly.',
+    'toast.stakeFailedRetry': 'Stake failed, please try again later.',
+    'toast.fetchReferrerFailed': 'Error: Could not retrieve your bound referrer address.',
+    
+    // Share Friend Modal
+    'share.title': 'Share Link with Friends',
+    'share.hint': 'If copying fails, please long-press the link to manually copy and share',
+    'share.button': 'Copy Link for Friends',
     
     // Common
     'common.loading': 'Loading...',
@@ -568,6 +601,12 @@ const languagePacks = {
     'toast.calculateFailed': '予想出力の計算ができません、ステーキングを中止します',
     'toast.stakeFailed': 'ステーキング失敗: {reason}',
     'toast.refreshData': '6秒ごとにデータを更新中...',
+    'toast.stakingRequest': 'ステーキングリクエストを処理中...',
+    'toast.insufficientBalance': 'エラー：USDT残高が不足しています（現在：{balance}）',
+    'toast.invalidReferrer': 'エラー：紹介者アドレスが無効か、ステーキングされていません',
+    'toast.stakeSuccessRefresh': 'ステーキング成功！ページを更新します。',
+    'toast.stakeFailedRetry': 'ステーキングに失敗しました。後でもう一度お試しください。',
+    'toast.fetchReferrerFailed': 'エラー：バインドされた紹介者アドレスを取得できませんでした。',
     
     // Common
     'common.loading': 'Loading...',
@@ -708,6 +747,12 @@ const languagePacks = {
     'toast.calculateFailed': '예상 출력을 계산할 수 없습니다, 스테이킹 중단',
     'toast.stakeFailed': '스테이킹 실패: {reason}',
     'toast.refreshData': '6초마다 데이터 새로고침 중...',
+    'toast.stakingRequest': '스테이킹 요청 처리 중...',
+    'toast.insufficientBalance': '오류: USDT 잔액이 부족합니다 (현재: {balance})',
+    'toast.invalidReferrer': '오류: 추천인 주소가 유효하지 않거나 스테이킹되지 않았습니다',
+    'toast.stakeSuccessRefresh': '스테이킹 성공! 페이지가 곧 새로고침됩니다.',
+    'toast.stakeFailedRetry': '스테이킹에 실패했습니다. 나중에 다시 시도해주세요.',
+    'toast.fetchReferrerFailed': '오류: 연결된 추천인 주소를 가져올 수 없습니다.',
     
     // Common
     'common.loading': 'Loading...',
