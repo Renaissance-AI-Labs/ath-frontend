@@ -7,8 +7,8 @@ import { t } from '../i18n';
 
 // --- Helper to get USDT decimals based on environment ---
 export const getUsdtDecimals = () => {
-  // Production (Mainnet) USDT uses 6 decimals, Development (Testnet) test USDT uses 18
-  return APP_ENV === 'PROD' ? 6 : 18;
+  // Both Production and Development environments use 18 decimals for USDT
+  return 18;
 };
 
 // --- Import ABIs ---
