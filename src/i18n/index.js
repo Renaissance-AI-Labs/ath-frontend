@@ -608,6 +608,11 @@ const languagePacks = {
     'toast.stakeFailedRetry': 'ステーキングに失敗しました。後でもう一度お試しください。',
     'toast.fetchReferrerFailed': 'エラー：バインドされた紹介者アドレスを取得できませんでした。',
     
+    // Share Friend Modal
+    'share.title': '友達にリンクを共有',
+    'share.hint': 'コピーに失敗した場合は、リンクを長押しして手動でコピーして共有してください',
+    'share.button': '友達にリンクをコピー',
+    
     // Common
     'common.loading': 'Loading...',
     'common.token': 'TOKEN',
@@ -753,6 +758,11 @@ const languagePacks = {
     'toast.stakeSuccessRefresh': '스테이킹 성공! 페이지가 곧 새로고침됩니다.',
     'toast.stakeFailedRetry': '스테이킹에 실패했습니다. 나중에 다시 시도해주세요.',
     'toast.fetchReferrerFailed': '오류: 연결된 추천인 주소를 가져올 수 없습니다.',
+    
+    // Share Friend Modal
+    'share.title': '친구에게 링크 공유',
+    'share.hint': '복사에 실패하면 링크를 길게 눌러 수동으로 복사하여 공유하십시오',
+    'share.button': '친구에게 링크 복사',
     
     // Common
     'common.loading': 'Loading...',
