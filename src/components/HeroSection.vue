@@ -212,7 +212,7 @@ import AnimatedNumber from './AnimatedNumber.vue'; // Import the new component
 import { t } from '@/i18n';
 import { ethers } from 'ethers';
 
-const emits = defineEmits(['open-inject-modal', 'open-claim-reward-modal']);
+const emits = defineEmits(['open-inject-modal', 'open-claim-reward-modal', 'open-share-friend-modal']);
 
 const stakedBalance = ref(0); // Use number type
 const friendsBoost = ref(0); // Use number type
@@ -316,25 +316,7 @@ const shareFriendLink = async () => {
     return;
   }
   const referralLink = `${window.location.origin}?ref=${walletState.address}`;
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(referralLink);
-      showToast(t('toast.copySuccess'));
-    } else {
-      const textArea = document.createElement('textarea');
-      textArea.value = referralLink;
-      textArea.style.position = 'absolute';
-      textArea.style.left = '-9999px';
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      showToast(t('toast.copySuccess'));
-    }
-  } catch (err) {
-    console.error('无法复制链接: ', err);
-    showToast(t('toast.copyFailed'));
-  }
+  emits('open-share-friend-modal', referralLink);
 };
 
 const handleClaimLevelReward = () => {
