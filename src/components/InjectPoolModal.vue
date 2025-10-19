@@ -162,7 +162,7 @@ export default {
         return { text: this.t('inject.approving'), action: 'approving', disabled: true };
       }
       
-      if (this.isGlobalLimitReached) {
+      if (this.isGlobalLimitReached && amountNum > 10) {
         return { text: this.t('inject.confirmStake'), action: 'global_limit_reached', disabled: true };
       }
 
@@ -273,7 +273,8 @@ export default {
     async handleMainAction() {
       if (this.mainButtonState.disabled) {
         // If the button is logically disabled, check why and show appropriate toast.
-        if (this.isGlobalLimitReached) {
+        const amountNum = parseFloat(this.amount) || 0;
+        if (this.isGlobalLimitReached && amountNum > 10) {
           showToast(this.t('inject.soldOut'));
         }
         // Potentially other disabled reasons can be checked here in the future.
@@ -304,7 +305,9 @@ export default {
         if (ENABLE_GLOBAL_STAKE_LIMIT) {
           const currentReserves = await getPoolUsdtReserves();
           this.poolUsdtReserves = currentReserves; // Update state for reactivity
-          if (this.isGlobalLimitReached) {
+          const isLimitReachedNow = parseFloat(this.poolUsdtReserves) >= GLOBAL_STAKE_LIMIT_USDT;
+          const amountNum = parseFloat(this.amount) || 0;
+          if (isLimitReachedNow && amountNum > 10) {
             showToast(this.t('inject.soldOut'));
             return; // Stop the process
           }
