@@ -13,14 +13,14 @@ const networks = {
     chainId: '0x38', // 56
     chainName: 'BNB Smart Chain Mainnet',
     nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
-    rpcUrls: ['https://bsc-dataseed.binance.org/'],
+    rpcUrls: ['https://bsc-mainnet.public.blastapi.io'],
     blockExplorerUrls: ['https://bscscan.com']
   },
   bnbTestnet: {
     chainId: '0x61', // 97
     chainName: 'BNB Smart Chain Testnet',
     nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
-    rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
+    rpcUrls: ['https://bsc-testnet.public.blastapi.io'],
     blockExplorerUrls: ['https://testnet.bscscan.com']
   }
 };
