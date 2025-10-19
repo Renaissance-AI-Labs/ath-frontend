@@ -211,7 +211,9 @@ import {
 import AnimatedNumber from './AnimatedNumber.vue'; // Import the new component
 import { t } from '@/i18n';
 import { ethers } from 'ethers';
+import useClipboard from 'vue-clipboard3';
 
+const { toClipboard } = useClipboard();
 const emits = defineEmits(['open-inject-modal', 'open-claim-reward-modal']);
 
 const stakedBalance = ref(0); // Use number type
@@ -317,13 +319,7 @@ const shareFriendLink = async () => {
   }
   const referralLink = `${window.location.origin}?ref=${walletState.address}`;
   try {
-    // Create temporary textarea element for better compatibility (especially for mobile wallets like TP)
-    const textArea = document.createElement('textarea');
-    textArea.value = referralLink;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textArea);
+    await toClipboard(referralLink);
     showToast(t('toast.copySuccess'));
   } catch (err) {
     console.error('无法复制链接: ', err);
