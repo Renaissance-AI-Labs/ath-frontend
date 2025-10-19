@@ -65,13 +65,16 @@ import {
   getUsdtAllowance,
   approveUsdt,
   getMaxStakeAmount,
-  getUserStakedBalance
+  getUserStakedBalance,
+  getPoolUsdtReserves
 } from '../services/contracts';
 import {
   ENABLE_TEMPORARY_STAKE_LIMIT,
   TEMPORARY_STAKE_LIMIT,
   ENABLE_SINGLE_PURCHASE_LIMIT,
   SINGLE_PURCHASE_LIMIT,
+  ENABLE_GLOBAL_STAKE_LIMIT,
+  GLOBAL_STAKE_LIMIT_USDT,
 } from '../services/environment';
 import CustomSelect from './CustomSelect.vue';
 import {
@@ -97,6 +100,7 @@ export default {
       usdtBalance: '0',
       usdtAllowance: '0',
       userStakedBalance: '0', // User's current staked balance
+      poolUsdtReserves: '0', // Global pool reserves
       isApproving: false,
       isLoading: true, // Start with loading true to fetch allowance
       walletState: walletState,
@@ -136,10 +140,16 @@ export default {
 
       // Apply the single transaction limit if it's enabled
       if (ENABLE_SINGLE_PURCHASE_LIMIT) {
-        return Math.min(effectiveAmount, SINGLE_PURCHASE_LIMIT);
+        effectiveAmount = Math.min(effectiveAmount, SINGLE_PURCHASE_LIMIT);
       }
       
       return effectiveAmount;
+    },
+    isGlobalLimitReached() {
+      if (!ENABLE_GLOBAL_STAKE_LIMIT) {
+        return false;
+      }
+      return parseFloat(this.poolUsdtReserves) >= GLOBAL_STAKE_LIMIT_USDT;
     },
     isAmountInvalid() {
       return parseFloat(this.amount) > this.effectiveMaxStakeAmount;
@@ -152,6 +162,10 @@ export default {
         return { text: this.t('inject.approving'), action: 'approving', disabled: true };
       }
       
+      if (this.isGlobalLimitReached) {
+        return { text: this.t('inject.confirmStake'), action: 'global_limit_reached', disabled: true };
+      }
+
       if (!this.amount || amountNum <= 0) {
         // Default state when no amount is entered
         return { text: this.t('inject.enterAmount'), action: 'idle', disabled: true };
@@ -211,12 +225,13 @@ export default {
         this.fetchUsdtBalance(),
         this.fetchUsdtAllowance(),
         this.fetchMaxStakeAmount(),
-        this.fetchUserStakedBalance()
+        this.fetchUserStakedBalance(),
+        this.fetchPoolUsdtReserves()
       ]);
       
       const allowanceNum = parseFloat(this.usdtAllowance);
       const isApproved = allowanceNum > 0;
-      console.log(`[注入资产弹窗] 数据获取: 用户余额=${this.usdtBalance}, 允许额度=${this.usdtAllowance}, 合约最大可注入=${this.maxStakeAmount}, 用户已质押=${this.userStakedBalance}`);
+      console.log(`[注入资产弹窗] 数据获取: 用户余额=${this.usdtBalance}, 允许额度=${this.usdtAllowance}, 合约最大可注入=${this.maxStakeAmount}, 用户已质押=${this.userStakedBalance}, 全局池子余量=${this.poolUsdtReserves}, 全局质押上限=${GLOBAL_STAKE_LIMIT_USDT}`);
 
       this.isLoading = false;
     },
@@ -233,6 +248,9 @@ export default {
     },
     async fetchUserStakedBalance() {
       this.userStakedBalance = await getUserStakedBalance();
+    },
+    async fetchPoolUsdtReserves() {
+      this.poolUsdtReserves = await getPoolUsdtReserves();
     },
     resetBalance() {
       this.usdtBalance = '0';
@@ -253,8 +271,15 @@ export default {
       this.amount = this.effectiveMaxStakeAmount.toString();
     },
     async handleMainAction() {
-      if (this.mainButtonState.disabled) return;
-
+      if (this.mainButtonState.disabled) {
+        // If the button is logically disabled, check why and show appropriate toast.
+        if (this.isGlobalLimitReached) {
+          showToast(this.t('inject.soldOut'));
+        }
+        // Potentially other disabled reasons can be checked here in the future.
+        return;
+      }
+      
       // --- Validation Logic ---
       const inputAmount = parseFloat(this.amount);
       const userBalance = parseFloat(this.usdtBalance);
@@ -272,7 +297,24 @@ export default {
       
       console.log(`[注入资产弹窗] 主操作按钮被点击, 当前状态: '${this.mainButtonState.action}'`);
 
-      switch (this.mainButtonState.action) {
+      const action = this.mainButtonState.action;
+
+      // Final on-click check for global staking limit, to prevent race conditions
+      if (action === 'stake' || action === 'next_step') {
+        if (ENABLE_GLOBAL_STAKE_LIMIT) {
+          const currentReserves = await getPoolUsdtReserves();
+          this.poolUsdtReserves = currentReserves; // Update state for reactivity
+          if (this.isGlobalLimitReached) {
+            showToast(this.t('inject.soldOut'));
+            return; // Stop the process
+          }
+        }
+      }
+
+      switch (action) {
+        case 'global_limit_reached':
+          showToast(this.t('inject.soldOut'));
+          break;
         case 'approve':
           console.log("[注入资产弹窗] 执行操作: 请求USDT授权");
           this.isApproving = true;

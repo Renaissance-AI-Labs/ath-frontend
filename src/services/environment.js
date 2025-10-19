@@ -53,6 +53,17 @@ export const ENABLE_SINGLE_PURCHASE_LIMIT = true;
 export const SINGLE_PURCHASE_LIMIT = 200;
 
 /**
+ * Enable global staking limit based on USDT reserves in the pool.
+ */
+export const ENABLE_GLOBAL_STAKE_LIMIT = true;
+
+/**
+ * The maximum amount of USDT reserves in the pool.
+ * If the current reserves exceed this value, staking will be disabled.
+ */
+export const GLOBAL_STAKE_LIMIT_USDT = 110000;
+
+/**
  * Disable console logs in production
  * Set to true to disable console.log/debug/info in production environment
  */

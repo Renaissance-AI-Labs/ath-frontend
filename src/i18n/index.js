@@ -65,6 +65,7 @@ const languagePacks = {
     'inject.maxAmountExceeded': '当前最多可注入 {amount} USDT',
     'inject.approveSuccess': '授权成功！',
     'inject.approveFailed': '授权失败或被拒绝',
+    'inject.soldOut': '当前全网质押额度已售罄',
     
     // Claim Reward Modal
     'claim.title': '领取您的成就奖励',
@@ -216,6 +217,7 @@ const languagePacks = {
     'inject.maxAmountExceeded': '當前最多可注入 {amount} USDT',
     'inject.approveSuccess': '授權成功！',
     'inject.approveFailed': '授權失敗或被拒絕',
+    'inject.soldOut': '當前全網質押額度已售罄',
     
     // Claim Reward Modal
     'claim.title': '領取您的成就獎勵',
@@ -367,6 +369,7 @@ const languagePacks = {
     'inject.maxAmountExceeded': 'Maximum {amount} USDT can be injected',
     'inject.approveSuccess': 'Approval successful!',
     'inject.approveFailed': 'Approval failed or rejected',
+    'inject.soldOut': 'The global staking quota is currently sold out',
     
     // Claim Reward Modal
     'claim.title': 'Claim Your Achievement Rewards',
@@ -669,7 +672,8 @@ const languagePacks = {
     'inject.maxAmountExceeded': '최대 {amount} USDT까지 주입 가능',
     'inject.approveSuccess': '승인 성공!',
     'inject.approveFailed': '승인 실패 또는 거부됨',
-    
+    'inject.soldOut': '현재 글로벌 스테이킹 할당량이 모두 판매되었습니다',
+
     // Claim Reward Modal
     'claim.title': '성취 보상 받기',
     'claim.loading': '성취 보상을 조회 중...',

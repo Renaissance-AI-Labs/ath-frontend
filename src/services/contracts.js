@@ -527,6 +527,24 @@ export const getUsdtBalance = async () => {
   }
 };
 
+/**
+ * Fetches the current USDT reserves from the ATH contract's associated pool.
+ * @returns {Promise<string>} The total USDT reserves, formatted as a string.
+ */
+export const getPoolUsdtReserves = async () => {
+  if (!athContract) {
+    console.warn("ATH contract not initialized.");
+    return "0";
+  }
+  try {
+    const reserves = await athContract.getReserveU();
+    return ethers.formatUnits(reserves, getUsdtDecimals());
+  } catch (error) {
+    console.error("Error fetching pool USDT reserves:", error);
+    return "0";
+  }
+};
+
 // --- Staking and Referral Flow Functions ---
 
 /**
