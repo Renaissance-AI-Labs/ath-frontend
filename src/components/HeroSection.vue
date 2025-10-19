@@ -50,7 +50,7 @@
                         </span> -->
                     </h1>
                     <p class="s-sub_title" style="color: #fff;">
-                        只有代码、数学，以及一个由 AI 驱动的、不可阻挡的<br class="d-none d-sm-block">价值创造机器
+                        {{ t('hero.subtitle') }}
                     </p>
                 </div>
             </div>
@@ -71,28 +71,35 @@
                         <div class="box-ask">
                             <form class="form-ask wow fadeInUp form-ask-bg">
                                 <div class="box-ask-inner">
+                                    <!-- S5~S7 Level Watermark -->
+                                    <div v-if="userLevel && ['S5', 'S6', 'S7'].includes(userLevel)" 
+                                         class="level-watermark"
+                                         :class="`level-${userLevel.toLowerCase()}`">
+                                        {{ userLevel }}
+                                    </div>
                                     <div class="form-content" style="margin-bottom: 20px;">
                                         <div class="tf-brand assets-title">
                                             <div class="container">
-                                                <h5 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content">您的资产在此处安睡 </h5>
+                                                <h5 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content">{{ t('hero.assetsTitle') }}</h5>
                                             </div>
                                         </div>
                                         <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px;">
-                                          <span v-if="isLoading">Loading...</span>
+                                          <span v-if="isLoading">{{ t('common.loading') }}</span>
                                           <span v-else>
-                                            <AnimatedNumber :value="stakedBalance" :decimals="6" /> TOKEN
+                                            <AnimatedNumber :value="stakedBalance" :decimals="6" /> {{ t('common.token') }}
                                           </span>
                                         </p>
 
                                         <div class="tf-brand assets-title">
                                             <div class="container">
-                                                <h3 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content" style="font-size: 16px !important;"> 好友带来的助力 </h3>
+                                                <h3 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content" style="font-size: 16px !important;">{{ t('hero.friendsBoost') }}</h3>
                                             </div>
                                         </div>
                                         <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: 26px; font-size: 14px !important;">
-                                          <span v-if="isLoading">Loading...</span>
+                                          <span v-if="isLoading">{{ t('common.loading') }}</span>
                                            <span v-else>
-                                            <AnimatedNumber :value="friendsBoost" :decimals="6" /> TOKEN
+                                            <AnimatedNumber :value="friendsBoost" :decimals="6" /> {{ t('common.token') }}
+                                            <span v-if="userLevel" class="user-level-badge">{{ userLevel }}</span>
                                           </span>
                                         </p>
 
@@ -100,16 +107,16 @@
                                             <div class="field_left">
                                                 <a href="#" @click.prevent="handleInjectPoolClick" class="btn-ip ip-modern text-body-3" style="padding: 7px 7px !important; gap: 4px !important;">
                                                     <i class="icon-plus fs-10"></i>
-                                                    注入底池
+                                                    {{ t('hero.injectPool') }}
                                                 </a>
                                                 <a href="#" @click.prevent="shareFriendLink" class="btn-ip ip-modern text-body-3" style="padding: 7px 7px !important; gap: 4px !important;">
                                                     <i class="icon-arrow-caret-down  fs-8"></i>
-                                                    分享好友
+                                                    {{ t('hero.shareFriend') }}
                                                 </a>
                                                 <div class="reward-button-wrapper">
                                                     <a href="#" @click.prevent="handleClaimLevelReward" class="btn-ip ip-modern text-body-3" v-if="isAuthenticated" style="padding: 7px 7px !important; gap: 4px !important;">
                                                         <i class="icon-arrow-top fs-14"></i>
-                                                        成就奖励
+                                                        {{ t('hero.achievementReward') }}
                                                     </a>
                                                     <div v-if="walletState.hasClaimableRewards" class="red-dot"></div>
                                                 </div>
@@ -188,17 +195,28 @@ import {
 import {
   getUserStakedBalance,
   getFriendsBoost,
-  checkIfUserHasReferrer
+  checkIfUserHasReferrer,
+  getTeamKpiBigNumber,
+  S1_THRESHOLD,
+  S2_THRESHOLD,
+  S3_THRESHOLD,
+  S4_THRESHOLD,
+  S5_THRESHOLD,
+  S6_THRESHOLD,
+  S7_THRESHOLD
 } from '../services/contracts';
 import {
   showToast
 } from '../services/notification';
 import AnimatedNumber from './AnimatedNumber.vue'; // Import the new component
+import { t } from '@/i18n';
+import { ethers } from 'ethers';
 
 const emits = defineEmits(['open-inject-modal', 'open-claim-reward-modal']);
 
 const stakedBalance = ref(0); // Use number type
 const friendsBoost = ref(0); // Use number type
+const userLevel = ref(''); // User's S level (e.g., 'S5', 'S6', 'S7')
 let fetchInterval = null;
 const isInitialFetch = ref(true); // Flag for the first fetch
 
@@ -207,22 +225,48 @@ const isLoading = computed(() => isAuthenticated.value && isInitialFetch.value);
 
 
 const fetchHeroData = async () => {
-  if (!isAuthenticated.value) return;
+  if (!isAuthenticated.value || !walletState.contractsInitialized) {
+    console.log('[HeroSection] 跳过数据获取 - 未认证或合约未初始化');
+    return;
+  }
 
   if (isInitialFetch.value) {
-    // console.log("正在首次加载数据...");
+    console.log("[HeroSection] 正在首次加载数据...");
   } else {
     // console.log("每6秒刷新数据...");
   }
 
   try {
-    const [newStakedBalance, newFriendsBoost] = await Promise.all([
+    // Optimize: Only call getTeamKpiBigNumber once, use it for both friendsBoost and level calculation
+    const [newStakedBalance, kpi] = await Promise.all([
       getUserStakedBalance(),
-      getFriendsBoost(),
+      getTeamKpiBigNumber(),
     ]);
+    
     // Convert string from contract to number for the component
     stakedBalance.value = parseFloat(newStakedBalance) || 0;
-    friendsBoost.value = parseFloat(newFriendsBoost) || 0;
+    
+    // Convert KPI BigInt to formatted number for friendsBoost display
+    friendsBoost.value = parseFloat(ethers.formatUnits(kpi, 18)) || 0;
+    
+    // Calculate user level based on KPI
+    if (kpi >= S7_THRESHOLD) {
+      userLevel.value = 'S7';
+    } else if (kpi >= S6_THRESHOLD) {
+      userLevel.value = 'S6';
+    } else if (kpi >= S5_THRESHOLD) {
+      userLevel.value = 'S5';
+    } else if (kpi >= S4_THRESHOLD) {
+      userLevel.value = 'S4';
+    } else if (kpi >= S3_THRESHOLD) {
+      userLevel.value = 'S3';
+    } else if (kpi >= S2_THRESHOLD) {
+      userLevel.value = 'S2';
+    } else if (kpi >= S1_THRESHOLD) {
+      userLevel.value = 'S1';
+    } else {
+      userLevel.value = ''; // No level if below S1 threshold
+    }
   } catch (error) {
     console.error("刷新数据失败:", error);
   } finally {
@@ -236,6 +280,7 @@ const fetchHeroData = async () => {
 const resetData = () => {
   stakedBalance.value = 0;
   friendsBoost.value = 0;
+  userLevel.value = '';
   isInitialFetch.value = true; // Reset flag on disconnect
 };
 
@@ -254,7 +299,7 @@ const stopFetching = () => {
 
 const handleInjectPoolClick = () => {
   if (!isAuthenticated.value) {
-    showToast('请先连接并授权您的钱包');
+    showToast(t('toast.connectWalletFirst'));
     return;
   }
   emits('open-inject-modal');
@@ -262,21 +307,21 @@ const handleInjectPoolClick = () => {
 
 const shareFriendLink = async () => {
   if (!isAuthenticated.value) {
-    showToast('请先连接并授权您的钱包');
+    showToast(t('toast.connectWalletFirst'));
     return;
   }
   const isEligible = await checkIfUserHasReferrer();
   if (!isEligible) {
-    showToast('请先进行质押并绑定您的推荐好友');
+    showToast(t('toast.stakeAndBindFirst'));
     return;
   }
   const referralLink = `${window.location.origin}?ref=${walletState.address}`;
   try {
     await navigator.clipboard.writeText(referralLink);
-    showToast('复制成功！链接已复制到剪贴板');
+    showToast(t('toast.copySuccess'));
   } catch (err) {
     console.error('无法复制链接: ', err);
-    showToast('复制失败，请检查浏览器权限');
+    showToast(t('toast.copyFailed'));
   }
 };
 
@@ -284,21 +329,18 @@ const handleClaimLevelReward = () => {
   emits('open-claim-reward-modal');
 };
 
-watch(isAuthenticated, (isAuth) => {
-  if (isAuth) {
+watch(() => [isAuthenticated.value, walletState.contractsInitialized], ([isAuth, contractsReady]) => {
+  console.log(`[HeroSection] 状态变化 - isAuth: ${isAuth}, contractsReady: ${contractsReady}`);
+  if (isAuth && contractsReady) {
     startFetching();
   } else {
     stopFetching();
-    resetData();
+    if (!isAuth) {
+      resetData();
+    }
   }
-});
+}, { immediate: true });
 
-
-onMounted(() => {
-  if (isAuthenticated.value) {
-    startFetching();
-  }
-});
 
 onUnmounted(() => {
   stopFetching();
@@ -356,6 +398,133 @@ onUnmounted(() => {
 .form-ask-bg {
     background-color: #11111300;
 }
+
+.level-watermark {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 160px;
+    font-weight: 900;
+    z-index: 0;
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: 12px;
+}
+
+/* S5 - Light Blue (浅蓝色) */
+.level-s5 {
+    color: rgba(147, 197, 253, 0.12);
+    text-shadow: 
+        0 0 60px rgba(147, 197, 253, 0.28),
+        0 0 100px rgba(186, 230, 253, 0.2),
+        0 0 140px rgba(224, 242, 254, 0.15);
+    animation: glowLightBlueS5 6s ease-in-out infinite;
+}
+
+@keyframes glowLightBlueS5 {
+    0%, 100% {
+        text-shadow: 
+            0 0 60px rgba(147, 197, 253, 0.28),
+            0 0 100px rgba(186, 230, 253, 0.2),
+            0 0 140px rgba(224, 242, 254, 0.15);
+        opacity: 0.6;
+    }
+    50% {
+        text-shadow: 
+            0 0 80px rgba(147, 197, 253, 0.4),
+            0 0 120px rgba(186, 230, 253, 0.3),
+            0 0 160px rgba(224, 242, 254, 0.22);
+        opacity: 0.8;
+    }
+}
+
+/* S6 - Lighter Blue (更浅蓝色) */
+.level-s6 {
+    color: rgba(186, 230, 253, 0.12);
+    text-shadow: 
+        0 0 60px rgba(186, 230, 253, 0.25),
+        0 0 100px rgba(224, 242, 254, 0.18),
+        0 0 140px rgba(240, 249, 255, 0.12);
+    animation: glowLighterBlue 6s ease-in-out infinite;
+}
+
+@keyframes glowLighterBlue {
+    0%, 100% {
+        text-shadow: 
+            0 0 60px rgba(186, 230, 253, 0.25),
+            0 0 100px rgba(224, 242, 254, 0.18),
+            0 0 140px rgba(240, 249, 255, 0.12);
+        opacity: 0.6;
+    }
+    50% {
+        text-shadow: 
+            0 0 80px rgba(186, 230, 253, 0.38),
+            0 0 120px rgba(224, 242, 254, 0.28),
+            0 0 160px rgba(240, 249, 255, 0.2);
+        opacity: 0.8;
+    }
+}
+
+/* S7 - Silver White (银白色) */
+.level-s7 {
+    color: rgba(229, 228, 226, 0.12);
+    text-shadow: 
+        0 0 60px rgba(229, 228, 226, 0.35),
+        0 0 100px rgba(241, 245, 249, 0.25),
+        0 0 140px rgba(248, 250, 252, 0.18);
+    animation: glowSilverWhite 6s ease-in-out infinite;
+}
+
+@keyframes glowSilverWhite {
+    0%, 100% {
+        text-shadow: 
+            0 0 60px rgba(229, 228, 226, 0.35),
+            0 0 100px rgba(241, 245, 249, 0.25),
+            0 0 140px rgba(248, 250, 252, 0.18);
+        opacity: 0.6;
+    }
+    50% {
+        text-shadow: 
+            0 0 80px rgba(229, 228, 226, 0.5),
+            0 0 120px rgba(241, 245, 249, 0.38),
+            0 0 160px rgba(248, 250, 252, 0.28);
+        opacity: 0.8;
+    }
+}
+
+.box-ask-inner {
+    position: relative;
+}
+
+.form-content {
+    position: relative;
+    z-index: 1;
+}
+
+.user-level-badge {
+    margin-left: 8px;
+    padding: 2px 8px;
+    background: linear-gradient(135deg, #e2e5eb 0%, #4b79a2 100%);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 1px 1px rgb(0 0 0 / 64%);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    display: inline-block;
+    vertical-align: middle;
+    animation: glow 4s ease-in-out infinite;
+}
+
+/* @keyframes glow {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    }
+    50% {
+        box-shadow: 0 2px 12px rgba(102, 164, 234, 0.8);
+    }
+} */
 
 .reward-button-wrapper {
     position: relative;

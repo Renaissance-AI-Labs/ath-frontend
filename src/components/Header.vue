@@ -52,8 +52,10 @@
                             <!-- <a href="#" class="tf-btn text-body-3 animate-btn d-none d-sm-flex">
                                 Log in
                             </a> -->
+                            <!-- Global icon for future internationalization -->
+                            <img src="/asset/icon/custom/global.png" alt="Global" class="global-icon" style="width: 20px; height: 20px; margin-right: 2px; cursor: pointer; opacity: 0.8;" @click="openLanguageModal">
                             <a v-if="!walletState.isConnected" href="#" @click.prevent="openModal" class="tf-btn text-body-3 style-2 animate-btn animate-dark">
-                                连接钱包
+                                {{ t('header.connectWallet') }}
                             </a>
                             <a v-else href="#" @click.prevent="openModal" class="wallet-address tf-btn text-body-3 style-2 animate-btn animate-dark">
                                 {{ formattedAddress }}
@@ -72,6 +74,7 @@
 <script>
 import { walletState, formatAddress } from '@/services/wallet.js';
 import { computed } from 'vue';
+import { t } from '@/i18n';
 
 export default {
   name: 'Header',
@@ -81,11 +84,15 @@ export default {
     return {
       walletState,
       formattedAddress,
+      t,
     };
   },
   methods: {
     openModal() {
       this.$emit('open-get-started-modal');
+    },
+    openLanguageModal() {
+      this.$emit('open-language-modal');
     }
   }
 }

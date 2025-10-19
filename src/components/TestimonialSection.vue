@@ -7,7 +7,7 @@
                     <p class="s-number_order wg-counter">
                         [ <span class="text-white">03</span> / 04 ]
                     </p>
-                    <p class="s-label">[ <span class="text-white hacker-text_transform">连接未来</span> ]</p>
+                    <p class="s-label">[ <span class="text-white hacker-text_transform">{{ t('testimonial.connectFuture') }}</span> ]</p>
                 </div>
             </div>
         </div>
@@ -23,7 +23,7 @@
                             <span class="bar_center"></span>
                         </span>
                         <span class="hacker-text_transform no-delay">
-                            Yourself shapes the future.
+                            {{ t('testimonial.yourselfShapesFuture') }}
                         </span>
                         <span class="bar-group type-right">
                             <span class="bar_center"></span>
@@ -45,8 +45,8 @@
             <div class="container">
                 <div class="sect-title wow fadeInUp">
                     <h2 class="s-title font-3 m-0" style="color: #fff;">
-                        未来的旅途 <br>
-                        让我们一同探索
+                        {{ t('testimonial.futureJourneyLine1') }} <br>
+                        {{ t('testimonial.futureJourneyLine2') }}
                     </h2>
                 </div>
 
@@ -82,49 +82,48 @@
                                 <div class="tes-author">
                                     
                                     <div class="author_info">
-                                        <a href="#" class="text-main-2">创世</a>
-                                        <p class="text-body-3">Genesis</p>
+                                        <a href="#" class="text-main-2">{{ t('testimonial.genesis') }}</a>
+                                        <p class="text-body-3">{{ t('testimonial.genesisEn') }}</p>
                                     </div>
                                 </div>
                                 <p class="text-main-2">
-                                    协议部署，LCC 功能上线，Athena AI™ v1.0 开始自主运行，开启一个前所未有的未来。
-
+                                    {{ t('testimonial.genesisDesc') }}
                                 </p>
                             </div>
                             <div class="wg-testimonial">
                                 <div class="tes-author">
                                     
                                     <div class="author_info">
-                                        <a href="#" class="text-main-2">扩张</a>
-                                        <p class="text-body-3">Expansion</p>
+                                        <a href="#" class="text-main-2">{{ t('testimonial.expansion') }}</a>
+                                        <p class="text-body-3">{{ t('testimonial.expansionEn') }}</p>
                                     </div>
                                 </div>
                                 <p class="text-main-2">
-                                    金库贴现票据 (TDN) V1 的合约接口被激活，协议开始主动进行资产负债表管理， 望眼前所未有的蓝图。
+                                    {{ t('testimonial.expansionDesc') }}
                                 </p>
                             </div>
                             <div class="wg-testimonial">
                                 <div class="tes-author">
                                     
                                     <div class="author_info">
-                                        <a href="#" class="text-main-2">移交</a>
-                                        <p class="text-body-3">The Handover</p>
+                                        <a href="#" class="text-main-2">{{ t('testimonial.handover') }}</a>
+                                        <p class="text-body-3">{{ t('testimonial.handoverEn') }}</p>
                                     </div>
                                 </div>
                                 <p class="text-main-2">
-                                    协议的最高管理权限被转移至一个时间锁合约，AthenaDAO 的治理模块上线， 忠诚调停时间线秩序。
+                                    {{ t('testimonial.handoverDesc') }}
                                 </p>
                             </div>
                             <div class="wg-testimonial">
                                 <div class="tes-author">
                                     
                                     <div class="author_info">
-                                        <a href="#" class="link name text-main-2">消亡</a>
-                                        <p class="text-body-3">The Nyx Dissolution</p>
+                                        <a href="#" class="link name text-main-2">{{ t('testimonial.dissolution') }}</a>
+                                        <p class="text-body-3">{{ t('testimonial.dissolutionEn') }}</p>
                                     </div>
                                 </div>
                                 <p class="tes-text">
-                                    <span class="text-main-2">在投票确认协议稳定后，时间锁到期，The Nyx Collective 的部署密钥将被永久销毁以进入自主进化阶段。</span>
+                                    <span class="text-main-2">{{ t('testimonial.dissolutionDesc') }}</span>
                                 </p>
                             </div>
                             
@@ -148,8 +147,15 @@
     </section>
 </template>
 <script>
+import { t } from '@/i18n';
+
 export default {
     name: 'TestimonialSection',
+    setup() {
+        return {
+            t,
+        };
+    },
     mounted() {
         const script = document.createElement('script');
         script.type = 'module';

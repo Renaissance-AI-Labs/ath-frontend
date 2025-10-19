@@ -11,13 +11,13 @@
       <div class="modal-body-custom">
         <!-- Header -->
         <div class="title_holder">
-          <h3>领取您的成就奖励</h3>
+          <h3>{{ t('claim.title') }}</h3>
         </div>
 
         <!-- Authenticated View -->
         <div v-if="walletState.isAuthenticated" class="reward-content">
             <div v-if="isLoading" class="loading-state-rewards">
-                <p>正在查询您的成就奖励...</p>
+                <p>{{ t('claim.loading') }}</p>
             </div>
             <div v-else class="hexagon-container">
                 <div class="hexagon-wrapper">
@@ -25,10 +25,10 @@
                         <span class="level-text level-s5">S5</span>
                     </div>
                     <div class="reward-display">
-                        <span>{{ parseFloat(s5_rewards) > 0 ? parseFloat(s5_rewards).toFixed(2) + ' ATH' : '暂无' }}</span>
+                        <span>{{ parseFloat(s5_rewards) > 0 ? parseFloat(s5_rewards).toFixed(2) + ' ' + t('common.ath') : t('claim.noReward') }}</span>
                     </div>
                     <button @click="claim(5)" :disabled="parseFloat(s5_rewards) <= 0 || isClaiming[5]" class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
-                        {{ isClaiming[5] ? '领取中' : '领取' }}
+                        {{ isClaiming[5] ? t('claim.claiming') : t('claim.claim') }}
                     </button>
                 </div>
                 <div class="hexagon-wrapper">
@@ -36,10 +36,10 @@
                         <span class="level-text level-s6">S6</span>
                     </div>
                     <div class="reward-display">
-                        <span>{{ parseFloat(s6_rewards) > 0 ? parseFloat(s6_rewards).toFixed(2) + ' ATH' : '暂无' }}</span>
+                        <span>{{ parseFloat(s6_rewards) > 0 ? parseFloat(s6_rewards).toFixed(2) + ' ' + t('common.ath') : t('claim.noReward') }}</span>
                     </div>
                     <button @click="claim(6)" :disabled="parseFloat(s6_rewards) <= 0 || isClaiming[6]" class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
-                        {{ isClaiming[6] ? '领取中' : '领取' }}
+                        {{ isClaiming[6] ? t('claim.claiming') : t('claim.claim') }}
                     </button>
                 </div>
                 <div class="hexagon-wrapper">
@@ -47,10 +47,10 @@
                         <span class="level-text level-s7">S7</span>
                     </div>
                     <div class="reward-display">
-                        <span>{{ parseFloat(s7_rewards) > 0 ? parseFloat(s7_rewards).toFixed(2) + ' ATH' : '暂无' }}</span>
+                        <span>{{ parseFloat(s7_rewards) > 0 ? parseFloat(s7_rewards).toFixed(2) + ' ' + t('common.ath') : t('claim.noReward') }}</span>
                     </div>
                     <button @click="claim(7)" :disabled="parseFloat(s7_rewards) <= 0 || isClaiming[7]" class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
-                        {{ isClaiming[7] ? '领取中' : '领取' }}
+                        {{ isClaiming[7] ? t('claim.claiming') : t('claim.claim') }}
                     </button>
                 </div>
             </div>
@@ -58,13 +58,13 @@
 
         <!-- Unauthenticated View -->
         <div v-else class="unauthenticated-view">
-            <p>请先连接并授权您的钱包</p>
+            <p>{{ t('claim.connectWallet') }}</p>
         </div>
 
         <!-- Footer -->
         <div class="button-group-center">
             <button class="btn-ip ip-modern text-body-3 btn-confirm" @click="$emit('close')">
-                关闭
+                {{ t('claim.close') }}
             </button>
         </div>
 
@@ -94,6 +94,7 @@ import {
     S6_THRESHOLD,
     S7_THRESHOLD
 } from '../services/contracts';
+import { t } from '@/i18n';
 
 const isLoading = ref(true);
 const s5_kpiMet = ref(false);

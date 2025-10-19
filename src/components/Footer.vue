@@ -7,7 +7,7 @@
                     <p class="s-number_order wg-counter">
                         [ <span class="text-white">04</span> / 04 ]
                     </p>
-                    <p class="s-label">[ <span class="text-white hacker-text_transform">了解我们</span> ]</p>
+                    <p class="s-label">[ <span class="text-white hacker-text_transform">{{ t('footer.aboutUs') }}</span> ]</p>
                 </div>
             </div>
         </div>
@@ -39,7 +39,7 @@
                             <!-- <h5 class="footer-heading footer-heading-mobile font-2">Social</h5>
                             <div class="tf-collapse-content">
                                 <ul class="footer-menu-list">
-                                    <li><a href="https://athena-protocol-official.gitbook.io/athena-protocol-cn/" class="link text-main-2">白皮书</a></li>
+                                    <li><a href="https://athena-protocol-official.gitbook.io/athena-protocol-cn/" class="link text-main-2">{{ t('footer.whitepaper') }}</a></li>
                                     <li><a href="#" class="link text-main-2">X/Twitter</a></li>
                                     <li><a href="#" class="link text-main-2">Telegram</a></li>
                                     <li><a href="#" class="link text-main-2"></a></li>
@@ -59,7 +59,7 @@
                             <h5 class="footer-heading footer-heading-mobile font-2">Social</h5>
                             <div class="tf-collapse-content">
                                 <ul class="footer-menu-list">
-                                    <li><a href="https://athena-protocol-official.gitbook.io/athena-protocol-cn/" class="link text-main-2">白皮书</a></li>
+                                    <li><a href="https://athena-protocol-official.gitbook.io/athena-protocol-cn/" class="link text-main-2">{{ t('footer.whitepaper') }}</a></li>
                                     <li><a href="https://x.com/Athena_Aigent" class="link text-main-2">X/Twitter</a></li>
                                     <li><a href="https://t.me/athena_aigent" class="link text-main-2">Telegram</a></li>
                                 </ul>
@@ -82,9 +82,15 @@
 </template>
 <script>
 import { APP_ENV } from '../services/environment'; // Import the environment variable
+import { t } from '@/i18n';
 
 export default {
     name: 'Footer',
+    setup() {
+        return {
+            t,
+        };
+    },
     computed: {
         copyrightText() {
             let envPrefix;
@@ -95,8 +101,8 @@ export default {
             } else {
                 envPrefix = 'D'; // Dev/Local
             }
-            const version = '1.1.0'; // Version is now hardcoded here
-            return `© 2025 Athena Protocol. ALL RIGHTS RESERVED. ${envPrefix}-${version}`;
+            const version = '1.1.1'; // Version is now hardcoded here
+            return `${this.t('footer.copyright')} ${envPrefix}-${version}`;
         }
     }
 }
