@@ -14,10 +14,10 @@
         
         <div class="share-content" style="margin-top: 30px;">
           <div class="input-wrapper">
-            <input type="text" :value="referralLink" readonly class="share-link-input" />
+            <textarea :value="referralLink" readonly class="share-link-input"></textarea>
           </div>
-          <p class="share-hint">若复制失败，可长按链接复制</p>
-          <a href="#" @click.prevent="copyLink" class="btn-ip ip-modern text-body-3 copy-btn" style="margin-top: 0px;">
+          <p class="share-hint">如果复制失败可以长按链接选择复制</p>
+          <a href="#" @click.prevent="copyLink" class="btn-ip ip-modern text-body-3 copy-btn">
             复制链接给好友
           </a>
         </div>
@@ -155,8 +155,8 @@ export default {
   font-size: 14px;
   text-align: center;
   overflow-x: auto;
-  -webkit-user-select: text; /* For Safari/iOS */
-  user-select: text; /* Standard */
+  resize: none;
+  word-break: break-all;
 }
 
 .share-link-input:focus {
