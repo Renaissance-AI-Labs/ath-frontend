@@ -1,7 +1,7 @@
 <template>
   <div>
     <span class="br-line"></span>
-    <HeroSection @open-inject-modal="openInjectModal" @open-claim-reward-modal="openClaimRewardModal" />
+    <HeroSection @open-inject-modal="openInjectModal" @open-claim-reward-modal="openClaimRewardModal" @open-share-friend-modal="openShareFriendModal" />
     <!-- <FeatureSection /> -->
     <HowToUseSection />
     <!-- <BenefitSection /> -->
@@ -29,6 +29,14 @@
     <transition name="modal">
         <ClaimRewardModal v-if="isClaimRewardModalVisible" @close="closeClaimRewardModal" />
     </transition>
+    
+    <transition name="modal">
+      <ShareFriendModal 
+        v-if="isShareFriendModalVisible" 
+        :referral-link="referralLinkForModal"
+        @close="closeShareFriendModal"
+      />
+    </transition>
   </div>
 </template>
 
@@ -45,6 +53,7 @@ import CTASection from '../components/CTASection.vue';
 import InjectPoolModal from '../components/InjectPoolModal.vue';
 import ConfirmReferrerModal from '../components/ConfirmReferrerModal.vue';
 import ClaimRewardModal from '../components/ClaimRewardModal.vue'; // <-- Import the new modal
+import ShareFriendModal from '../components/ShareFriendModal.vue';
 import {
   walletState
 } from '../services/wallet';
@@ -79,12 +88,15 @@ export default {
     ConfirmReferrerModal,
     // CTASection,
     ClaimRewardModal,
+    ShareFriendModal,
   },
   data() {
     return {
       isInjectModalVisible: false,
       isConfirmReferrerModalVisible: false,
       isClaimRewardModalVisible: false, // <-- Add state for the new modal
+      isShareFriendModalVisible: false,
+      referralLinkForModal: '',
       injectionData: null, // To store data from the first modal
       isStaking: false, // To lock UI during transaction
       walletState: walletState,
@@ -96,6 +108,13 @@ export default {
     },
     closeInjectModal() {
       this.isInjectModalVisible = false;
+    },
+    openShareFriendModal(link) {
+      this.referralLinkForModal = link;
+      this.isShareFriendModalVisible = true;
+    },
+    closeShareFriendModal() {
+      this.isShareFriendModalVisible = false;
     },
     openClaimRewardModal() {
       this.isClaimRewardModalVisible = true;
