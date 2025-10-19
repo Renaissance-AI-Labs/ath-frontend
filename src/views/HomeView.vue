@@ -2,13 +2,14 @@
   <div>
     <span class="br-line"></span>
     <HeroSection @open-inject-modal="openInjectModal" @open-claim-reward-modal="openClaimRewardModal" />
-    <!-- <FeatureSection /> -->
     <HowToUseSection />
-    <!-- <BenefitSection /> -->
-    <!-- <PricingSection /> -->
+    <CTASection />
     <TestimonialSection />
     <!-- <FAQSection /> -->
-    <!-- <CTASection /> -->
+     <!-- <BenefitSection /> -->
+    <!-- <PricingSection /> -->
+     <!-- <FeatureSection /> -->
+    
 
     <transition name="modal">
       <InjectPoolModal 
@@ -34,8 +35,7 @@
 
 <script>
 import HeroSection from '../components/HeroSection.vue';
-// import FeatureSection from '../components/FeatureSection.vue';
-import BenefitSection from '../components/BenefitSection.vue';
+// import BenefitSection from '../components/BenefitSection.vue';
 import HowToUseSection from '../components/HowToUseSection.vue';
 import FeatureSection from '../components/FeatureSection.vue';
 import TestimonialSection from '../components/TestimonialSection.vue';
@@ -70,14 +70,14 @@ export default {
   components: {
     HeroSection,
     // FeatureSection,
-    BenefitSection,
+    // BenefitSection,
     HowToUseSection,
     // PricingSection,
     TestimonialSection,
     FAQSection,
     InjectPoolModal,
     ConfirmReferrerModal,
-    // CTASection,
+    CTASection,
     ClaimRewardModal,
   },
   data() {
