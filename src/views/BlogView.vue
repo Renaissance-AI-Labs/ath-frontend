@@ -339,7 +339,7 @@
                     </li>
                     <li>
                       <a href="#" class="text-body-3 link">
-                        Themesflat
+                        Athena Protocol
                       </a>
                     </li>
                     <li>
