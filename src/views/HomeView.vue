@@ -34,6 +34,7 @@
       <ShareFriendModal 
         v-if="isShareFriendModalVisible" 
         :referral-link="referralLinkForModal"
+        :referrer-address="referrerAddressForModal"
         @close="closeShareFriendModal"
       />
     </transition>
@@ -98,6 +99,7 @@ export default {
       isClaimRewardModalVisible: false, // <-- Add state for the new modal
       isShareFriendModalVisible: false,
       referralLinkForModal: '',
+      referrerAddressForModal: '',
       injectionData: null, // To store data from the first modal
       isStaking: false, // To lock UI during transaction
       walletState: walletState,
@@ -110,8 +112,9 @@ export default {
     closeInjectModal() {
       this.isInjectModalVisible = false;
     },
-    openShareFriendModal(link) {
-      this.referralLinkForModal = link;
+    openShareFriendModal(data) {
+      this.referralLinkForModal = data.referralLink;
+      this.referrerAddressForModal = data.referrerAddress || '';
       this.isShareFriendModalVisible = true;
     },
     closeShareFriendModal() {

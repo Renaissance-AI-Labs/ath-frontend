@@ -196,6 +196,7 @@ import {
   getUserStakedBalance,
   getFriendsBoost,
   checkIfUserHasReferrer,
+  getReferrer,
   getTeamKpiBigNumber,
   S1_THRESHOLD,
   S2_THRESHOLD,
@@ -316,7 +317,8 @@ const shareFriendLink = async () => {
     return;
   }
   const referralLink = `${window.location.origin}?ref=${walletState.address}`;
-  emits('open-share-friend-modal', referralLink);
+  const referrerAddress = await getReferrer();
+  emits('open-share-friend-modal', { referralLink, referrerAddress });
 };
 
 const handleClaimLevelReward = () => {
