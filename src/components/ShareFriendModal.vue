@@ -14,12 +14,18 @@
         
         <div class="share-content" style="margin-top: 30px;">
           <div class="input-wrapper">
+            <label class="share-link-label">{{ t('share.linkLabel') }}</label>
             <textarea :value="referralLink" readonly class="share-link-input" @focus="$event.target.select()"></textarea>
           </div>
           <p class="share-hint">{{ t('share.hint') }}</p>
           <a href="#" @click.prevent="copyLink" class="btn-ip ip-modern text-body-3 copy-btn">
             {{ t('share.button') }}
           </a>
+          <div class="divider" v-if="teamId"></div>
+          <div class="team-id-section" v-if="teamId">
+            <label class="team-id-label">{{ t('share.teamId') }}</label>
+            <p class="team-id-value">{{ teamId }}</p>
+          </div>
         </div>
 
       </div>
@@ -31,7 +37,7 @@
 </template>
 
 <script>
-import { onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted, computed } from 'vue';
 import { showToast } from '@/services/notification';
 import { t } from '@/i18n';
 
@@ -41,6 +47,10 @@ export default {
     referralLink: {
       type: String,
       required: true,
+    },
+    referrerAddress: {
+      type: String,
+      default: '',
     },
   },
   setup(props, { emit }) {
@@ -63,6 +73,16 @@ export default {
       }
     };
 
+    const teamId = computed(() => {
+      if (!props.referrerAddress || props.referrerAddress.length < 10) {
+        return '';
+      }
+      // Format: 0x + first 4 chars + ... + last 4 chars
+      const prefix = props.referrerAddress.slice(0, 6); // 0x + first 4 chars
+      const suffix = props.referrerAddress.slice(-4); // last 4 chars
+      return `${prefix}...${suffix}`;
+    });
+
     onMounted(() => {
       document.body.style.overflow = 'hidden';
     });
@@ -74,6 +94,7 @@ export default {
     return {
       close,
       copyLink,
+      teamId,
       t,
     };
   },
@@ -144,6 +165,47 @@ export default {
   align-items: center;
 }
 
+.divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 15%,
+    rgba(255, 255, 255, 0.3) 85%,
+    transparent 100%
+  );
+  margin: 30px 0 30px 0;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.1);
+}
+
+.team-id-section {
+  width: 100%;
+  text-align: left;
+}
+
+.team-id-label {
+  display: block;
+  color: var(--white);
+  font-size: 14px;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.team-id-value {
+  display: block;
+  color: var(--white);
+  font-size: 14px;
+  font-family: 'monospace', 'BlinkMacSystemFont', sans-serif;
+  margin: 0;
+  padding: 10px 15px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
 .share-hint {
   color: var(--text-2);
   font-size: 14px;
@@ -154,6 +216,15 @@ export default {
 .input-wrapper {
   width: 100%;
   margin-bottom: 20px;
+}
+
+.share-link-label {
+  display: block;
+  color: var(--white);
+  font-size: 14px;
+  margin-bottom: 8px;
+  text-align: left;
+  font-weight: 500;
 }
 
 .share-link-input {
