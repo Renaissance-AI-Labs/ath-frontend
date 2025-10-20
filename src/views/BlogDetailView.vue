@@ -141,7 +141,7 @@
                         Tags:
                       </li>
                       <li><a href="#" class="text-body-3 link">ChatBot AI</a></li>
-                      <li><a href="#" class="text-body-3 link">Themesflat</a></li>
+                      <li><a href="#" class="text-body-3 link">Athena Protocol</a></li>
                       <li><a href="#" class="text-body-3 link">Qore</a></li>
                     </ul>
                   </div>
@@ -461,7 +461,7 @@
                     </li>
                     <li>
                       <a href="#" class="text-body-3 link">
-                        Themesflat
+                        Athena Protocol
                       </a>
                     </li>
                     <li>
