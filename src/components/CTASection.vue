@@ -42,12 +42,13 @@
             <div class="container">
                 <div class="sect-title wow fadeInUp">
                     <h2 class="s-title font-3" style="color: #fff;">
-                        Athena & xBroker<br>
-                        联合算力特惠活动
+                        Athena & xBrokers<br>
+                        官方合作 | 算力特惠
                     </h2>
                     <p class="s-sub_title">
-                        在 Athena 用同样的钱，投资效率翻4倍 <br>
-                        xBrokers官方战略合作
+                        通过Athena渠道投资
+                         <br>获取4倍xBrokers算力收益
+                        
                     </p>
                 </div>
                 <div class="px-16 px-sm-0" id="ad-platform">
@@ -93,7 +94,7 @@
                 <div class="row" style="margin: 20px 0 50px 0;">
                     <div class="col-11 col-md-8 col-xl-4 mx-auto">
                         <p class="form-note text-center">
-                            xBrokers · 全球化金融服务平台<br>让资本的流动更加自由、透明和高效
+                            xBrokers · 全球化金融服务平台<br>让资本的流动更加自由、透明与高效
                         </p>
                     </div>
                 </div>
