@@ -35,10 +35,21 @@
           </div>
         </div>
 
-        <!-- Duration Dropdown Group -->
+        <!-- Duration Button Group -->
         <div class="form-group">
           <label class="form-label">{{ t('inject.durationLabel') }}</label>
-          <CustomSelect :options="durationOptions" v-model="selectedDuration" />
+          <div class="duration-button-group">
+            <button 
+              v-for="option in durationOptions" 
+              :key="option.value"
+              @click="selectedDuration = option.value"
+              :class="['duration-btn', { 'active': selectedDuration === option.value }]"
+              type="button"
+            >
+              <span class="duration-days">{{ option.days }}</span>
+              <span class="duration-rate">{{ option.rate }}</span>
+            </button>
+          </div>
         </div>
 
         <!-- Action Buttons -->
@@ -76,7 +87,6 @@ import {
   ENABLE_GLOBAL_STAKE_LIMIT,
   GLOBAL_STAKE_LIMIT_USDT,
 } from '../services/environment';
-import CustomSelect from './CustomSelect.vue';
 import {
   showToast
 } from '../services/notification';
@@ -85,9 +95,6 @@ import { t } from '@/i18n';
 
 export default {
   name: 'InjectPoolModal',
-  components: {
-    CustomSelect,
-  },
   setup() {
     return {
       t,
@@ -96,7 +103,7 @@ export default {
   data() {
     return {
       amount: '',
-      selectedDuration: 0, // Default to 1 day (index 0)
+      selectedDuration: 2, // Default to 30 days (index 2)
       usdtBalance: '0',
       usdtAllowance: '0',
       userStakedBalance: '0', // User's current staked balance
@@ -112,15 +119,18 @@ export default {
       return [
         {
           value: 0,
-          text: this.t('inject.duration1Day')
+          days: this.t('inject.days1'),
+          rate: this.t('inject.rate1')
         },
         {
           value: 1,
-          text: this.t('inject.duration15Days')
+          days: this.t('inject.days15'),
+          rate: this.t('inject.rate15')
         },
         {
           value: 2,
-          text: this.t('inject.duration30Days')
+          days: this.t('inject.days30'),
+          rate: this.t('inject.rate30')
         }
       ];
     },
@@ -447,6 +457,62 @@ export default {
   padding: 8px 12px; /* Adjust padding to fit the text */
   white-space: nowrap; /* Prevent text from wrapping */
   font-size: 12px;
+}
+
+.duration-button-group {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.duration-btn {
+  flex: 1;
+  padding: 10px 8px;
+  background: linear-gradient(0deg, rgba(20, 20, 21, 0.82), rgba(20, 20, 21, 0.82)),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 100%);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+  align-items: center;
+}
+
+.duration-btn .duration-days {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.duration-btn .duration-rate {
+  font-size: 11px;
+  opacity: 0.8;
+  line-height: 1.2;
+}
+
+.duration-btn:hover {
+  color: var(--white);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.duration-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--white);
+}
+
+.duration-btn.active .duration-days {
+  font-weight: 600;
+}
+
+.duration-btn.active .duration-rate {
+  opacity: 1;
 }
 
 .button-group {
