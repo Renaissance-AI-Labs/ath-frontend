@@ -152,6 +152,11 @@ export default {
       if (ENABLE_SINGLE_PURCHASE_LIMIT) {
         effectiveAmount = Math.min(effectiveAmount, SINGLE_PURCHASE_LIMIT);
       }
+
+      // If global limit is reached, cap the amount at 10 USDT
+      if (this.isGlobalLimitReached) {
+        effectiveAmount = Math.min(effectiveAmount, 10);
+      }
       
       return effectiveAmount;
     },
