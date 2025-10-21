@@ -41,12 +41,12 @@
             </div>
             <div class="container">
                 <div class="sect-title wow fadeInUp">
-                    <h2 class="s-title font-3">
-                        Ethena x Xbroker<br>
+                    <h2 class="s-title font-3" style="color: #fff;">
+                        Athena & xBroker<br>
                         联合算力特惠活动
                     </h2>
                     <p class="s-sub_title">
-                        在 Ethena 用同样的钱，投资效率翻4倍 <br>
+                        在 Athena 用同样的钱，投资效率翻4倍 <br>
                         xBrokers官方战略合作
                     </p>
                 </div>
@@ -127,7 +127,8 @@ import {
 import {
     getUsdtAllowanceForPowerPurchase,
     approveUsdtForPowerPurchase,
-    purchasePower
+    purchasePower,
+    getUserStakedBalance
 } from '../services/contracts';
 
 export default {
@@ -141,13 +142,32 @@ export default {
             isApproving: false,
             isSubmitting: false,
             walletState: walletState,
-            storageKey: 'powerPurchaseForm' // Key for session storage
+            userStakedBalance: '0',
+            isLoadingBalance: true,
         }
     },
     computed: {
         mainButtonState() {
             if (!this.walletState.address) {
-                return { text: '连接钱包', action: 'connect', disabled: false };
+                return {
+                    text: '连接钱包',
+                    action: 'connect',
+                    disabled: false
+                };
+            }
+            if (this.isLoadingBalance) {
+                return {
+                    text: '读取资产中...',
+                    action: 'loading',
+                    disabled: true
+                };
+            }
+            if (parseFloat(this.userStakedBalance) < 1000) {
+                return {
+                    text: '需达到 1000USDT 资产额度',
+                    action: 'insufficient',
+                    disabled: true
+                };
             }
             if (this.isApproving) {
                 return {
@@ -204,50 +224,26 @@ export default {
     watch: {
         'walletState.address'(newAddress) {
             if (newAddress) {
-                this.fetchUsdtAllowance();
+                this.fetchData();
             } else {
                 this.usdtAllowance = '0';
+                this.userStakedBalance = '0';
+                this.isLoadingBalance = false;
             }
         },
-        // Watch for changes and save to session storage
-        xbrokersUid() {
-            this.saveStateToStorage();
-        },
-        investAmount() {
-            this.saveStateToStorage();
-        }
     },
     methods: {
-        // Method to save form state
-        saveStateToStorage() {
-            const state = {
-                uid: this.xbrokersUid,
-                amount: this.investAmount,
-            };
-            sessionStorage.setItem(this.storageKey, JSON.stringify(state));
+        async fetchData() {
+            if (!walletState.address) return;
+            this.isLoadingBalance = true;
+            await Promise.all([
+                this.fetchUsdtAllowance(),
+                this.fetchUserStakedBalance()
+            ]);
+            this.isLoadingBalance = false;
         },
-        // Method to restore form state
-        restoreStateFromStorage() {
-            const savedState = sessionStorage.getItem(this.storageKey);
-            if (savedState) {
-                try {
-                    const {
-                        uid,
-                        amount
-                    } = JSON.parse(savedState);
-                    this.xbrokersUid = uid || '';
-                    this.investAmount = amount || '';
-                } catch (e) {
-                    console.error("Failed to restore form state from sessionStorage", e);
-                    sessionStorage.removeItem(this.storageKey);
-                }
-            }
-        },
-        // Method to clear state after successful submission
-        clearStateAfterSubmit() {
-            this.xbrokersUid = '';
-            this.investAmount = '';
-            sessionStorage.removeItem(this.storageKey);
+        async fetchUserStakedBalance() {
+            this.userStakedBalance = await getUserStakedBalance();
         },
         async fetchUsdtAllowance() {
             if (!walletState.address) return;
@@ -317,7 +313,8 @@ export default {
                         const success = await purchasePower(this.xbrokersUid, this.investAmount);
                         if (success) {
                             showToast('已提交投资请求，请稍后在聚币APP中查看');
-                            this.clearStateAfterSubmit();
+                            this.xbrokersUid = '';
+                            this.investAmount = '';
                             // Reload the page after a short delay to allow the user to see the toast.
                             setTimeout(() => {
                                 window.location.reload();
@@ -333,9 +330,10 @@ export default {
         }
     },
     mounted() {
-        this.restoreStateFromStorage(); // Restore state on component mount
         if (walletState.address) {
-            this.fetchUsdtAllowance();
+            this.fetchData();
+        } else {
+            this.isLoadingBalance = false;
         }
         window.REQUIRED_CODE_ERROR_MESSAGE = 'Please choose a country code';
         window.LOCALE = 'en';
