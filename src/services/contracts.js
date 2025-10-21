@@ -20,6 +20,7 @@ import athAbi from '../abis/ath.json';
 import s5poolAbi from '../abis/s5pool.json';
 import s6poolAbi from '../abis/s6pool.json';
 import s7poolAbi from '../abis/s7pool.json';
+import powerPurchaseAbi from '../abis/powerPurchase.json';
 // No need for a separate USDT ABI if it follows ERC20 standard like `ath.json`
 // import usdtAbi from '../abis/usdt.json';
 
@@ -67,7 +68,11 @@ const contractAddresses = {
   lp: {
     production: '0x1Cd9298c1c73F02D14EFcF23622352EB7308d700',
     development: '0xCE8Ce1f5Fd5E67987c749783dA5E5861D7152262',
-  }
+  },
+  powerPurchase: {
+    production: '', // To be deployed
+    development: '0xE04600a0aADf768d948d25097B9Bf62f76d5B7b1',
+  },
 };
 
 // --- Contract Instances ---
@@ -79,9 +84,10 @@ let routerContract;
 let s5poolContract;
 let s6poolContract;
 let s7poolContract;
+let powerPurchaseContract;
 
 // We need to export these for other modules to use them.
-export { referralContract, stakingContract, athContract, usdtContract, s5poolContract, s6poolContract, s7poolContract };
+export { referralContract, stakingContract, athContract, usdtContract, s5poolContract, s6poolContract, s7poolContract, powerPurchaseContract };
 
 // --- KPI Thresholds (as per Staking.sol) ---
 const THRESHOLDS = {
@@ -140,6 +146,7 @@ export const initializeContracts = async () => {
   const s5poolAddress = contractAddresses.s5pool[env];
   const s6poolAddress = contractAddresses.s6pool[env];
   const s7poolAddress = contractAddresses.s7pool[env];
+  const powerPurchaseAddress = contractAddresses.powerPurchase[env];
 
   // Create new contract instances using the raw, unwrapped signer
   referralContract = new ethers.Contract(referralAddress, referralAbi, rawSigner);
@@ -150,6 +157,7 @@ export const initializeContracts = async () => {
   s5poolContract = new ethers.Contract(s5poolAddress, s5poolAbi, rawSigner);
   s6poolContract = new ethers.Contract(s6poolAddress, s6poolAbi, rawSigner);
   s7poolContract = new ethers.Contract(s7poolAddress, s7poolAbi, rawSigner);
+  powerPurchaseContract = new ethers.Contract(powerPurchaseAddress, powerPurchaseAbi, rawSigner);
 
   console.log("Contracts initialized:", {
     referral: await referralContract.getAddress(),
@@ -160,6 +168,7 @@ export const initializeContracts = async () => {
     s5pool: await s5poolContract.getAddress(),
     s6pool: await s6poolContract.getAddress(),
     s7pool: await s7poolContract.getAddress(),
+    powerPurchase: await powerPurchaseContract.getAddress(),
   });
 
   walletState.contractsInitialized = true;
@@ -179,6 +188,7 @@ export const resetContracts = () => {
   s5poolContract = null;
   s6poolContract = null;
   s7poolContract = null;
+  powerPurchaseContract = null;
   console.log("Contract instances have been reset.");
 };
 
@@ -774,6 +784,87 @@ export const rewardOfSlot = async (id) => {
     } catch (error) {
         console.error(`Error fetching reward for slot with ID ${id}:`, error);
         return 0n;
+    }
+};
+
+/**
+ * Gets the current USDT allowance for the PowerPurchase contract.
+ * @returns {Promise<string>} The allowance amount in ethers (string).
+ */
+export const getUsdtAllowanceForPowerPurchase = async () => {
+    const powerPurchaseAddress = contractAddresses.powerPurchase[APP_ENV === 'PROD' ? 'production' : 'development'];
+    if (!usdtContract || !walletState.address || !powerPurchaseAddress) {
+        console.warn("USDT contract not initialized, wallet not connected, or powerPurchase address missing.");
+        return "0";
+    }
+    try {
+        const allowance = await usdtContract.allowance(walletState.address, powerPurchaseAddress);
+        return ethers.formatUnits(allowance, getUsdtDecimals());
+    } catch (error) {
+        console.error("Error fetching USDT allowance for PowerPurchase:", error);
+        return "0";
+    }
+};
+
+/**
+ * Approves the PowerPurchase contract to spend the maximum amount of USDT.
+ * @returns {Promise<boolean>} True if the approval transaction was successful, false otherwise.
+ */
+export const approveUsdtForPowerPurchase = async () => {
+    const powerPurchaseAddress = contractAddresses.powerPurchase[APP_ENV === 'PROD' ? 'production' : 'development'];
+    if (!usdtContract || !powerPurchaseAddress) {
+        showToast('合约未初始化');
+        return false;
+    }
+    try {
+        const tx = await usdtContract.approve(powerPurchaseAddress, ethers.MaxUint256);
+        await tx.wait();
+        console.log("USDT max approval for PowerPurchase successful, transaction hash:", tx.hash);
+        return true;
+    } catch (error) {
+        if (error.code === 'ACTION_REJECTED') {
+            console.log("User rejected the approval transaction.");
+            // No toast for user rejection
+        } else {
+            console.error("Error approving USDT for PowerPurchase:", error);
+            showToast('授权失败');
+        }
+        return false;
+    }
+};
+
+/**
+ * Executes the power purchase transaction.
+ * @param {string} uid The xBroker UID.
+ * @param {string} amount The amount of USDT to use for purchase.
+ * @returns {Promise<boolean>} True if the transaction was successful.
+ */
+export const purchasePower = async (uid, amount) => {
+    if (!powerPurchaseContract) {
+        showToast('合约未初始化');
+        return false;
+    }
+    try {
+        const decimals = getUsdtDecimals();
+        const amountInWei = ethers.parseUnits(amount, decimals);
+
+        // Optional: static call to check for reverts
+        await powerPurchaseContract.purchasePower.staticCall(uid, amountInWei);
+
+        const tx = await powerPurchaseContract.purchasePower(uid, amountInWei);
+        showToast('交易已发送，等待确认...');
+        await tx.wait();
+        console.log("Power purchase successful, transaction hash:", tx.hash);
+        return true;
+    } catch (error) {
+        if (error.code === 'ACTION_REJECTED') {
+            console.log("User rejected the purchase transaction.");
+            // No toast needed
+        } else {
+            console.error("Error during purchasePower call:", error);
+            showToast('提交请求未成功'); // Generic error
+        }
+        return false;
     }
 };
 
