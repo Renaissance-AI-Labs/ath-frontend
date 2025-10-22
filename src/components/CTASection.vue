@@ -313,13 +313,13 @@ export default {
                     try {
                         const success = await purchasePower(this.xbrokersUid, this.investAmount);
                         if (success) {
-                            showToast('已提交投资请求，请稍后在聚币APP中查看');
+                            showToast('已提交投资请求，请稍后在聚币APP中查看', 5000);
                             this.xbrokersUid = '';
                             this.investAmount = '';
-                            // Reload the page after a short delay to allow the user to see the toast.
+                            // Reload the page after toast is shown (5.5s) to allow the user to read it.
                             setTimeout(() => {
                                 window.location.reload();
-                            }, 1500);
+                            }, 5500);
                         } else {
                             // Error toast is shown inside purchasePower function
                         }
