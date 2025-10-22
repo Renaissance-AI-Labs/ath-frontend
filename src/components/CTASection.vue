@@ -43,7 +43,7 @@
                 <div class="sect-title wow fadeInUp">
                     <h2 class="s-title font-3" style="color: #fff;">
                         Athena & xBrokers<br>
-                        官方合作 | 算力特惠
+                        官方生态战略合作
                     </h2>
                     <p class="s-sub_title">
                         通过Athena渠道投资
@@ -56,7 +56,7 @@
                         <div class="col-11 col-md-8 col-xl-6">
                             <div class="ad-platform-form">
                                 <div class="form-group">
-                                    <label class="form-label">xBrokers UID</label>
+                                    <label class="form-label">聚币账户UID</label>
                                     <input 
                                         type="text" 
                                         inputmode="numeric"
@@ -165,7 +165,7 @@ export default {
             }
             if (parseFloat(this.userStakedBalance) < 1000) {
                 return {
-                    text: '需达到 1000USDT 资产额度',
+                    text: '需达到 1000 TOKEN 额度',
                     action: 'insufficient',
                     disabled: true
                 };
