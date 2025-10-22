@@ -61,7 +61,7 @@ export const ENABLE_GLOBAL_STAKE_LIMIT = true;
  * The maximum amount of USDT reserves in the pool.
  * If the current reserves exceed this value, staking will be disabled.
  */
-export const GLOBAL_STAKE_LIMIT_USDT = 133100;
+export const GLOBAL_STAKE_LIMIT_USDT = 146410;
 
 /**
  * Disable console logs in production
