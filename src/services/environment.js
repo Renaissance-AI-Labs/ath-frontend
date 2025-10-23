@@ -63,6 +63,7 @@ export const ENABLE_GLOBAL_STAKE_LIMIT = true;
  */
 export const GLOBAL_STAKE_LIMIT_USDT = 177156;
 
+
 /**
  * Disable console logs in production
  * Set to true to disable console.log/debug/info in production environment
