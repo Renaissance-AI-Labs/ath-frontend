@@ -41,120 +41,60 @@
             </div>
             <div class="container">
                 <div class="sect-title wow fadeInUp">
-                    <h2 class="s-title font-3">
-                        Ready to Power Up <br>
-                        Your Creativity?
+                    <h2 class="s-title font-3" style="color: #fff;">
+                        Athena & xBrokers<br>
+                        官方生态战略合作
                     </h2>
                     <p class="s-sub_title">
-                        Join thousands of creators using Qore to streamline <br class="d-none d-lg-block">
-                        their ideas and accelerate content creation.
+                        通过Athena渠道投资
+                         <br>获取4倍xBrokers算力收益
+                        
                     </p>
                 </div>
-                <div class="px-16 px-sm-0">
-                    <div class="sib-form form-get">
-                        <div id="sib-form-container" class="sib-form-container">
-                            <div id="error-message" class="sib-form-message-panel">
-                                <div class="sib-form-message-panel__text sib-form-message-panel__text--center">
-                                    <svg viewBox="0 0 512 512" class="sib-icon sib-notification__icon">
-                                        <path
-                                            d="M256 40c118.621 0 216 96.075 216 216 0 119.291-96.61 216-216 216-119.244 0-216-96.562-216-216 0-119.203 96.602-216 216-216m0-32C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm-11.49 120h22.979c6.823 0 12.274 5.682 11.99 12.5l-7 168c-.268 6.428-5.556 11.5-11.99 11.5h-8.979c-6.433 0-11.722-5.073-11.99-11.5l-7-168c-.283-6.818 5.167-12.5 11.99-12.5zM256 340c-15.464 0-28 12.536-28 28s12.536 28 28 28 28-12.536 28-28-12.536-28-28-28z" />
-                                    </svg>
-                                    <span class="sib-form-message-panel__inner-text">
-                                        Your subscription could not be saved. Please try again.
-                                    </span>
+                <div class="px-16 px-sm-0" id="ad-platform">
+                    <div class="row justify-content-center">
+                        <div class="col-11 col-md-8 col-xl-6">
+                            <div class="ad-platform-form">
+                                <div class="form-group">
+                                    <label class="form-label">聚币账户UID</label>
+                                    <input 
+                                        type="text" 
+                                        inputmode="numeric"
+                                        class="form-input" 
+                                        placeholder="输入 UID"
+                                        :value="xbrokersUid"
+                                        @input="handleUidInput"
+                                    />
                                 </div>
-                            </div>
-                            <div id="success-message" class="sib-form-message-panel">
-                                <div class="sib-form-message-panel__text sib-form-message-panel__text--center">
-                                    <svg viewBox="0 0 512 512" class="sib-icon sib-notification__icon">
-                                        <path
-                                            d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm0 464c-118.664 0-216-96.055-216-216 0-118.663 96.055-216 216-216 118.664 0 216 96.055 216 216 0 118.663-96.055 216-216 216zm141.63-274.961L217.15 376.071c-4.705 4.667-12.303 4.637-16.97-.068l-85.878-86.572c-4.667-4.705-4.637-12.303.068-16.97l8.52-8.451c4.705-4.667 12.303-4.637 16.97.068l68.976 69.533 163.441-162.13c4.705-4.667 12.303-4.637 16.97.068l8.451 8.52c4.668 4.705 4.637 12.303-.068 16.97z" />
-                                    </svg>
-                                    <span class="sib-form-message-panel__inner-text">
-                                        Your subscription has been successful.
-                                    </span>
+                                <div class="form-group">
+                                    <label class="form-label">投资金额</label>
+                                    <input 
+                                        type="text" 
+                                        inputmode="decimal"
+                                        class="form-input" 
+                                        placeholder="输入数量"
+                                        :value="investAmount"
+                                        @input="handleAmountInput"
+                                    />
+                                    <div class="hashpower-info">
+                                        <span v-if="computedHashpower">≈ {{ computedHashpower }} 算力</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div id="sib-container" class="sib-container--large sib-container--vertical">
-                                <form id="sib-form" method="POST"
-                                    action="https://3c02c1a1.sibforms.com/serve/MUIFABp-6TRH_ZaK3WSmgGEDN5JKtMVuO6AlfuFlAQ5zTnRMTM9BUGeezu_2xii-Q69nQvGvpnGbcxXU67nGQ5uDYgSnl0-UsYaPkTQENX9KjaNOrfvCz8rpEWGmf8Hp7zP5oS_WBIdftR5tby8mzBWr8pGQ7408FpU45UnQz5_Noqye8awDqyH6FqstWhwflIgsFbsd_AHEpMrk"
-                                    data-type="subscription">
-                                    <div style="display: none;">
-                                        <div class="sib-form-block">
-                                            <p></p>
-                                        </div>
-                                    </div>
-                                    <div style="display: none;">
-                                        <div class="sib-form-block">
-                                            <div class="sib-text-form-block">
-                                                <p></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div style="display: none;">
-                                        <div class="sib-optin sib-form-block">
-                                            <div class="form__entry entry_mcq">
-                                                <div class="form__label-row ">
-                                                    <div class="entry__choice">
-                                                        <label>
-                                                            <input type="checkbox" class="input_replaced" value="1"
-                                                                id="OPT_IN" name="OPT_IN" />
-                                                            <span class="checkbox checkbox_tick_positive"></span>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <label class="entry__error entry__error--primary">
-                                                </label>
-                                                <label class="entry__specification">
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="sib-form-inner">
-                                        <div class="sib-input sib-form-block">
-                                            <div class="form__entry entry_block">
-                                                <div class="form__label-row ">
-                                                    <label class="entry__label" for="EMAIL">
-                                                    </label>
-                                                    <div class="entry__field">
-                                                        <input class="input " type="text" id="EMAIL" name="EMAIL"
-                                                            autocomplete="off" placeholder="Enter your email"
-                                                            data-required="true" required />
-                                                    </div>
-                                                </div>
-                                                <label class="entry__error entry__error--primary"></label>
-                                                <label class="entry__specification">
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="sib-form-block">
-                                            <button
-                                                class="sib-form-block__button sib-form-block__button-with-loader       tf-btn style-2 style-high animate-btn"
-                                                form="sib-form" type="submit">
-                                                <svg class="icon clickable__icon progress-indicator__icon sib-hide-loader-icon"
-                                                    viewBox="0 0 512 512">
-                                                    <path
-                                                        d="M460.116 373.846l-20.823-12.022c-5.541-3.199-7.54-10.159-4.663-15.874 30.137-59.886 28.343-131.652-5.386-189.946-33.641-58.394-94.896-95.833-161.827-99.676C261.028 55.961 256 50.751 256 44.352V20.309c0-6.904 5.808-12.337 12.703-11.982 83.556 4.306 160.163 50.864 202.11 123.677 42.063 72.696 44.079 162.316 6.031 236.832-3.14 6.148-10.75 8.461-16.728 5.01z" />
-                                                </svg>
-                                                <span>Submit</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <input type="text" name="email_address_check" value="" class="input--hidden">
-                                    <input type="hidden" name="locale" value="en">
-                                </form>
+                                <div class="button-group">
+                                    <a href="#" @click.prevent="handleSubmit" 
+                                        class="btn-ip ip-modern text-body-3 btn-confirm"
+                                        :class="{ 'btn-disabled': mainButtonState.disabled }">
+                                        {{ mainButtonState.text }}
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" style="margin: 20px 0 50px 0;">
                     <div class="col-11 col-md-8 col-xl-4 mx-auto">
                         <p class="form-note text-center">
-                            By signing up you agree to our <a href="#" class="link">Terms of Service</a> and <a href="#"
-                                class="link">Privacy
-                                Policy</a>. No credit card required.
+                            xBrokers · 全球化金融服务平台<br>让资本的流动更加自由、透明与高效
                         </p>
                     </div>
                 </div>
@@ -179,9 +119,223 @@
     </section>
 </template>
 <script>
+import {
+    showToast
+} from '../services/notification';
+import {
+    walletState
+} from '../services/wallet';
+import {
+    getUsdtAllowanceForPowerPurchase,
+    approveUsdtForPowerPurchase,
+    purchasePower,
+    getUserStakedBalance
+} from '../services/contracts';
+
 export default {
     name: 'CTASection',
+    data() {
+        return {
+            xbrokersUid: '',
+            investAmount: '',
+            hashpowerRate: 4, // Conversion rate: 1 USDT = 4 hashpower
+            usdtAllowance: '0',
+            isApproving: false,
+            isSubmitting: false,
+            walletState: walletState,
+            userStakedBalance: '0',
+            isLoadingBalance: true,
+        }
+    },
+    computed: {
+        mainButtonState() {
+            if (!this.walletState.address) {
+                return {
+                    text: '连接钱包',
+                    action: 'connect',
+                    disabled: false
+                };
+            }
+            if (this.isLoadingBalance) {
+                return {
+                    text: '读取资产中...',
+                    action: 'loading',
+                    disabled: true
+                };
+            }
+            if (parseFloat(this.userStakedBalance) < 1000) {
+                return {
+                    text: '需达到 1000 TOKEN 额度',
+                    action: 'insufficient',
+                    disabled: true
+                };
+            }
+            if (this.isApproving) {
+                return {
+                    text: '授权中...',
+                    action: 'approving',
+                    disabled: true
+                };
+            }
+            if (this.isSubmitting) {
+                return {
+                    text: '请求提交中...',
+                    action: 'submitting',
+                    disabled: true
+                };
+            }
+
+            const amountNum = parseFloat(this.investAmount);
+            const allowanceNum = parseFloat(this.usdtAllowance);
+
+            if (!this.investAmount || amountNum <= 0) {
+                return {
+                    text: '确定投资',
+                    action: 'submit',
+                    disabled: true
+                };
+            }
+
+            if (allowanceNum < amountNum) {
+                return {
+                    text: '授权 USDT',
+                    action: 'approve',
+                    disabled: false
+                };
+            }
+
+            return {
+                text: '确定投资',
+                action: 'submit',
+                disabled: false
+            };
+        },
+        computedHashpower() {
+            const amount = parseFloat(this.investAmount);
+            if (isNaN(amount) || amount <= 0) {
+                return '';
+            }
+            const hashpower = amount * this.hashpowerRate;
+            return hashpower.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+    },
+    watch: {
+        'walletState.address'(newAddress) {
+            if (newAddress) {
+                this.fetchData();
+            } else {
+                this.usdtAllowance = '0';
+                this.userStakedBalance = '0';
+                this.isLoadingBalance = false;
+            }
+        },
+    },
+    methods: {
+        async fetchData() {
+            if (!walletState.address) return;
+            this.isLoadingBalance = true;
+            await Promise.all([
+                this.fetchUsdtAllowance(),
+                this.fetchUserStakedBalance()
+            ]);
+            this.isLoadingBalance = false;
+        },
+        async fetchUserStakedBalance() {
+            this.userStakedBalance = await getUserStakedBalance();
+        },
+        async fetchUsdtAllowance() {
+            if (!walletState.address) return;
+            this.usdtAllowance = await getUsdtAllowanceForPowerPurchase();
+        },
+        handleUidInput(event) {
+            let value = event.target.value;
+            // Only allow digits (0-9)
+            value = value.replace(/[^0-9]/g, '');
+            this.xbrokersUid = value;
+        },
+        handleAmountInput(event) {
+            let value = event.target.value;
+            // Only allow digits and decimal point
+            value = value.replace(/[^0-9.]/g, '');
+            // Ensure only one decimal point
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+            this.investAmount = value;
+        },
+        async handleSubmit() {
+            if (this.mainButtonState.disabled) return;
+
+            const action = this.mainButtonState.action;
+
+            if (action === 'connect') {
+                showToast('请先连接钱包');
+                this.$emit('connect-wallet');
+                return;
+            }
+
+            // --- Validation Logic ---
+            if (!this.xbrokersUid.trim()) {
+                showToast('请输入 xBrokers UID');
+                return;
+            }
+            if (!this.investAmount.trim()) {
+                showToast('请输入投资金额');
+                return;
+            }
+            const amount = parseFloat(this.investAmount);
+            if (isNaN(amount) || amount <= 0) {
+                showToast('请输入有效的投资金额');
+                return;
+            }
+
+            switch (action) {
+                case 'approve':
+                    this.isApproving = true;
+                    try {
+                        const success = await approveUsdtForPowerPurchase();
+                        if (success) {
+                            showToast('授权成功');
+                            await this.fetchUsdtAllowance();
+                        } else {
+                            // Error toast is shown inside approve function for rejection
+                        }
+                    } finally {
+                        this.isApproving = false;
+                    }
+                    break;
+                case 'submit':
+                    this.isSubmitting = true;
+                    try {
+                        const success = await purchasePower(this.xbrokersUid, this.investAmount);
+                        if (success) {
+                            showToast('已提交投资请求，请稍后在聚币APP中查看', 5000);
+                            this.xbrokersUid = '';
+                            this.investAmount = '';
+                            // Reload the page after toast is shown (5.5s) to allow the user to read it.
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 5500);
+                        } else {
+                            // Error toast is shown inside purchasePower function
+                        }
+                    } finally {
+                        this.isSubmitting = false;
+                    }
+                    break;
+            }
+        }
+    },
     mounted() {
+        if (walletState.address) {
+            this.fetchData();
+        } else {
+            this.isLoadingBalance = false;
+        }
         window.REQUIRED_CODE_ERROR_MESSAGE = 'Please choose a country code';
         window.LOCALE = 'en';
         window.EMAIL_INVALID_MESSAGE = window.SMS_INVALID_MESSAGE = "The information provided is invalid. Please review the field format and try again.";
@@ -202,4 +356,116 @@ export default {
 }
 </script>
 <style scoped>
+.ad-platform-form {
+    padding: 2rem;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    backdrop-filter: blur(16px);
+}
+
+.form-group {
+    margin: 20px 0 20px 0;
+}
+
+.form-label {
+    display: block;
+    text-align: left;
+    color: var(--text-2);
+    margin-bottom: 10px;
+    font-size: 14px;
+    padding-left: 5px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 15px 20px;
+    background-color: #0c0c0e;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    color: var(--white);
+    font-size: 16px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.hashpower-info {
+    margin-top: 8px;
+    text-align: left;
+    padding-left: 5px;
+    color: var(--primary);
+    font-size: 14px;
+    min-height: 20px;
+    line-height: 20px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn-ip {
+    flex: 1;
+    max-width: 200px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(0deg, rgba(20, 20, 21, 0.82), rgba(20, 20, 21, 0.82)),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 100%);
+    border: 1px solid var(--line);
+    box-shadow: 0px 1px 1px 0px #FFFFFF2E inset, 0px 0px 4px 0px #FFFFFF0F inset, 0px 0px 8px 0px #FFFFFF14 inset, 0px 0px 16px 0px #FFFFFF1F inset;
+    padding: 12px;
+    border-radius: 999px;
+    transition: all .3s ease;
+    color: var(--text-2);
+    text-decoration: none;
+}
+
+.btn-ip:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-confirm {
+    color: var(--white);
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-confirm:hover {
+    color: var(--white);
+    filter: brightness(1.1);
+}
+
+.btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(50%);
+}
+
+@media (max-width: 768px) {
+    .ad-platform-form {
+        padding: 1.5rem;
+    }
+    
+    .form-input {
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+    
+    .btn-ip {
+        max-width: 100%;
+        padding: 10px;
+    }
+}
 </style>
