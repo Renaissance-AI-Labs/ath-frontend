@@ -77,7 +77,8 @@ import {
   approveUsdt,
   getMaxStakeAmount,
   getUserStakedBalance,
-  getPoolUsdtReserves
+  getPoolUsdtReserves,
+  getMaxPoolLimit
 } from '../services/contracts';
 import {
   ENABLE_TEMPORARY_STAKE_LIMIT,
@@ -112,6 +113,7 @@ export default {
       isLoading: true, // Start with loading true to fetch allowance
       walletState: walletState,
       maxStakeAmount: '0',
+      dynamicGlobalLimit: '0', // Dynamic global limit from contract
     };
   },
   computed: {
@@ -164,7 +166,9 @@ export default {
       if (!ENABLE_GLOBAL_STAKE_LIMIT) {
         return false;
       }
-      return parseFloat(this.poolUsdtReserves) >= GLOBAL_STAKE_LIMIT_USDT;
+      // Use dynamic limit from contract if available, otherwise fallback to static limit
+      const effectiveLimit = parseFloat(this.dynamicGlobalLimit) || GLOBAL_STAKE_LIMIT_USDT;
+      return parseFloat(this.poolUsdtReserves) >= effectiveLimit;
     },
     isAmountInvalid() {
       return parseFloat(this.amount) > this.effectiveMaxStakeAmount;
@@ -241,12 +245,14 @@ export default {
         this.fetchUsdtAllowance(),
         this.fetchMaxStakeAmount(),
         this.fetchUserStakedBalance(),
-        this.fetchPoolUsdtReserves()
+        this.fetchPoolUsdtReserves(),
+        this.fetchMaxPoolLimit()
       ]);
       
       const allowanceNum = parseFloat(this.usdtAllowance);
       const isApproved = allowanceNum > 0;
-      console.log(`[注入资产弹窗] 数据获取: 用户余额=${this.usdtBalance}, 允许额度=${this.usdtAllowance}, 合约最大可注入=${this.maxStakeAmount}, 用户已质押=${this.userStakedBalance}, 全局池子余量=${this.poolUsdtReserves}, 全局质押上限=${GLOBAL_STAKE_LIMIT_USDT}`);
+      const effectiveLimit = parseFloat(this.dynamicGlobalLimit) || GLOBAL_STAKE_LIMIT_USDT;
+      console.log(`[注入资产弹窗] 数据获取: 用户余额=${this.usdtBalance}, 允许额度=${this.usdtAllowance}, 合约最大可注入=${this.maxStakeAmount}, 用户已质押=${this.userStakedBalance}, 全局池子余量=${this.poolUsdtReserves}, 全局质押上限(动态)=${this.dynamicGlobalLimit}, 全局质押上限(静态)=${GLOBAL_STAKE_LIMIT_USDT}, 实际使用=${effectiveLimit}`);
 
       this.isLoading = false;
     },
@@ -266,6 +272,10 @@ export default {
     },
     async fetchPoolUsdtReserves() {
       this.poolUsdtReserves = await getPoolUsdtReserves();
+    },
+    async fetchMaxPoolLimit() {
+      this.dynamicGlobalLimit = await getMaxPoolLimit();
+      console.log(`[注入资产弹窗] 从合约获取到的最大限额 maxPoolLimit: ${this.dynamicGlobalLimit} USDT`);
     },
     resetBalance() {
       this.usdtBalance = '0';
@@ -319,8 +329,11 @@ export default {
       if (action === 'stake' || action === 'next_step') {
         if (ENABLE_GLOBAL_STAKE_LIMIT) {
           const currentReserves = await getPoolUsdtReserves();
+          const currentLimit = await getMaxPoolLimit();
           this.poolUsdtReserves = currentReserves; // Update state for reactivity
-          const isLimitReachedNow = parseFloat(this.poolUsdtReserves) >= GLOBAL_STAKE_LIMIT_USDT;
+          this.dynamicGlobalLimit = currentLimit; // Update dynamic limit
+          const effectiveLimit = parseFloat(this.dynamicGlobalLimit) || GLOBAL_STAKE_LIMIT_USDT;
+          const isLimitReachedNow = parseFloat(this.poolUsdtReserves) >= effectiveLimit;
           const amountNum = parseFloat(this.amount) || 0;
           if (isLimitReachedNow && amountNum > 10) {
             showToast(this.t('inject.soldOut'));
