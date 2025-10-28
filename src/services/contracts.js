@@ -20,11 +20,24 @@ import athAbi from '../abis/ath.json';
 import s5poolAbi from '../abis/s5pool.json';
 import s6poolAbi from '../abis/s6pool.json';
 import s7poolAbi from '../abis/s7pool.json';
+import stakeLimitAbi from '../abis/stake_limit.json';
 // No need for a separate USDT ABI if it follows ERC20 standard like `ath.json`
 // import usdtAbi from '../abis/usdt.json';
 
 // Select staking ABI based on environment
 const stakingAbi = APP_ENV === 'PROD' ? stakingAbiMain : stakingAbiTest;
+
+// Add maxPoolLimit method to stake limit ABI
+const stakeLimitAbiWithMethod = [
+  ...stakeLimitAbi,
+  {
+    "inputs": [],
+    "name": "maxPoolLimit",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  }
+];
 
 const uniswapV2RouterAbi = [
   "function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts)"
@@ -67,6 +80,10 @@ const contractAddresses = {
   lp: {
     production: '0x1Cd9298c1c73F02D14EFcF23622352EB7308d700',
     development: '0xCE8Ce1f5Fd5E67987c749783dA5E5861D7152262',
+  },
+  stakeLimit: {
+    production: '0x06c879448299B0fE5fcdf590770d85fEfc1B122b',
+    development: '0x352Ff740C6F15E35E2585Ef98826C4e4351AdA2a',
   }
 };
 
@@ -79,9 +96,10 @@ let routerContract;
 let s5poolContract;
 let s6poolContract;
 let s7poolContract;
+let stakeLimitContract;
 
 // We need to export these for other modules to use them.
-export { referralContract, stakingContract, athContract, usdtContract, s5poolContract, s6poolContract, s7poolContract };
+export { referralContract, stakingContract, athContract, usdtContract, s5poolContract, s6poolContract, s7poolContract, stakeLimitContract };
 
 // --- KPI Thresholds (as per Staking.sol) ---
 const THRESHOLDS = {
@@ -140,6 +158,7 @@ export const initializeContracts = async () => {
   const s5poolAddress = contractAddresses.s5pool[env];
   const s6poolAddress = contractAddresses.s6pool[env];
   const s7poolAddress = contractAddresses.s7pool[env];
+  const stakeLimitAddress = contractAddresses.stakeLimit[env];
 
   // Create new contract instances using the raw, unwrapped signer
   referralContract = new ethers.Contract(referralAddress, referralAbi, rawSigner);
@@ -150,6 +169,7 @@ export const initializeContracts = async () => {
   s5poolContract = new ethers.Contract(s5poolAddress, s5poolAbi, rawSigner);
   s6poolContract = new ethers.Contract(s6poolAddress, s6poolAbi, rawSigner);
   s7poolContract = new ethers.Contract(s7poolAddress, s7poolAbi, rawSigner);
+  stakeLimitContract = new ethers.Contract(stakeLimitAddress, stakeLimitAbiWithMethod, rawSigner);
 
   console.log("Contracts initialized:", {
     referral: await referralContract.getAddress(),
@@ -160,6 +180,7 @@ export const initializeContracts = async () => {
     s5pool: await s5poolContract.getAddress(),
     s6pool: await s6poolContract.getAddress(),
     s7pool: await s7poolContract.getAddress(),
+    stakeLimit: await stakeLimitContract.getAddress(),
   });
 
   walletState.contractsInitialized = true;
@@ -179,6 +200,7 @@ export const resetContracts = () => {
   s5poolContract = null;
   s6poolContract = null;
   s7poolContract = null;
+  stakeLimitContract = null;
   console.log("Contract instances have been reset.");
 };
 
@@ -775,6 +797,29 @@ export const rewardOfSlot = async (id) => {
         console.error(`Error fetching reward for slot with ID ${id}:`, error);
         return 0n;
     }
+};
+
+/**
+ * Fetches the maxPoolLimit from the stake limit contract.
+ * @returns {Promise<string>} The max pool limit, formatted as a string.
+ */
+export const getMaxPoolLimit = async () => {
+  if (!stakeLimitContract) {
+    console.warn("Stake limit contract not initialized.");
+    return "0";
+  }
+  try {
+    console.log(`[MaxPoolLimit] 正在从合约读取 maxPoolLimit...`);
+    const limit = await stakeLimitContract.maxPoolLimit();
+    console.log(`[MaxPoolLimit] 从合约获取到的原始值: ${limit.toString()}`);
+    // Note: maxPoolLimit is already in USDT units, no need to format
+    const limitStr = limit.toString();
+    console.log(`[MaxPoolLimit] 最终值 (USDT): ${limitStr}`);
+    return limitStr;
+  } catch (error) {
+    console.error("[MaxPoolLimit] 获取最大池子限额失败:", error);
+    return "0";
+  }
 };
 
 // --- Exported Functions to get contract instances (optional, but good practice) ---
