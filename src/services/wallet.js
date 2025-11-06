@@ -223,22 +223,25 @@ export const connectWallet = async (walletType) => {
     }
 
     // --- Step 2: Use the raw provider for network management ---
+    const currentChainIdHex = await rawProvider.request({ method: 'eth_chainId' });
+    const currentChainId = Number(currentChainIdHex);
+
     const isEventPage = window.location.pathname.includes('/xbrokers-event');
     const targetNetwork = isEventPage 
       ? networks.juchain 
       : (APP_ENV === 'PROD' ? networks.bnbMainnet : networks.bnbTestnet);
 
-    console.log(`Targeting network: ${targetNetwork.chainName}`);
-
-    // Re-use the abstracted switch function, passing the newly acquired rawProvider
-    const switchSuccess = await _performNetworkSwitch(rawProvider, targetNetwork);
-    if (!switchSuccess) {
-      // If the user cancels the initial network switch, we shouldn't proceed.
-      // We can't use a generic alert because the rawProvider might not be active yet.
-      // Let's just return false and let the UI handle it.
-      return false;
+    // Only switch if the network is actually different.
+    if (currentChainId !== Number(targetNetwork.chainId)) {
+      console.log(`Network mismatch. Current: ${currentChainId}, Target: ${targetNetwork.chainId}. Switching...`);
+      const switchSuccess = await _performNetworkSwitch(rawProvider, targetNetwork);
+      if (!switchSuccess) {
+        // If the user cancels the initial network switch, we stop the connection process.
+        return false;
+      }
+    } else {
+      console.log(`Already on correct network (${currentChainId}). No switch needed.`);
     }
-
 
     // --- Step 3: Wrap the raw provider with Ethers and get accounts if not already fetched ---
     provider = new ethers.BrowserProvider(rawProvider);

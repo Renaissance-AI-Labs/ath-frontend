@@ -1,10 +1,13 @@
 import { ethers } from 'ethers';
 import { walletState } from './wallet';
 import usdtJuAbi from '../abis/ath.json';
+import xbrokersAbi from '../abis/xbrokers.json';
 
 const USDT_JU_ADDRESS = '0xc8e19C19479a866142B42fB390F2ea1Ff082E0D2';
+const XBROKERS_ADDRESS = '0xd4cee460Ceb47D1A30E1672EE2a13ecdf362Cf5a';
 
 let usdtJuContract;
+let xbrokersContract;
 
 export const initializeJuChainContracts = () => {
   if (walletState.signer && walletState.chainId === 210000) {

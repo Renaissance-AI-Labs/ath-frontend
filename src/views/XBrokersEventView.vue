@@ -52,13 +52,13 @@
                     </p>
                 </div>
                 <div name="buyJUchain">
-                    <div class="balance-display" v-if="walletState.isConnected && walletState.network === 'JuChain'">
+                    <!-- <div class="balance-display" v-if="walletState.isConnected && walletState.network === 'JuChain'">
                         <div class="balance-label">USDT-JU Balance</div>
                         <div class="balance-value">
                             <span v-if="isLoading">Loading...</span>
                             <AnimatedNumber v-else :value="usdtJuBalance" :decimals="4" />
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="row">
                     <div class="col-11 col-md-8 col-xl-4 mx-auto">
