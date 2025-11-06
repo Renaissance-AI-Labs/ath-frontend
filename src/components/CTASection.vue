@@ -89,15 +89,26 @@ import { walletState } from '@/services/wallet';
 import { showToast } from '@/services/notification';
 import { t } from '@/i18n';
 import { useRouter } from 'vue-router';
+import { getUserStakedBalance } from '@/services/contracts';
 
 const router = useRouter();
 
-const handleInvestClick = () => {
+const handleInvestClick = async () => {
   if (!walletState.isAuthenticated) {
     showToast(t('toast.connectWalletFirst'));
     return;
   }
-  router.push('/xbrokers-event');
+
+  // Fetch staked balance from BSC before navigating
+  try {
+    const stakedBalance = await getUserStakedBalance();
+    router.push({ path: '/xbrokers-event', query: { staked: stakedBalance } });
+  } catch (error) {
+    console.error("Failed to get staked balance:", error);
+    // Even if it fails, navigate but without the staked amount.
+    // The event page will handle the missing parameter.
+    router.push('/xbrokers-event');
+  }
 };
 
 </script>

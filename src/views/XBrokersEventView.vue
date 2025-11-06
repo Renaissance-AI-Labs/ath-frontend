@@ -59,14 +59,14 @@
                         </div>
 
                         <!-- UID Not Bound Form -->
-                        <div v-else-if="!isUidBound" class="uid-form">
-                            <h4>绑定您的交易所UID</h4>
-                            <p style="color: #a9c2e2; font-size: 14px; margin-bottom: 20px;">首次投资前，需要将您的钱包地址与交易所UID进行绑定。</p>
+                        <div v-else-if="!isUidBound" class="uid-form form-ask">
+                            <h4 class="s-title" style="text-align: center; margin-bottom: 10px;">绑定您的交易所UID</h4>
+                            <p style="color: #a9c2e2; font-size: 14px; margin-bottom: 20px; text-align: center;">首次投资前，需将钱包地址与交易所UID绑定</p>
                             <div class="form-group">
-                                <label for="uidInput">请输入您的UID</label>
-                                <input id="uidInput" type="text" v-model="inputUid" placeholder="例如: 1001">
+                                <label for="uidInput" class="form-label">请输入您的UID</label>
+                                <input id="uidInput" type="text" v-model="inputUid" class="form-input" placeholder="例如: 1001">
                             </div>
-                            <button @click="handleBindUid" :disabled="isBinding" class="submit-btn">
+                            <button @click="handleBindUid" :disabled="isBinding" class="btn-ip btn-confirm" style="width:100%">
                                 {{ isBinding ? '正在绑定...' : '确认绑定' }}
                             </button>
                         </div>
@@ -91,7 +91,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" style="margin-bottom: 30px;">
                     <div class="col-11 col-md-8 col-xl-4 mx-auto">
                         <p class="form-note text-center">
                             xBrokers · 全球化金融服务平台<br/>自由、透明、高效化资本流动
@@ -119,7 +119,8 @@
     </section>
 </template>
 <script setup>
-import { watch, ref, computed } from 'vue';
+import { watch, ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import { walletState } from '@/services/wallet';
 import { 
   initializeJuChainContracts, 
@@ -144,6 +145,7 @@ const boundUid = ref("0");
 const inputUid = ref("");
 const investmentAmount = ref("");
 const allowance = ref("0");
+const athenaStakedAmount = ref(0);
 
 const isUidBound = computed(() => boundUid.value !== "0");
 const needsAllowance = computed(() => {
@@ -156,6 +158,13 @@ const needsAllowance = computed(() => {
 const actionButtonText = computed(() => {
   if (isProcessing.value) return "处理中...";
   if (needsAllowance.value) return "授权USDT";
+  
+  const amount = parseFloat(investmentAmount.value);
+  if (!isNaN(amount) && amount > 0) {
+    const estimatedPower = amount * 4;
+    return `确定投资 (约${estimatedPower.toLocaleString()}T)`;
+  }
+  
   return "确定投资";
 });
 
@@ -242,6 +251,12 @@ const fillMax = () => {
 };
 
 const handleInvest = async () => {
+  // **[NEW] Staking requirement check**
+  if (athenaStakedAmount.value < 1000) {
+    showToast("需在Athena中质押1000TOKEN");
+    return;
+  }
+
   const amount = parseFloat(investmentAmount.value);
   if (isNaN(amount) || amount <= 0) {
     showToast("请输入有效的投资金额");
@@ -286,6 +301,13 @@ const handleInvest = async () => {
     isProcessing.value = false;
   }
 };
+
+onMounted(() => {
+  const route = useRoute();
+  const staked = parseFloat(route.query.staked) || 0;
+  athenaStakedAmount.value = staked;
+  console.log(`Received staked amount from Athena: ${staked}`);
+});
 
 watch(() => walletState.network, (newNetwork) => {
   if (newNetwork) {
@@ -445,6 +467,6 @@ export default {
 }
 
 div[name="buyJUchain"] {
-  padding: 30px;
+  padding: 0 20px;
 }
 </style>
