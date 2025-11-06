@@ -5,14 +5,15 @@
             <div class="container">
                 <div class="s-meta text-caption font-2">
                     <p class="s-number_order wg-counter">
-                        [ <span class="text-white">Athena<span class="odometer" data-number=""></span></span> ]
+                        <router-link to="/" style="text-decoration: none; color: inherit;">
+                        [ <span class="text-white">返回Athena首页<span class="odometer" data-number=""></span></span> ]
+                        </router-link>
                     </p>
-                    <p class="s-label">[ <span class="text-white hacker-text_transform">xBrokers</span> ]</p>
                 </div>
             </div>
         </div>
         <span class="br-line"></span>
-        <!-- == Tagline Section -->
+        <!-- == Tagline Section
         <div class="sect-tagline">
             <div class="container">
                 <div class="sect-tagline_inner">
@@ -32,7 +33,7 @@
                 </div>
             </div>
         </div>
-        <span class="br-line"></span>
+        <span class="br-line"></span> -->
         <!-- == Main Section -->
         <div class="sect-main position-relative">
             <div class="s-img_item">
@@ -50,12 +51,8 @@
                         获取4倍xBrokers算力收益
                     </p>
                 </div>
-                <div name="goJUchain">
-                    <div class="d-flex justify-content-center my-5" style="margin-top: 2rem !important;">
-                        <a @click.prevent="handleInvestClick" href="#" class="tf-btn text-body-3 style-2 animate-btn animate-dark" style="height: 50px; width: 200px; line-height: 50px;">
-                            去投资xBrokers算力
-                        </a>
-                    </div>
+                <div name="buyJUchain">
+                    
                 </div>
                 <div class="row">
                     <div class="col-11 col-md-8 col-xl-4 mx-auto">
@@ -84,26 +81,9 @@
         <span class="br-line"></span>
     </section>
 </template>
-<script setup>
-import { walletState } from '@/services/wallet';
-import { showToast } from '@/services/notification';
-import { t } from '@/i18n';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
-
-const handleInvestClick = () => {
-  if (!walletState.isAuthenticated) {
-    showToast(t('toast.connectWalletFirst'));
-    return;
-  }
-  router.push('/xbrokers-event');
-};
-
-</script>
 <script>
 export default {
-    name: 'CTASection',
+    name: 'XBrokersEventView',
     mounted() {
         window.REQUIRED_CODE_ERROR_MESSAGE = 'Please choose a country code';
         window.LOCALE = 'en';
