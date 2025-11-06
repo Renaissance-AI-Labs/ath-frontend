@@ -49,6 +49,60 @@ export const bindUid = async (uid) => {
   }
 };
 
+export const getUsdtJuAllowance = async () => {
+  if (!usdtJuContract) {
+    if (!initializeJuChainContracts()) {
+      throw new Error("Cannot initialize JuChain contracts.");
+    }
+  }
+  try {
+    const allowance = await usdtJuContract.allowance(walletState.address, XBROKERS_ADDRESS);
+    return ethers.formatUnits(allowance, 18);
+  } catch (error) {
+    console.error("Error fetching USDT-JU allowance:", error);
+    return "0";
+  }
+};
+
+export const approveUsdtJu = async () => {
+  if (!usdtJuContract) {
+    if (!initializeJuChainContracts()) {
+      throw new Error("Cannot initialize JuChain contracts.");
+    }
+  }
+  try {
+    // Approve the maximum possible amount
+    const tx = await usdtJuContract.approve(XBROKERS_ADDRESS, ethers.MaxUint256);
+    return tx;
+  } catch (error) {
+    console.error("Error approving USDT-JU:", error);
+    throw error;
+  }
+};
+
+export const deposit = async (amount) => {
+  if (!xbrokersContract) {
+    if (!initializeJuChainContracts()) {
+      throw new Error("Cannot initialize JuChain contracts.");
+    }
+  }
+  try {
+    const amountInWei = ethers.parseUnits(amount.toString(), 18);
+    const projectCode = "xnodeydn";
+    // Deposit is for the connected user's address.
+    const depositFor = walletState.address;
+    
+    // Call the contract with all three required arguments.
+    const tx = await xbrokersContract.deposit(projectCode, depositFor, amountInWei, {
+      // No `value` needed for token transfers, only for native currency (main coin)
+    });
+    return tx;
+  } catch (error) {
+    console.error("Error depositing:", error);
+    throw error;
+  }
+};
+
 export const getUsdtJuBalance = async () => {
   if (!usdtJuContract) {
     console.log("JuChain contract not initialized.");

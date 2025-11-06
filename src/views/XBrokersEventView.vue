@@ -79,11 +79,14 @@
                                 <input type="text" :value="boundUid" class="form-input" disabled>
                             </div>
                             <div class="form-group">
-                                <label for="amountInput" class="form-label">请输入投资数量 (JU)</label>
-                                <input id="amountInput" type="text" v-model="investmentAmount" class="form-input" placeholder="例如: 1.5">
+                                <label for="amountInput" class="form-label">请输入投资数量 (USDT-JU)</label>
+                                <div class="amount-input-container">
+                                    <input id="amountInput" type="text" :value="investmentAmount" @input="handleAmountInput" class="form-input" placeholder="例如: 100">
+                                    <button @click="fillMax" class="max-btn" v-html="maxButtonText"></button>
+                                </div>
                             </div>
-                            <button @click="handleInvest" class="btn-ip btn-confirm" style="width:100%">
-                                确定投资
+                            <button @click="handleInvest" :disabled="isProcessing" class="btn-ip btn-confirm" style="width:100%">
+                                {{ actionButtonText }}
                             </button>
                         </div>
                     </div>
@@ -122,7 +125,10 @@ import {
   initializeJuChainContracts, 
   getUsdtJuBalance,
   getBoundUid,
-  bindUid 
+  bindUid,
+  getUsdtJuAllowance,
+  approveUsdtJu,
+  deposit
 } from '@/services/juchainContracts';
 import AnimatedNumber from '@/components/AnimatedNumber.vue';
 import { showToast } from '@/services/notification';
@@ -132,12 +138,37 @@ const usdtJuBalance = ref(0);
 const isLoadingBalance = ref(true);
 const isLoadingUid = ref(true);
 const isBinding = ref(false);
+const isProcessing = ref(false); // For approve/deposit actions
 
 const boundUid = ref("0");
 const inputUid = ref("");
 const investmentAmount = ref("");
+const allowance = ref("0");
 
 const isUidBound = computed(() => boundUid.value !== "0");
+const needsAllowance = computed(() => {
+  const amount = parseFloat(investmentAmount.value) || 0;
+  const currentAllowance = parseFloat(allowance.value) || 0;
+  // An allowance of less than the requested amount is considered insufficient.
+  return amount > 0 && currentAllowance < amount;
+});
+
+const actionButtonText = computed(() => {
+  if (isProcessing.value) return "处理中...";
+  if (needsAllowance.value) return "授权USDT";
+  return "确定投资";
+});
+
+const maxButtonText = computed(() => {
+  const balance = usdtJuBalance.value.toFixed(2);
+  return `MAX<br><span class="balance-amount">${balance}</span>`;
+});
+
+const checkAllowance = async () => {
+  if (walletState.isConnected && walletState.network === 'JuChain') {
+    allowance.value = await getUsdtJuAllowance();
+  }
+};
 
 const checkUidBinding = async () => {
   if (walletState.isConnected && walletState.network === 'JuChain') {
@@ -148,6 +179,26 @@ const checkUidBinding = async () => {
     } finally {
       isLoadingUid.value = false;
     }
+  }
+};
+
+const fetchBalance = async () => {
+  if (walletState.isConnected && walletState.network === 'JuChain') {
+    isLoadingBalance.value = true;
+    const balance = await getUsdtJuBalance();
+    usdtJuBalance.value = parseFloat(balance);
+    isLoadingBalance.value = false;
+  }
+};
+
+const fetchAllData = async () => {
+  if (walletState.isConnected && walletState.network === 'JuChain') {
+    initializeJuChainContracts();
+    await Promise.all([
+      fetchBalance(),
+      checkUidBinding(),
+      checkAllowance()
+    ]);
   }
 };
 
@@ -164,26 +215,75 @@ const handleBindUid = async () => {
     showToast("UID 绑定成功！");
     await checkUidBinding(); // Re-check to update UI
   } catch (error) {
-    console.error(error);
-    showToast(error.reason || "UID 绑定失败");
+    console.error("User action failed:", error);
+    // Suppress toast notification if the user deliberately cancelled the transaction.
+    if (error.code !== 'ACTION_REJECTED' && error.code !== 4001) {
+      showToast(error.reason || "UID 绑定失败");
+    }
   } finally {
     isBinding.value = false;
   }
 };
 
-const handleInvest = () => {
-  // Placeholder for the investment logic
-  console.log(`准备投资: UID=${boundUid.value}, 金额=${investmentAmount.value}`);
-  showToast(`准备投资: UID=${boundUid.value}, 算力数量=${investmentAmount.value}`);
+const handleAmountInput = (event) => {
+  let value = event.target.value;
+  // Remove any non-numeric characters except for a single decimal point
+  value = value.replace(/[^0-9.]/g, '');
+  const parts = value.split('.');
+  if (parts.length > 2) {
+    value = parts[0] + '.' + parts.slice(1).join('');
+  }
+  investmentAmount.value = value;
 };
 
-const fetchBalance = async () => {
-  if (walletState.isConnected && walletState.network === 'JuChain') {
-    isLoadingBalance.value = true;
-    initializeJuChainContracts();
-    const balance = await getUsdtJuBalance();
-    usdtJuBalance.value = parseFloat(balance);
-    isLoadingBalance.value = false;
+const fillMax = () => {
+  // Use the fetched USDT-JU balance
+  investmentAmount.value = usdtJuBalance.value.toString();
+};
+
+const handleInvest = async () => {
+  const amount = parseFloat(investmentAmount.value);
+  if (isNaN(amount) || amount <= 0) {
+    showToast("请输入有效的投资金额");
+    return;
+  }
+
+  // **[FIX 1] Balance Check**
+  const userBalance = parseFloat(usdtJuBalance.value);
+  if (amount > userBalance) {
+    showToast("USDT-JU 余额不足");
+    return;
+  }
+  
+  isProcessing.value = true;
+  try {
+    if (needsAllowance.value) {
+      // --- Approve Logic (now infinite) ---
+      showToast("需要授权，请在钱包中确认...");
+      const tx = await approveUsdtJu();
+      showToast("交易已发送，等待授权确认...");
+      await tx.wait();
+      showToast("授权成功！");
+      await checkAllowance(); // Re-check allowance after approval
+    } else {
+      // --- Deposit Logic ---
+      showToast("正在发起投资，请在钱包中确认...");
+      const tx = await deposit(investmentAmount.value);
+      showToast("交易已发送，等待投资确认...");
+      await tx.wait();
+      showToast(t('toast.investmentSubmitted'), 5000);
+      // Optionally, refresh balance or clear input after success
+      await fetchBalance();
+      investmentAmount.value = "";
+    }
+  } catch (error) {
+    console.error("User action failed:", error);
+    // Suppress toast notification if the user deliberately cancelled the transaction.
+    if (error.code !== 'ACTION_REJECTED' && error.code !== 4001) {
+      showToast(error.reason || "操作失败");
+    }
+  } finally {
+    isProcessing.value = false;
   }
 };
 
@@ -191,17 +291,21 @@ watch(() => walletState.network, (newNetwork) => {
   if (newNetwork) {
     console.log('当前连接的网络是:', newNetwork);
     if (newNetwork === 'JuChain') {
-      fetchBalance();
-      checkUidBinding();
+      fetchAllData();
     }
   }
 }, { immediate: true });
 
 watch(() => walletState.address, (newAddress) => {
   if (newAddress && walletState.network === 'JuChain') {
-    fetchBalance();
-    checkUidBinding();
+    fetchAllData();
   }
+});
+
+watch(investmentAmount, () => {
+  // This watcher is not strictly necessary for logic, but can be useful
+  // for real-time validation feedback in the future.
+  // For now, it implicitly triggers the `needsAllowance` computed property re-evaluation.
 });
 </script>
 <script>
@@ -259,12 +363,47 @@ export default {
   border-radius: 12px;
   color: var(--white);
   font-size: 16px;
+  box-sizing: border-box; /* Ensure padding and border are included in the height */
 }
 
 .form-input:disabled {
   background-color: rgba(0, 0, 0, 0.4);
   cursor: not-allowed;
   opacity: 0.7;
+}
+
+.amount-input-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.amount-input-container .form-group {
+  flex-grow: 1;
+  margin-bottom: 0; /* Remove margin from inner group */
+}
+
+.max-btn {
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--text-2);
+  padding: 5px 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  height: 54px; /* Match input height */
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  line-height: 1.2;
+  font-size: 14px;
+  box-sizing: border-box; /* Ensure padding and border are included in the height */
+}
+
+.max-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 .btn-ip {
