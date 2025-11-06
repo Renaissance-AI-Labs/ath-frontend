@@ -52,7 +52,13 @@
                     </p>
                 </div>
                 <div name="buyJUchain">
-                    
+                    <div class="balance-display" v-if="walletState.isConnected && walletState.network === 'JuChain'">
+                        <div class="balance-label">USDT-JU Balance</div>
+                        <div class="balance-value">
+                            <span v-if="isLoading">Loading...</span>
+                            <AnimatedNumber v-else :value="usdtJuBalance" :decimals="4" />
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-11 col-md-8 col-xl-4 mx-auto">
@@ -81,28 +87,61 @@
         <span class="br-line"></span>
     </section>
 </template>
+<script setup>
+import { watch, ref } from 'vue';
+import { walletState } from '@/services/wallet';
+import { initializeJuChainContracts, getUsdtJuBalance } from '@/services/juchainContracts';
+import AnimatedNumber from '@/components/AnimatedNumber.vue';
+
+const usdtJuBalance = ref(0);
+const isLoading = ref(true);
+
+const fetchBalance = async () => {
+  if (walletState.isConnected && walletState.network === 'JuChain') {
+    isLoading.value = true;
+    initializeJuChainContracts();
+    const balance = await getUsdtJuBalance();
+    usdtJuBalance.value = parseFloat(balance);
+    isLoading.value = false;
+  }
+};
+
+watch(() => walletState.network, (newNetwork) => {
+  if (newNetwork) {
+    console.log('当前连接的网络是:', newNetwork);
+    if (newNetwork === 'JuChain') {
+      fetchBalance();
+    }
+  }
+}, { immediate: true });
+
+watch(() => walletState.address, (newAddress) => {
+  if (newAddress && walletState.network === 'JuChain') {
+    fetchBalance();
+  }
+});
+</script>
 <script>
 export default {
     name: 'XBrokersEventView',
-    mounted() {
-        window.REQUIRED_CODE_ERROR_MESSAGE = 'Please choose a country code';
-        window.LOCALE = 'en';
-        window.EMAIL_INVALID_MESSAGE = window.SMS_INVALID_MESSAGE = "The information provided is invalid. Please review the field format and try again.";
-        window.REQUIRED_ERROR_MESSAGE = "This field cannot be left blank. ";
-        window.GENERIC_INVALID_MESSAGE = "The information provided is invalid. Please review the field format and try again.";
-        window.translation = {
-            common: {
-                selectedList: '{quantity} list selected',
-                selectedLists: '{quantity} lists selected'
-            }
-        };
-        window.AUTOHIDE = Boolean(0);
-
-        const script = document.createElement('script');
-        script.src = '/asset/js/sibforms.js';
-        document.body.appendChild(script);
+    components: {
+        AnimatedNumber
     }
 }
 </script>
 <style scoped>
+.balance-display {
+  color: #fff;
+  text-align: center;
+  margin: 40px 0;
+}
+.balance-value {
+  font-size: 28px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+.balance-label {
+  font-size: 16px;
+  color: #a9c2e2;
+}
 </style>

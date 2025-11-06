@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { reactive, markRaw } from 'vue';
 import { ethers } from 'ethers';
 import { APP_ENV } from './environment'; // Import from the new centralized file
 import {
@@ -6,9 +6,18 @@ import {
   resetContracts,
   checkIfUserHasReferrer
 } from './contracts';
+import { showToast } from './notification';
+import { t } from '../i18n';
 
 // --- Network Configurations ---
 const networks = {
+  juchain: {
+    chainId: '0x33450', // 210000
+    chainName: 'JuChain',
+    nativeCurrency: { name: 'JUC', symbol: 'JUC', decimals: 18 },
+    rpcUrls: ['https://rpc.juchain.org'],
+    blockExplorerUrls: [] // Add explorer URL if available
+  },
   bnbMainnet: {
     chainId: '0x38', // 56
     chainName: 'BNB Smart Chain Mainnet',
@@ -33,6 +42,7 @@ export const walletState = reactive({
   isAuthenticated: false,
   address: null,
   network: null, // To store the network name
+  chainId: null, // To store the chain ID
   signer: null,
   walletType: null, // To store the type of the connected wallet
   isNewUser: null, // null: unknown, true: new, false: old
@@ -134,6 +144,57 @@ const switchNetwork = async (rawProvider) => {
 };
 // --- End of Network Management Function ---
 
+// --- New JuChain Network Switch Function ---
+// This function is no longer needed as the logic is now integrated into connectWallet
+// --- End of JuChain Network Switch Function ---
+
+const _performNetworkSwitch = async (provider, targetNetwork) => {
+  if (!provider) {
+    console.log("No active wallet provider to perform network switch.");
+    return false;
+  }
+
+  try {
+    await provider.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: targetNetwork.chainId }],
+    });
+    showToast(t('toast.networkSwitched', { networkName: targetNetwork.chainName }));
+    return true;
+  } catch (switchError) {
+    if (switchError.code === 4902) { // Chain not added
+      try {
+        await provider.request({
+          method: 'wallet_addEthereumChain',
+          params: [targetNetwork],
+        });
+        showToast(t('toast.networkSwitched', { networkName: targetNetwork.chainName }));
+        return true;
+      } catch (addError) {
+        console.error(`Failed to add the network ${targetNetwork.chainName}:`, addError);
+        return false;
+      }
+    } else {
+      console.error(`Failed to switch to the network ${targetNetwork.chainName}:`, switchError);
+      return false;
+    }
+  }
+};
+
+export const ensureCorrectNetwork = async () => {
+  if (!walletState.isConnected) return;
+
+  const isEventPage = window.location.pathname.includes('/xbrokers-event');
+  const targetNetwork = isEventPage 
+    ? networks.juchain 
+    : (APP_ENV === 'PROD' ? networks.bnbMainnet : networks.bnbTestnet);
+
+  if (Number(walletState.chainId) !== Number(targetNetwork.chainId)) {
+    console.log(`Incorrect network detected. Current: ${walletState.chainId}, Target: ${targetNetwork.chainId}. Prompting switch...`);
+    await _performNetworkSwitch(activeProvider, targetNetwork);
+  }
+};
+
 
 // Main function to connect to a wallet
 export const connectWallet = async (walletType) => {
@@ -162,10 +223,22 @@ export const connectWallet = async (walletType) => {
     }
 
     // --- Step 2: Use the raw provider for network management ---
-    const networkSwitchSuccess = await switchNetwork(rawProvider);
-    if (!networkSwitchSuccess) {
-        return false; // Stop if user rejects network switch
+    const isEventPage = window.location.pathname.includes('/xbrokers-event');
+    const targetNetwork = isEventPage 
+      ? networks.juchain 
+      : (APP_ENV === 'PROD' ? networks.bnbMainnet : networks.bnbTestnet);
+
+    console.log(`Targeting network: ${targetNetwork.chainName}`);
+
+    // Re-use the abstracted switch function, passing the newly acquired rawProvider
+    const switchSuccess = await _performNetworkSwitch(rawProvider, targetNetwork);
+    if (!switchSuccess) {
+      // If the user cancels the initial network switch, we shouldn't proceed.
+      // We can't use a generic alert because the rawProvider might not be active yet.
+      // Let's just return false and let the UI handle it.
+      return false;
     }
+
 
     // --- Step 3: Wrap the raw provider with Ethers and get accounts if not already fetched ---
     provider = new ethers.BrowserProvider(rawProvider);
@@ -198,8 +271,13 @@ export const connectWallet = async (walletType) => {
     // 5. Update the global state
     walletState.isConnected = true;
     walletState.address = address;
-    walletState.network = network.name; // Store network name (e.g., 'sepolia', 'mainnet')
-    walletState.signer = signer;
+    walletState.chainId = Number(network.chainId);
+    if (Number(network.chainId) === 210000) {
+      walletState.network = 'JuChain';
+    } else {
+      walletState.network = network.name; // Store network name (e.g., 'sepolia', 'mainnet')
+    }
+    walletState.signer = markRaw(signer);
     walletState.walletType = walletType; // Save the wallet type
 
     // Save address to localStorage for auto-reconnect
@@ -207,6 +285,13 @@ export const connectWallet = async (walletType) => {
     localStorage.setItem('ath_walletType', walletType); // Save wallet type
 
     // --- Initialize Contracts ---
+    if (window.location.pathname.includes('/xbrokers-event')) {
+      console.log("On xBrokers event page, skipping BSC contract initialization.");
+      walletState.contractsInitialized = false; 
+      setupWalletListeners(rawProvider);
+      return true;
+    }
+
     await initializeContracts();
     // --------------------------
 
@@ -246,6 +331,7 @@ export const disconnectWallet = () => {
   walletState.contractsInitialized = false; // <-- Reset on disconnect
   walletState.address = null;
   walletState.network = null;
+  walletState.chainId = null;
   walletState.signer = null;
   walletState.walletType = null;
   walletState.isNewUser = null; // Reset user status on disconnect
@@ -326,7 +412,7 @@ const handleAccountsChanged = async (accounts) => {
     if (reauthSuccess) {
       console.log(`Successfully re-authenticated new address: ${newAddress}`);
       // Update the rest of the state only after successful re-authentication
-      walletState.signer = signer;
+      walletState.signer = markRaw(signer);
       await initializeContracts(); // Re-initialize contracts for the new user context
       const hasReferrer = await checkIfUserHasReferrer();
       walletState.isNewUser = !hasReferrer;
@@ -342,10 +428,15 @@ const handleAccountsChanged = async (accounts) => {
 
 const handleChainChanged = (chainId) => {
   console.log('Wallet chain changed to:', chainId);
-  // The most reliable way to handle chain changes is to reload the page.
-  // This ensures all state, including the ethers provider and contract instances,
-  // are re-initialized correctly for the new network.
-  window.location.reload();
+  const newChainId = Number(chainId);
+
+  // Only reload if the chain ID has actually changed from the one we have in state.
+  if (newChainId !== walletState.chainId) {
+    console.log(`Chain ID changed from ${walletState.chainId} to ${newChainId}. Reloading page.`);
+    window.location.reload();
+  } else {
+    console.log('chainChanged event fired, but the chain ID is the same. Ignoring reload.');
+  }
 };
 
 let activeProvider = null; // To keep track of the provider we've attached listeners to
