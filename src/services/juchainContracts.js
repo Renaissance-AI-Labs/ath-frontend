@@ -12,10 +12,41 @@ let xbrokersContract;
 export const initializeJuChainContracts = () => {
   if (walletState.signer && walletState.chainId === 210000) {
     usdtJuContract = new ethers.Contract(USDT_JU_ADDRESS, usdtJuAbi, walletState.signer);
-    console.log("JuChain USDT-JU contract initialized.");
+    xbrokersContract = new ethers.Contract(XBROKERS_ADDRESS, xbrokersAbi, walletState.signer);
+    console.log("JuChain contracts initialized.");
     return true;
   }
   return false;
+};
+
+export const getBoundUid = async () => {
+  if (!xbrokersContract) {
+    if (!initializeJuChainContracts()) {
+      throw new Error("Cannot initialize JuChain contracts.");
+    }
+  }
+  try {
+    const uid = await xbrokersContract.uidOf(walletState.address);
+    return uid.toString();
+  } catch (error) {
+    console.error("Error fetching bound UID:", error);
+    return "0";
+  }
+};
+
+export const bindUid = async (uid) => {
+  if (!xbrokersContract) {
+    if (!initializeJuChainContracts()) {
+      throw new Error("Cannot initialize JuChain contracts.");
+    }
+  }
+  try {
+    const tx = await xbrokersContract.bindUid(uid);
+    return tx;
+  } catch (error) {
+    console.error("Error binding UID:", error);
+    throw error;
+  }
 };
 
 export const getUsdtJuBalance = async () => {

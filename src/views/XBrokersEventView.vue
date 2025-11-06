@@ -52,13 +52,41 @@
                     </p>
                 </div>
                 <div name="buyJUchain">
-                    <!-- <div class="balance-display" v-if="walletState.isConnected && walletState.network === 'JuChain'">
-                        <div class="balance-label">USDT-JU Balance</div>
-                        <div class="balance-value">
-                            <span v-if="isLoading">Loading...</span>
-                            <AnimatedNumber v-else :value="usdtJuBalance" :decimals="4" />
+                    <div v-if="walletState.isConnected && walletState.network === 'JuChain'">
+                        <!-- Loading State -->
+                        <div v-if="isLoadingUid" class="uid-form">
+                            <p>正在检查UID绑定状态...</p>
                         </div>
-                    </div> -->
+
+                        <!-- UID Not Bound Form -->
+                        <div v-else-if="!isUidBound" class="uid-form">
+                            <h4>绑定您的交易所UID</h4>
+                            <p style="color: #a9c2e2; font-size: 14px; margin-bottom: 20px;">首次投资前，需要将您的钱包地址与交易所UID进行绑定。</p>
+                            <div class="form-group">
+                                <label for="uidInput">请输入您的UID</label>
+                                <input id="uidInput" type="text" v-model="inputUid" placeholder="例如: 1001">
+                            </div>
+                            <button @click="handleBindUid" :disabled="isBinding" class="submit-btn">
+                                {{ isBinding ? '正在绑定...' : '确认绑定' }}
+                            </button>
+                        </div>
+
+                        <!-- UID Bound Form (Investment) -->
+                        <div v-else class="uid-form form-ask">
+                            <h4 class="s-title" style="text-align: center; margin-bottom: 20px;">投资xBrokers算力</h4>
+                            <div class="form-group">
+                                <label class="form-label">您已绑定的交易所UID</label>
+                                <input type="text" :value="boundUid" class="form-input" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="amountInput" class="form-label">请输入投资数量 (JU)</label>
+                                <input id="amountInput" type="text" v-model="investmentAmount" class="form-input" placeholder="例如: 1.5">
+                            </div>
+                            <button @click="handleInvest" class="btn-ip btn-confirm" style="width:100%">
+                                确定投资
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-11 col-md-8 col-xl-4 mx-auto">
@@ -88,21 +116,74 @@
     </section>
 </template>
 <script setup>
-import { watch, ref } from 'vue';
+import { watch, ref, computed } from 'vue';
 import { walletState } from '@/services/wallet';
-import { initializeJuChainContracts, getUsdtJuBalance } from '@/services/juchainContracts';
+import { 
+  initializeJuChainContracts, 
+  getUsdtJuBalance,
+  getBoundUid,
+  bindUid 
+} from '@/services/juchainContracts';
 import AnimatedNumber from '@/components/AnimatedNumber.vue';
+import { showToast } from '@/services/notification';
+import { t } from '@/i18n';
 
 const usdtJuBalance = ref(0);
-const isLoading = ref(true);
+const isLoadingBalance = ref(true);
+const isLoadingUid = ref(true);
+const isBinding = ref(false);
+
+const boundUid = ref("0");
+const inputUid = ref("");
+const investmentAmount = ref("");
+
+const isUidBound = computed(() => boundUid.value !== "0");
+
+const checkUidBinding = async () => {
+  if (walletState.isConnected && walletState.network === 'JuChain') {
+    isLoadingUid.value = true;
+    try {
+      const uid = await getBoundUid();
+      boundUid.value = uid;
+    } finally {
+      isLoadingUid.value = false;
+    }
+  }
+};
+
+const handleBindUid = async () => {
+  if (!inputUid.value || isNaN(Number(inputUid.value)) || Number(inputUid.value) <= 0) {
+    showToast("请输入有效的用户UID");
+    return;
+  }
+  isBinding.value = true;
+  try {
+    const tx = await bindUid(inputUid.value);
+    showToast("交易已发送，等待确认...");
+    await tx.wait();
+    showToast("UID 绑定成功！");
+    await checkUidBinding(); // Re-check to update UI
+  } catch (error) {
+    console.error(error);
+    showToast(error.reason || "UID 绑定失败");
+  } finally {
+    isBinding.value = false;
+  }
+};
+
+const handleInvest = () => {
+  // Placeholder for the investment logic
+  console.log(`准备投资: UID=${boundUid.value}, 金额=${investmentAmount.value}`);
+  showToast(`准备投资: UID=${boundUid.value}, 算力数量=${investmentAmount.value}`);
+};
 
 const fetchBalance = async () => {
   if (walletState.isConnected && walletState.network === 'JuChain') {
-    isLoading.value = true;
+    isLoadingBalance.value = true;
     initializeJuChainContracts();
     const balance = await getUsdtJuBalance();
     usdtJuBalance.value = parseFloat(balance);
-    isLoading.value = false;
+    isLoadingBalance.value = false;
   }
 };
 
@@ -111,6 +192,7 @@ watch(() => walletState.network, (newNetwork) => {
     console.log('当前连接的网络是:', newNetwork);
     if (newNetwork === 'JuChain') {
       fetchBalance();
+      checkUidBinding();
     }
   }
 }, { immediate: true });
@@ -118,6 +200,7 @@ watch(() => walletState.network, (newNetwork) => {
 watch(() => walletState.address, (newAddress) => {
   if (newAddress && walletState.network === 'JuChain') {
     fetchBalance();
+    checkUidBinding();
   }
 });
 </script>
@@ -143,5 +226,86 @@ export default {
 .balance-label {
   font-size: 16px;
   color: #a9c2e2;
+}
+
+/* Reusing and adapting styles from the homepage and modals */
+.form-ask {
+  background-color: var(--bg-2);
+  padding: 30px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  max-width: 420px;
+  margin: 60px auto;
+  color: #fff;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-2);
+  font-size: 14px;
+  text-align: left;
+}
+
+.form-input {
+  width: 100%;
+  padding: 15px 20px;
+  background-color: #0c0c0e;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--white);
+  font-size: 16px;
+}
+
+.form-input:disabled {
+  background-color: rgba(0, 0, 0, 0.4);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.btn-ip {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: linear-gradient(0deg, rgba(20, 20, 21, 0.82), rgba(20, 20, 21, 0.82)),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 100%);
+    border: 1px solid var(--line);
+    box-shadow: 0px 1px 1px 0px #FFFFFF2E inset, 0px 0px 4px 0px #FFFFFF0F inset, 0px 0px 8px 0px #FFFFFF14 inset, 0px 0px 16px 0px #FFFFFF1F inset;
+    padding: 12px;
+    border-radius: 999px;
+    transition: all .3s ease;
+    color: var(--text-2);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-ip:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-confirm {
+    color: var(--white);
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-confirm:hover {
+    color: var(--white);
+    filter: brightness(1.1);
+}
+
+.btn-ip:disabled {
+  background: #2c3a75;
+  border-color: #2c3a75;
+  color: #a9c2e2;
+  cursor: wait;
+  opacity: 0.6;
+}
+
+div[name="buyJUchain"] {
+  padding: 30px;
 }
 </style>
