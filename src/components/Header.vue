@@ -99,9 +99,6 @@ export default {
 </script>
 
 <style scoped>
-.tf-btn.style-2 {
-    background-color: #161c416b;
-}
 </style>
 
 

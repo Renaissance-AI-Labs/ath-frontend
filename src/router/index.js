@@ -9,12 +9,19 @@ import BlogDetailView from '../views/BlogDetailView.vue';
 import PricingView from '../views/PricingView.vue';
 import UseCaseView from '../views/UseCaseView.vue';
 import UseCaseDetailView from '../views/UseCaseDetailView.vue';
+import XBrokersEventView from '../views/XBrokersEventView.vue';
+import { walletState, ensureCorrectNetwork } from '../services/wallet';
 
 const routes = [
   {
     path: '/',
     name: 'Home',
     component: HomeView,
+  },
+  {
+    path: '/xbrokers-event',
+    name: 'XBrokersEvent',
+    component: XBrokersEventView,
   },
   {
     path: '/faq',
@@ -67,9 +74,23 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    // always scroll to top
-    return { top: 0 };
+    if (savedPosition) {
+      return savedPosition;
+    } else {
+      return { top: 0, behavior: 'auto' };
+    }
   },
+});
+
+router.beforeEach((to, from, next) => {
+  // Ensure the wallet is on the correct network after navigation.
+  if (walletState.isConnected) {
+    // We use window.location to check the URL because the router's `to` object
+    // might not be fully updated yet when this guard is triggered on initial page load.
+    // A small timeout ensures the check runs after the new URL is reflected.
+    setTimeout(() => ensureCorrectNetwork(), 100);
+  }
+  next();
 });
 
 export default router;
