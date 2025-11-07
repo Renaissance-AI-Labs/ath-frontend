@@ -102,11 +102,12 @@ const handleInvestClick = async () => {
   // Fetch staked balance from BSC before navigating
   try {
     const stakedBalance = await getUserStakedBalance();
-    router.push({ path: '/xbrokers-event', query: { staked: stakedBalance } });
+    sessionStorage.setItem('athenaStakedAmount', stakedBalance);
+    router.push('/xbrokers-event');
   } catch (error) {
     console.error("Failed to get staked balance:", error);
-    // Even if it fails, navigate but without the staked amount.
-    // The event page will handle the missing parameter.
+    // If fetching fails, store '0' and navigate.
+    sessionStorage.setItem('athenaStakedAmount', '0');
     router.push('/xbrokers-event');
   }
 };
