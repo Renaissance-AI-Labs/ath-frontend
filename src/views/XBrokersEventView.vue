@@ -52,43 +52,48 @@
                     </p>
                 </div>
                 <div name="buyJUchain">
-                    <div v-if="walletState.isConnected && walletState.network === 'JuChain'">
-                        <!-- Loading State -->
-                        <div v-if="isLoadingUid" class="uid-form">
-                            <p>正在检查UID绑定状态...</p>
-                        </div>
-
-                        <!-- UID Not Bound Form -->
-                        <div v-else-if="!isUidBound" class="uid-form form-ask">
-                            <h4 class="s-title" style="text-align: center; margin-bottom: 10px;">绑定您的交易所UID</h4>
-                            <p style="color: #a9c2e2; font-size: 14px; margin-bottom: 20px; text-align: center;">首次投资前，需将钱包地址与交易所UID绑定</p>
-                            <div class="form-group">
-                                <label for="uidInput" class="form-label">请输入您的UID</label>
-                                <input id="uidInput" type="text" v-model="inputUid" class="form-input" placeholder="例如: 1001">
+                    <div v-if="isDataValid">
+                        <div v-if="walletState.isConnected && walletState.network === 'JuChain'">
+                            <!-- Loading State -->
+                            <div v-if="isLoadingUid" class="uid-form">
+                                <p>正在检查UID绑定状态...</p>
                             </div>
-                            <button @click="handleBindUid" :disabled="isBinding" class="btn-ip btn-confirm" style="width:100%">
-                                {{ isBinding ? '正在绑定...' : '确认绑定' }}
-                            </button>
-                        </div>
 
-                        <!-- UID Bound Form (Investment) -->
-                        <div v-else class="uid-form form-ask">
-                            <h4 class="s-title" style="text-align: center; margin-bottom: 20px;">投资xBrokers算力</h4>
-                            <div class="form-group">
-                                <label class="form-label">您已绑定的交易所UID</label>
-                                <input type="text" :value="boundUid" class="form-input" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="amountInput" class="form-label">请输入投资数量 (USDT-JU)</label>
-                                <div class="amount-input-container">
-                                    <input id="amountInput" type="text" :value="investmentAmount" @input="handleAmountInput" class="form-input" placeholder="例如: 100">
-                                    <button @click="fillMax" class="max-btn" v-html="maxButtonText"></button>
+                            <!-- UID Not Bound Form -->
+                            <div v-else-if="!isUidBound" class="uid-form form-ask">
+                                <h4 class="s-title" style="text-align: center; margin-bottom: 10px;">绑定您的交易所UID</h4>
+                                <p style="color: #a9c2e2; font-size: 14px; margin-bottom: 20px; text-align: center;">首次投资前，需将钱包地址与交易所UID绑定</p>
+                                <div class="form-group">
+                                    <label for="uidInput" class="form-label">请输入您的UID</label>
+                                    <input id="uidInput" type="text" v-model="inputUid" class="form-input" placeholder="例如: 1001">
                                 </div>
+                                <button @click="handleBindUid" :disabled="isBinding" class="btn-ip btn-confirm" style="width:100%">
+                                    {{ isBinding ? '正在绑定...' : '确认绑定' }}
+                                </button>
                             </div>
-                            <button @click="handleInvest" :disabled="isProcessing" class="btn-ip btn-confirm" style="width:100%">
-                                {{ actionButtonText }}
-                            </button>
+
+                            <!-- UID Bound Form (Investment) -->
+                            <div v-else class="uid-form form-ask">
+                                <h4 class="s-title" style="text-align: center; margin-bottom: 20px;">投资xBrokers算力</h4>
+                                <div class="form-group">
+                                    <label class="form-label">您已绑定的交易所UID</label>
+                                    <input type="text" :value="boundUid" class="form-input" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="amountInput" class="form-label">请输入投资数量 (USDT-JU)</label>
+                                    <div class="amount-input-container">
+                                        <input id="amountInput" type="text" :value="investmentAmount" @input="handleAmountInput" class="form-input" placeholder="例如: 100">
+                                        <button @click="fillMax" class="max-btn" v-html="maxButtonText"></button>
+                                    </div>
+                                </div>
+                                <button @click="handleInvest" :disabled="isProcessing" class="btn-ip btn-confirm" style="width:100%">
+                                    {{ actionButtonText }}
+                                </button>
+                            </div>
                         </div>
+                    </div>
+                    <div v-else class="error-message">
+                        无法获取地址数据，请返回Athena首页再次进入此页面
                     </div>
                 </div>
                 <div class="row" style="margin-bottom: 30px;">
@@ -120,7 +125,6 @@
 </template>
 <script setup>
 import { watch, ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
 import { walletState } from '@/services/wallet';
 import { 
   initializeJuChainContracts, 
@@ -129,7 +133,7 @@ import {
   bindUid,
   getUsdtJuAllowance,
   approveUsdtJu,
-  deposit
+  purchasePower
 } from '@/services/juchainContracts';
 import AnimatedNumber from '@/components/AnimatedNumber.vue';
 import { showToast } from '@/services/notification';
@@ -146,6 +150,7 @@ const inputUid = ref("");
 const investmentAmount = ref("");
 const allowance = ref("0");
 const athenaStakedAmount = ref(0);
+const isDataValid = ref(true); // New state to track if data from previous page is valid
 
 const isUidBound = computed(() => boundUid.value !== "0");
 const needsAllowance = computed(() => {
@@ -276,15 +281,15 @@ const handleInvest = async () => {
       // --- Approve Logic (now infinite) ---
       showToast("需要授权，请在钱包中确认...");
       const tx = await approveUsdtJu();
-      showToast("交易已发送，等待授权确认...");
+      showToast("等待授权确认...");
       await tx.wait();
       showToast("授权成功！");
       await checkAllowance(); // Re-check allowance after approval
     } else {
       // --- Deposit Logic ---
       showToast("正在发起投资，请在钱包中确认...");
-      const tx = await deposit(investmentAmount.value);
-      showToast("交易已发送，等待投资确认...");
+      const tx = await purchasePower(investmentAmount.value);
+      showToast("等待投资确认...");
       await tx.wait();
       showToast(t('toast.investmentSubmitted'), 5000);
       // Optionally, refresh balance or clear input after success
@@ -303,10 +308,17 @@ const handleInvest = async () => {
 };
 
 onMounted(() => {
-  const route = useRoute();
-  const staked = parseFloat(route.query.staked) || 0;
-  athenaStakedAmount.value = staked;
-  console.log(`Received staked amount from Athena: ${staked}`);
+  const staked = sessionStorage.getItem('athenaStakedAmount');
+  if (staked === null) {
+    // Data is missing, which means the user refreshed or navigated directly.
+    isDataValid.value = false;
+    console.log("Staked amount not found in session storage. Displaying error message.");
+  } else {
+    athenaStakedAmount.value = parseFloat(staked);
+    // We keep the data in session storage for the duration of the tab session
+    // to allow for page reloads. It will be cleared when the tab is closed.
+    console.log(`Received staked amount from session storage: ${athenaStakedAmount.value}`);
+  }
 });
 
 watch(() => walletState.network, (newNetwork) => {
@@ -355,7 +367,7 @@ export default {
 }
 
 /* Reusing and adapting styles from the homepage and modals */
-.form-ask {
+.form-ask, .uid-form {
   background-color: var(--bg-2);
   padding: 30px;
   border-radius: 12px;
@@ -363,6 +375,16 @@ export default {
   max-width: 420px;
   margin: 60px auto;
   color: #fff;
+  text-align: center; /* Center the text for loading message */
+}
+
+.error-message {
+  text-align: center;
+  color: #a9c2e2;
+  font-size: 16px;
+  margin: 60px auto;
+  max-width: 420px;
+  padding: 30px;
 }
 
 .form-group {
