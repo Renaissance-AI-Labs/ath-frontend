@@ -2,17 +2,21 @@ import { ethers } from 'ethers';
 import { walletState } from './wallet';
 import usdtJuAbi from '../abis/ath.json';
 import xbrokersAbi from '../abis/xbrokers.json';
+import powerPurchaseAbi from '../abis/power_purchase.json';
 
 const USDT_JU_ADDRESS = '0xc8e19C19479a866142B42fB390F2ea1Ff082E0D2';
 const XBROKERS_ADDRESS = '0xd4cee460Ceb47D1A30E1672EE2a13ecdf362Cf5a';
+const POWER_PURCHASE_ADDRESS = '0x705c99F6C25056cC73B299dFe209d80455FA7D63';
 
 let usdtJuContract;
 let xbrokersContract;
+let powerPurchaseContract;
 
 export const initializeJuChainContracts = () => {
   if (walletState.signer && walletState.chainId === 210000) {
     usdtJuContract = new ethers.Contract(USDT_JU_ADDRESS, usdtJuAbi, walletState.signer);
     xbrokersContract = new ethers.Contract(XBROKERS_ADDRESS, xbrokersAbi, walletState.signer);
+    powerPurchaseContract = new ethers.Contract(POWER_PURCHASE_ADDRESS, powerPurchaseAbi, walletState.signer);
     console.log("JuChain contracts initialized.");
     return true;
   }
@@ -56,7 +60,7 @@ export const getUsdtJuAllowance = async () => {
     }
   }
   try {
-    const allowance = await usdtJuContract.allowance(walletState.address, XBROKERS_ADDRESS);
+    const allowance = await usdtJuContract.allowance(walletState.address, POWER_PURCHASE_ADDRESS);
     return ethers.formatUnits(allowance, 18);
   } catch (error) {
     console.error("Error fetching USDT-JU allowance:", error);
@@ -71,8 +75,8 @@ export const approveUsdtJu = async () => {
     }
   }
   try {
-    // Approve the maximum possible amount
-    const tx = await usdtJuContract.approve(XBROKERS_ADDRESS, ethers.MaxUint256);
+    // Approve the maximum possible amount to the new PowerPurchase contract
+    const tx = await usdtJuContract.approve(POWER_PURCHASE_ADDRESS, ethers.MaxUint256);
     return tx;
   } catch (error) {
     console.error("Error approving USDT-JU:", error);
@@ -80,25 +84,18 @@ export const approveUsdtJu = async () => {
   }
 };
 
-export const deposit = async (amount) => {
-  if (!xbrokersContract) {
+export const purchasePower = async (amount) => {
+  if (!powerPurchaseContract) {
     if (!initializeJuChainContracts()) {
       throw new Error("Cannot initialize JuChain contracts.");
     }
   }
   try {
     const amountInWei = ethers.parseUnits(amount.toString(), 18);
-    const projectCode = "xnodeydn";
-    // Deposit is for the connected user's address.
-    const depositFor = walletState.address;
-    
-    // Call the contract with all three required arguments.
-    const tx = await xbrokersContract.deposit(projectCode, depositFor, amountInWei, {
-      // No `value` needed for token transfers, only for native currency (main coin)
-    });
+    const tx = await powerPurchaseContract.purchasePower(amountInWei);
     return tx;
   } catch (error) {
-    console.error("Error depositing:", error);
+    console.error("Error purchasing power:", error);
     throw error;
   }
 };
@@ -114,7 +111,7 @@ export const getUsdtJuBalance = async () => {
   try {
     const balance = await usdtJuContract.balanceOf(walletState.address);
     // Assuming USDT-JU also has 18 decimals like standard USDT
-    return ethers.formatUnits(balance, 18); 
+    return ethers.formatUnits(balance, 18);
   } catch (error) {
     console.error("Error fetching USDT-JU balance:", error);
     return '0';

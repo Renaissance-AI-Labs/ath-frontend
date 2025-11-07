@@ -129,7 +129,7 @@ import {
   bindUid,
   getUsdtJuAllowance,
   approveUsdtJu,
-  deposit
+  purchasePower
 } from '@/services/juchainContracts';
 import AnimatedNumber from '@/components/AnimatedNumber.vue';
 import { showToast } from '@/services/notification';
@@ -283,7 +283,7 @@ const handleInvest = async () => {
     } else {
       // --- Deposit Logic ---
       showToast("正在发起投资，请在钱包中确认...");
-      const tx = await deposit(investmentAmount.value);
+      const tx = await purchasePower(investmentAmount.value);
       showToast("交易已发送，等待投资确认...");
       await tx.wait();
       showToast(t('toast.investmentSubmitted'), 5000);
