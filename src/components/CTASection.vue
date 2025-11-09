@@ -1,5 +1,5 @@
 <template>
-    <section class="section-cta">
+    <section class="section-cta" v-if="showEntrance">
         <!-- == Head Section -->
         <div class="sect-header">
             <div class="container">
@@ -85,12 +85,15 @@
     </section>
 </template>
 <script setup>
+import { ref } from 'vue';
 import { walletState } from '@/services/wallet';
 import { showToast } from '@/services/notification';
 import { t } from '@/i18n';
 import { useRouter } from 'vue-router';
 import { getUserStakedBalance } from '@/services/contracts';
+import { ENABLE_XBROKERS_ENTRANCE } from '@/services/environment';
 
+const showEntrance = ref(ENABLE_XBROKERS_ENTRANCE);
 const router = useRouter();
 
 const handleInvestClick = async () => {
