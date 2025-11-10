@@ -138,7 +138,7 @@ const languagePacks = {
     
     // Countdown Timer
     'countdown.remaining': '剩余：',
-    'countdown.expired': '已到期可赎回',
+    'countdown.expired': '可赎回',
     'countdown.days': '天',
     'countdown.hours': '时',
     'countdown.minutes': '分',
@@ -164,6 +164,7 @@ const languagePacks = {
     'howToUse.waitingRedeem': '等待赎回',
     'howToUse.staking': 'STAKING',
     'howToUse.redeemedStatus': 'REDEEMED',
+    'howToUse.loadingMoreData': '正在加载更多数据...',
     
     // Share Friend Modal
     'share.title': '分享链接给好友',
@@ -272,7 +273,7 @@ const languagePacks = {
     
     // Countdown Timer
     'countdown.remaining': '剩餘：',
-    'countdown.expired': '已到期可贖回',
+    'countdown.expired': '可贖回',
     'countdown.days': '天',
     'countdown.hours': '時',
     'countdown.minutes': '分',
@@ -298,6 +299,7 @@ const languagePacks = {
     'howToUse.waitingRedeem': '等待贖回',
     'howToUse.staking': 'STAKING',
     'howToUse.redeemedStatus': 'REDEEMED',
+    'howToUse.loadingMoreData': '正在加載更多數據...',
     
     // Toast Notifications
     'toast.connectWalletFirst': '請先連接並授權您的錢包',
@@ -434,7 +436,7 @@ const languagePacks = {
     
     // Countdown Timer
     'countdown.remaining': 'Remaining: ',
-    'countdown.expired': 'Expired, Redeemable',
+    'countdown.expired': 'Redeemable',
     'countdown.days': 'd ',
     'countdown.hours': 'h ',
     'countdown.minutes': 'm ',
@@ -460,6 +462,7 @@ const languagePacks = {
     'howToUse.waitingRedeem': 'Waiting to Redeem',
     'howToUse.staking': 'STAKING',
     'howToUse.redeemedStatus': 'REDEEMED',
+    'howToUse.loadingMoreData': 'Loading more data...',
     
     // Toast Notifications
     'toast.connectWalletFirst': 'Please connect and authorize your wallet first',
@@ -593,7 +596,7 @@ const languagePacks = {
     
     // Countdown Timer
     'countdown.remaining': '残り：',
-    'countdown.expired': '期限切れ、償還可能',
+    'countdown.expired': '可贖回',
     'countdown.days': '日',
     'countdown.hours': '時間',
     'countdown.minutes': '分',
@@ -619,6 +622,7 @@ const languagePacks = {
     'howToUse.waitingRedeem': '償還待ち',
     'howToUse.staking': 'STAKING',
     'howToUse.redeemedStatus': 'REDEEMED',
+    'howToUse.loadingMoreData': 'さらにデータを読み込み中...',
     
     // Toast Notifications
     'toast.connectWalletFirst': 'まずウォレットを接続して承認してください',
@@ -755,7 +759,7 @@ const languagePacks = {
     
     // Countdown Timer
     'countdown.remaining': '남은 시간: ',
-    'countdown.expired': '만료됨, 상환 가능',
+    'countdown.expired': '상환 가능',
     'countdown.days': '일 ',
     'countdown.hours': '시간 ',
     'countdown.minutes': '분 ',
@@ -781,6 +785,7 @@ const languagePacks = {
     'howToUse.waitingRedeem': '상환 대기',
     'howToUse.staking': 'STAKING',
     'howToUse.redeemedStatus': 'REDEEMED',
+    'howToUse.loadingMoreData': '추가 데이터 로드 중...',
     
     // Toast Notifications
     'toast.connectWalletFirst': '먼저 지갑을 연결하고 승인하세요',
