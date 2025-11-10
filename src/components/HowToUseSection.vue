@@ -66,7 +66,7 @@
                             </button>
                         </div>
 
-                        <div v-if="isLoading && stakingItems.length === 0" class="loading-state" :class="`list-${listMode}`">
+                        <div v-if="isLoading" class="loading-state" :class="`list-${listMode}`">
                             <div class="stars-bg stars-bg-1">
                                 <div class="stars"></div>
                                 <div class="stars2"></div>
@@ -100,58 +100,59 @@
                             <p v-else>{{ t('howToUse.noRedemptionOrders') }}</p>
                         </div>
                         <template v-else>
-                            <div class="scroll-container" @scroll="throttledHandleScroll" ref="scrollContainer">
-                                <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist" :class="`list-${listMode}`">
-                                    <li v-for="(item, index) in stakingItems" :key="item.id" class="nav-tab-item li-style" role="presentation">
-                                        <div class="br-line has-dot"></div>
-                                        <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true" role="tab">
-                                            <div :class="`stars-bg stars-bg-${(index % 3) + 1}`">
-                                                <div class="stars"></div>
-                                                <div class="stars2"></div>
-                                                <div class="stars3"></div>
+                            <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist" :class="`list-${listMode}`">
+                                <li v-for="(item, index) in stakingItems" :key="item.id" class="nav-tab-item li-style" role="presentation">
+                                    <div class="br-line has-dot"></div>
+                                    <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true" role="tab">
+                                        <div :class="`stars-bg stars-bg-${(index % 3) + 1}`">
+                                            <div class="stars"></div>
+                                            <div class="stars2"></div>
+                                            <div class="stars3"></div>
+                                        </div>
+                                        <div class="card-content">
+                                            <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                                                <h5 class="name h5-list-style" :data-text="`${activeTab === 'investment' ? t('howToUse.staking') : t('howToUse.redeemedStatus')}-CODE-${String(item.id + 1).padStart(2, '0')}`">
+                                                    {{ activeTab === 'investment' ? t('howToUse.staking') : t('howToUse.redeemedStatus') }}-CODE-{{ String(item.id + 1).padStart(2, '0') }}
+                                                </h5>
+                                                <h5 class="name h5-list-style" :data-text="item.stakeDate" style="min-width: 125px;">{{ item.stakeDate }}</h5>
                                             </div>
-                                            <div class="card-content">
-                                                <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                                                    <h5 class="name h5-list-style" :data-text="`${activeTab === 'investment' ? t('howToUse.staking') : t('howToUse.redeemedStatus')}-CODE-${String(item.id + 1).padStart(2, '0')}`">
-                                                        {{ activeTab === 'investment' ? t('howToUse.staking') : t('howToUse.redeemedStatus') }}-CODE-{{ String(item.id + 1).padStart(2, '0') }}
-                                                    </h5>
-                                                    <h5 class="name h5-list-style" :data-text="item.stakeDate" style="min-width: 125px;">{{ item.stakeDate }}</h5>
+                                            <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                                                <p class="desc p-list-style">{{ t('howToUse.principal') }}$ <span style="margin-left: 0px;">{{ parseFloat(item.principal).toFixed(4) }}</span></p>
+                                                <div class="desc p-list-style" style="display: flex; flex-direction: row; justify-content: space-between; min-width: 125px;">
+                                                    <div style="width: 49%;">{{ t('howToUse.interest') }}$</div>
+                                                    <div style="width: 51%; margin-left: 2px;"><AnimatedNumber :value="parseFloat(item.interest)" :decimals="4" /></div>
+                                                     
                                                 </div>
-                                                <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                                                    <p class="desc p-list-style">{{ t('howToUse.principal') }}$ <span style="margin-left: 0px;">{{ parseFloat(item.principal).toFixed(4) }}</span></p>
-                                                    <div class="desc p-list-style" style="display: flex; flex-direction: row; justify-content: space-between; min-width: 125px;">
-                                                        <div style="width: 49%;">{{ t('howToUse.interest') }}$</div>
-                                                        <div style="width: 51%; margin-left: 2px;"><AnimatedNumber :value="parseFloat(item.principal) + parseFloat(item.interest)" :decimals="4" /></div>
-                                                         
-                                                    </div>
-                                                </div>
+                                            </div>
 
-                                                <div class="status-box">
-                                                    <CountdownTimer v-if="activeTab === 'investment'" :target-timestamp="item.expiryTimestamp" />
-                                                    <span v-else class="desc clock"></span>
-                                                    <div class="status-box-button">
-                                                        <button v-if="item.displayStatus === 'redeemable'" 
-                                                                class="tf-btn text-body-3 style-2 animate-btn animate-dark redeemable-btn" 
-                                                                :disabled="unstackingStates[item.id]"
-                                                                @click.prevent="handleUnstake(item.id)">
-                                                            {{ unstackingStates[item.id] ? t('howToUse.redeeming') : t('howToUse.redeem') }}
-                                                        </button>
-                                                        <button v-else-if="item.displayStatus === 'redeemed'" class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>{{ t('howToUse.redeemed') }}</button>
-                                                        <button v-else class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>{{ t('howToUse.waitingRedeem') }}</button>
-                                                    </div>
+                                            <div class="status-box">
+                                                <CountdownTimer v-if="activeTab === 'investment'" :target-timestamp="item.expiryTimestamp" />
+                                                <span v-else class="desc clock"></span>
+                                                <div class="status-box-button">
+                                                    <button v-if="item.displayStatus === 'redeemable'" 
+                                                            class="tf-btn text-body-3 style-2 animate-btn animate-dark" 
+                                                            :disabled="unstackingStates[item.id]"
+                                                            @click.prevent="handleUnstake(item.id)">
+                                                        {{ unstackingStates[item.id] ? t('howToUse.redeeming') : t('howToUse.redeem') }}
+                                                    </button>
+                                                    <button v-else-if="item.displayStatus === 'redeemed'" class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>{{ t('howToUse.redeemed') }}</button>
+                                                    <button v-else class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>{{ t('howToUse.waitingRedeem') }}</button>
                                                 </div>
                                             </div>
                                         </div>
-                                    </li>
-                                </ul>
-                                <div v-if="isLoading && stakingItems.length > 0" class="loading-more-state" :class="`list-${listMode}`">
-                                    <div class="stars-bg stars-bg-1">
-                                        <div class="stars"></div>
-                                        <div class="stars2"></div>
-                                        <div class="stars3"></div>
                                     </div>
-                                    <p>{{ t('howToUse.loadingMoreData') }}</p>
-                                </div>
+                                </li>
+                            </ul>
+                            <div v-if="totalPages > 1" class="pagination-list">
+                                <a href="#" class="pagination-item" @click.prevent="prevPage" :class="{ 'disabled': currentPage === 1 }">
+                                    <span class="icon icon-CaretDoubleRight fs-20" style="transform: rotate(180deg);"></span>
+                                </a>
+                                <a v-for="page in displayedPages" :key="page" href="#" class="pagination-item" :class="{ 'active': currentPage === page }" @click.prevent="goToPage(page)">
+                                    <span>{{ page }}</span>
+                                </a>
+                                <a href="#" class="pagination-item" @click.prevent="nextPage" :class="{ 'disabled': currentPage === totalPages }">
+                                    <span class="icon icon-CaretDoubleRight fs-20"></span>
+                                </a>
                             </div>
                         </template>
                     </div>
@@ -205,22 +206,10 @@ const totalItems = ref(0); // New state for total records from contract
 const isLoading = ref(true);
 const activeTab = ref('investment'); // 'investment' or 'redemption'
 const currentPage = ref(1);
-const itemsPerPage = 5; // No longer a ref, just a constant
+const itemsPerPage = ref(4);
 const listMode = ref('show');
+let pollingInterval = null;
 const unstackingStates = reactive({});
-const scrollContainer = ref(null);
-
-// Throttling function
-let throttleTimer = null;
-const throttle = (func, delay) => {
-  return (...args) => {
-    if (throttleTimer) return;
-    throttleTimer = setTimeout(() => {
-      func(...args);
-      throttleTimer = null;
-    }, delay);
-  };
-};
 
 const fetchStakingData = async () => {
     if (!walletState.isAuthenticated || !walletState.contractsInitialized || !stakingContract) {
@@ -232,14 +221,14 @@ const fetchStakingData = async () => {
 
     try {
         const status = activeTab.value === 'investment' ? 0 : 1;
-        const offset = (currentPage.value - 1) * itemsPerPage;
+        const offset = (currentPage.value - 1) * itemsPerPage.value;
 
-        console.log(`[订单列表] 正在请求数据... offset=${offset}, limit=${itemsPerPage}, status=${status}`);
+        console.log(`[订单列表] 正在请求数据... offset=${offset}, limit=${itemsPerPage.value}, status=${status}`);
 
         const [pageRecords, total] = await stakingContract.getUserRecords(
             walletState.address,
             offset,
-            itemsPerPage,
+            itemsPerPage.value,
             status
         );
 
@@ -261,7 +250,7 @@ const fetchStakingData = async () => {
             console.log('[订单列表] 获取到进行中列表的实时奖励数据:', liveRewards);
         }
 
-        const newItems = pageRecords.map((record, index) => {
+        stakingItems.value = pageRecords.map((record, index) => {
             const id = Number(record.id);
 
             let interest;
@@ -301,13 +290,6 @@ const fetchStakingData = async () => {
             };
         });
 
-        if (currentPage.value === 1) {
-            stakingItems.value = newItems;
-        } else {
-            stakingItems.value = [...stakingItems.value, ...newItems];
-        }
-
-
         console.log('[订单列表] 数据处理完成, 最终用于渲染的数据:', stakingItems.value);
         // --- End of New Logic ---
 
@@ -319,6 +301,7 @@ const fetchStakingData = async () => {
         isLoading.value = false; // Always turn off loading after a fetch attempt
     }
 };
+
 
 const handleUnstake = async (id) => {
     unstackingStates[id] = true;
@@ -333,6 +316,21 @@ const handleUnstake = async (id) => {
     }
 };
 
+const startPolling = () => {
+  stopPolling(); // Ensure no multiple intervals are running
+  console.log('[订单列表] 启动轮询，每15秒刷新一次数据...');
+  pollingInterval = setInterval(fetchStakingData, 15000);
+};
+
+const stopPolling = () => {
+  if (pollingInterval) {
+    console.log('[订单列表] 停止轮询。');
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+};
+
+
 watch(() => [walletState.isAuthenticated, walletState.address, walletState.contractsInitialized], ([isAuth, address, contractsReady]) => {
   console.log(`[订单列表-检查] 监听到状态变化 -> isAuth: ${isAuth}, address: ${address}, contractsReady: ${contractsReady}`);
   // Only fetch data when both authenticated and contracts are ready
@@ -342,7 +340,9 @@ watch(() => [walletState.isAuthenticated, walletState.address, walletState.contr
       isLoading.value = true;
     }
     fetchStakingData();
+    startPolling();
   } else {
+    stopPolling();
     stakingItems.value = [];
     totalItems.value = 0;
     isLoading.value = false; // Correctly set loading to false on disconnect
@@ -354,7 +354,7 @@ watch(() => [walletState.isAuthenticated, walletState.address, walletState.contr
 });
 
 onUnmounted(() => {
-  // Cleanup if needed
+  stopPolling();
 });
 
 
@@ -363,63 +363,76 @@ const toggleTab = () => {
   setTimeout(() => {
     activeTab.value = activeTab.value === 'investment' ? 'redemption' : 'investment';
     currentPage.value = 1; // Reset to first page on tab switch
-    stakingItems.value = []; // Clear items immediately for better UX
-    isLoading.value = true; // Show loading state for new tab
     fetchStakingData(); // Refetch data when tab changes
     listMode.value = 'show'; // Start fade in animation
   }, 150); // This duration should match the CSS transition duration
 };
 
-const hasMore = computed(() => stakingItems.value.length < totalItems.value);
 
-const loadMore = async () => {
-  if (isLoading.value || !hasMore.value) return;
+const totalPages = computed(() => {
+    if (totalItems.value === 0) return 1; // Prevent division by zero
+    return Math.ceil(totalItems.value / itemsPerPage.value);
+});
 
-  isLoading.value = true;
-  currentPage.value++;
-  await fetchStakingData();
-};
+// This computed property is no longer needed as the contract returns paginated data directly.
+// const paginatedItems = computed(() => { ... });
 
-const handleScroll = () => {
-  const container = scrollContainer.value;
-  if (container) {
-    const { scrollTop, scrollHeight, clientHeight } = container;
-    // Load more when the user is 300px from the bottom
-    if (scrollTop + clientHeight >= scrollHeight - 300) { 
-      loadMore();
-    }
+// Methods to change the page
+const goToPage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+    fetchStakingData(); // Refetch data for the new page
   }
 };
 
-const throttledHandleScroll = throttle(handleScroll, 2000); // Throttle scroll handler to run every 2000ms
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    fetchStakingData(); // Refetch data for the new page
+  }
+};
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+    fetchStakingData(); // Refetch data for the new page
+  }
+};
+
+const displayedPages = computed(() => {
+  const maxDisplayed = 5;
+  const pages = [];
+
+  if (totalPages.value <= maxDisplayed) {
+    for (let i = 1; i <= totalPages.value; i++) {
+      pages.push(i);
+    }
+  } else {
+    let startPage;
+    let endPage;
+
+    if (currentPage.value <= 3) {
+      // At the beginning
+      startPage = 1;
+      endPage = maxDisplayed;
+    } else if (currentPage.value >= totalPages.value - 2) {
+      // At the end
+      startPage = totalPages.value - maxDisplayed + 1;
+      endPage = totalPages.value;
+    } else {
+      // In the middle
+      startPage = currentPage.value - 2;
+      endPage = currentPage.value + 2;
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+  }
+  return pages;
+});
 </script>
 <style scoped>
-
-.scroll-container {
-  max-height: 480px; /* Adjust as needed */
-  overflow-y: auto;
-  padding-right: 5px; /* For scrollbar */
-}
-
-/* Custom scrollbar styles */
-.scroll-container::-webkit-scrollbar {
-  width: 4px;
-}
-
-.scroll-container::-webkit-scrollbar-track {
-  background: #1e1e1e;
-  border-radius: 2px;
-}
-
-.scroll-container::-webkit-scrollbar-thumb {
-  background: #555;
-  border-radius: 2px;
-}
-
-.scroll-container::-webkit-scrollbar-thumb:hover {
-  background: #777;
-}
-
 
 .tab-how_to,
 .empty-state,
@@ -522,38 +535,6 @@ const throttledHandleScroll = throttle(handleScroll, 2000); // Throttle scroll h
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-}
-
-@keyframes pulse-text-glow {
-  0% {
-    text-shadow: 0 0 7px rgba(255, 255, 255, 0.8);
-  }
-  50% {
-    text-shadow: 0 0 20px rgba(255, 255, 255, 1);
-  }
-  100% {
-    text-shadow: 0 0 7px rgba(255, 255, 255, 0.8);
-  }
-}
-
-@keyframes pulse-border-glow {
-  0% {
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 15px rgba(255, 255, 255, 1);
-  }
-  100% {
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-  }
-}
-
-.redeemable-btn {
-  color: #fff;
-  border-color: #aaa;
-  animation: 
-    pulse-text-glow 4s infinite ease-in-out,
-    pulse-border-glow 4s infinite ease-in-out;
 }
 
 .tf-btn.style-2 {
@@ -733,25 +714,6 @@ const throttledHandleScroll = throttle(handleScroll, 2000); // Throttle scroll h
     width: 36px;
     height: 36px;
     line-height: 36px;
-}
-
-.loading-more-state {
-    background: rgba(20, 20, 21, 0.5);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 20px;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    text-align: center;
-    color: #fff;
-    position: relative;
-    overflow: hidden;
-    margin-top: 20px;
-}
-
-.loading-more-state p {
-    position: relative;
-    z-index: 2;
 }
 
 </style>

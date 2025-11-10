@@ -138,7 +138,7 @@ const languagePacks = {
     
     // Countdown Timer
     'countdown.remaining': '剩余：',
-    'countdown.expired': '可赎回',
+    'countdown.expired': '已到期可赎回',
     'countdown.days': '天',
     'countdown.hours': '时',
     'countdown.minutes': '分',
@@ -157,14 +157,13 @@ const languagePacks = {
     'howToUse.noInvestmentOrders': '您还没有任何进行中的质押订单',
     'howToUse.noRedemptionOrders': '您还没有已赎回的订单',
     'howToUse.principal': '母金：',
-    'howToUse.interest': '盈利：',
+    'howToUse.interest': '子金：',
     'howToUse.redeeming': '赎回中...',
     'howToUse.redeem': '赎回',
     'howToUse.redeemed': '已赎回',
     'howToUse.waitingRedeem': '等待赎回',
     'howToUse.staking': 'STAKING',
     'howToUse.redeemedStatus': 'REDEEMED',
-    'howToUse.loadingMoreData': '正在加载更多数据...',
     
     // Share Friend Modal
     'share.title': '分享链接给好友',
@@ -273,7 +272,7 @@ const languagePacks = {
     
     // Countdown Timer
     'countdown.remaining': '剩餘：',
-    'countdown.expired': '可贖回',
+    'countdown.expired': '已到期可贖回',
     'countdown.days': '天',
     'countdown.hours': '時',
     'countdown.minutes': '分',
@@ -292,14 +291,13 @@ const languagePacks = {
     'howToUse.noInvestmentOrders': '您還沒有任何進行中的質押訂單',
     'howToUse.noRedemptionOrders': '您還沒有已贖回的訂單',
     'howToUse.principal': '母金：',
-    'howToUse.interest': '盈利：',
+    'howToUse.interest': '子金：',
     'howToUse.redeeming': '贖回中...',
     'howToUse.redeem': '贖回',
     'howToUse.redeemed': '已贖回',
     'howToUse.waitingRedeem': '等待贖回',
     'howToUse.staking': 'STAKING',
     'howToUse.redeemedStatus': 'REDEEMED',
-    'howToUse.loadingMoreData': '正在加載更多數據...',
     
     // Toast Notifications
     'toast.connectWalletFirst': '請先連接並授權您的錢包',
@@ -436,7 +434,7 @@ const languagePacks = {
     
     // Countdown Timer
     'countdown.remaining': 'Remaining: ',
-    'countdown.expired': 'Redeemable',
+    'countdown.expired': 'Expired, Redeemable',
     'countdown.days': 'd ',
     'countdown.hours': 'h ',
     'countdown.minutes': 'm ',
@@ -455,14 +453,13 @@ const languagePacks = {
     'howToUse.noInvestmentOrders': 'You have no ongoing staking orders',
     'howToUse.noRedemptionOrders': 'You have no redeemed orders',
     'howToUse.principal': 'Principal: ',
-    'howToUse.interest': 'Profit: ',
+    'howToUse.interest': 'Interest: ',
     'howToUse.redeeming': 'Redeeming...',
     'howToUse.redeem': 'Redeem',
     'howToUse.redeemed': 'Redeemed',
     'howToUse.waitingRedeem': 'Waiting to Redeem',
     'howToUse.staking': 'STAKING',
     'howToUse.redeemedStatus': 'REDEEMED',
-    'howToUse.loadingMoreData': 'Loading more data...',
     
     // Toast Notifications
     'toast.connectWalletFirst': 'Please connect and authorize your wallet first',
@@ -596,7 +593,7 @@ const languagePacks = {
     
     // Countdown Timer
     'countdown.remaining': '残り：',
-    'countdown.expired': '可贖回',
+    'countdown.expired': '期限切れ、償還可能',
     'countdown.days': '日',
     'countdown.hours': '時間',
     'countdown.minutes': '分',
@@ -615,14 +612,13 @@ const languagePacks = {
     'howToUse.noInvestmentOrders': '進行中のステーキング注文がありません',
     'howToUse.noRedemptionOrders': '償還済みの注文がありません',
     'howToUse.principal': '元本：',
-    'howToUse.interest': '利益：',
+    'howToUse.interest': '利息：',
     'howToUse.redeeming': '償還中...',
     'howToUse.redeem': '償還',
     'howToUse.redeemed': '償還済み',
     'howToUse.waitingRedeem': '償還待ち',
     'howToUse.staking': 'STAKING',
     'howToUse.redeemedStatus': 'REDEEMED',
-    'howToUse.loadingMoreData': 'さらにデータを読み込み中...',
     
     // Toast Notifications
     'toast.connectWalletFirst': 'まずウォレットを接続して承認してください',
@@ -759,7 +755,7 @@ const languagePacks = {
     
     // Countdown Timer
     'countdown.remaining': '남은 시간: ',
-    'countdown.expired': '상환 가능',
+    'countdown.expired': '만료됨, 상환 가능',
     'countdown.days': '일 ',
     'countdown.hours': '시간 ',
     'countdown.minutes': '분 ',
@@ -778,14 +774,13 @@ const languagePacks = {
     'howToUse.noInvestmentOrders': '진행 중인 스테이킹 주문이 없습니다',
     'howToUse.noRedemptionOrders': '상환된 주문이 없습니다',
     'howToUse.principal': '원금: ',
-    'howToUse.interest': '수익: ',
+    'howToUse.interest': '이자: ',
     'howToUse.redeeming': '상환 중...',
     'howToUse.redeem': '상환',
     'howToUse.redeemed': '상환됨',
     'howToUse.waitingRedeem': '상환 대기',
     'howToUse.staking': 'STAKING',
     'howToUse.redeemedStatus': 'REDEEMED',
-    'howToUse.loadingMoreData': '추가 데이터 로드 중...',
     
     // Toast Notifications
     'toast.connectWalletFirst': '먼저 지갑을 연결하고 승인하세요',
