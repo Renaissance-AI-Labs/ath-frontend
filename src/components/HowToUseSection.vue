@@ -120,7 +120,7 @@
                                                 <p class="desc p-list-style">{{ t('howToUse.principal') }}$ <span style="margin-left: 0px;">{{ parseFloat(item.principal).toFixed(4) }}</span></p>
                                                 <div class="desc p-list-style" style="display: flex; flex-direction: row; justify-content: space-between; min-width: 125px;">
                                                     <div style="width: 49%;">{{ t('howToUse.interest') }}$</div>
-                                                    <div style="width: 51%; margin-left: 2px;"><AnimatedNumber :value="parseFloat(item.interest)" :decimals="4" /></div>
+                                                    <div style="width: 51%; margin-left: 2px;"><AnimatedNumber :value="parseFloat(item.principal) + parseFloat(item.interest)" :decimals="4" /></div>
                                                      
                                                 </div>
                                             </div>
@@ -130,10 +130,12 @@
                                                 <span v-else class="desc clock"></span>
                                                 <div class="status-box-button">
                                                     <button v-if="item.displayStatus === 'redeemable'" 
-                                                            class="tf-btn text-body-3 style-2 animate-btn animate-dark" 
+                                                            class="tf-btn text-body-3 style-2 animate-btn animate-dark redeem-glow" 
                                                             :disabled="unstackingStates[item.id]"
                                                             @click.prevent="handleUnstake(item.id)">
-                                                        {{ unstackingStates[item.id] ? t('howToUse.redeeming') : t('howToUse.redeem') }}
+                                                        <span :class="{ 'redeem-text-glow': !unstackingStates[item.id] }">
+                                                            {{ unstackingStates[item.id] ? t('howToUse.redeeming') : t('howToUse.redeem') }}
+                                                        </span>
                                                     </button>
                                                     <button v-else-if="item.displayStatus === 'redeemed'" class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>{{ t('howToUse.redeemed') }}</button>
                                                     <button v-else class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>{{ t('howToUse.waitingRedeem') }}</button>
@@ -548,9 +550,9 @@ const displayedPages = computed(() => {
 }
 
 .pagination-item.active {
-  background-color: var(--primary);
-  border-color: var(--primary);
-  color: #fff;
+  background-color: #fff;
+  border-color: #fff;
+  color: #222;
 }
 
 .pagination-item.disabled {
@@ -716,6 +718,39 @@ const displayedPages = computed(() => {
     line-height: 36px;
 }
 
+.redeem-glow {
+  /* A slow, breathing glow effect */
+  animation: redeem-breathing-glow 6s ease-in-out infinite;
+  border: 1px solid rgba(220, 220, 220, 0.3); /* A subtle border to complement the glow */
+}
+
+@keyframes redeem-breathing-glow {
+  0% {
+    box-shadow: 0 0 3px rgba(220, 220, 220, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(220, 220, 220, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 3px rgba(220, 220, 220, 0.2);
+  }
+}
+
+.redeem-text-glow {
+  animation: redeem-text-breathing-glow 6s ease-in-out infinite;
+}
+
+@keyframes redeem-text-breathing-glow {
+  0% {
+    text-shadow: 0 0 2px rgba(220, 220, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(220, 220, 0.8);
+  }
+  100% {
+    text-shadow: 0 0 2px rgba(220, 220, 0.3);
+  }
+}
 </style>
 
 
