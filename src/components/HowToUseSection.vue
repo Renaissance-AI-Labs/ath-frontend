@@ -120,7 +120,7 @@
                                                 <p class="desc p-list-style">{{ t('howToUse.principal') }}$ <span style="margin-left: 0px;">{{ parseFloat(item.principal).toFixed(4) }}</span></p>
                                                 <div class="desc p-list-style" style="display: flex; flex-direction: row; justify-content: space-between; min-width: 125px;">
                                                     <div style="width: 49%;">{{ t('howToUse.interest') }}$</div>
-                                                    <div style="width: 51%; margin-left: 2px;"><AnimatedNumber :value="parseFloat(item.interest)" :decimals="4" /></div>
+                                                    <div style="width: 51%; margin-left: 2px;"><AnimatedNumber :value="parseFloat(item.totalValue)" :decimals="4" /></div>
                                                      
                                                 </div>
                                             </div>
@@ -256,9 +256,9 @@ const fetchStakingData = async () => {
             let interest;
             if (status === 0) { // In-progress
                 const totalValue = liveRewards[index] ? BigInt(liveRewards[index].toString()) : 0n;
-                interest = totalValue > record.amount ? totalValue - record.amount : 0n;
+                interest = totalValue > record.amount ? totalValue : record.amount;
             } else { // Redeemed
-                interest = record.finalReward > 0 ? record.finalReward - record.amount : 0n;
+                interest = record.finalReward > 0 ? record.finalReward : record.amount;
             }
 
             const stakeTimeInSeconds = Number(record.stakeTime);
@@ -274,7 +274,8 @@ const fetchStakingData = async () => {
 
             return {
                 principal: ethers.formatUnits(record.amount, decimals),
-                interest: ethers.formatUnits(interest, decimals),
+                interest: ethers.formatUnits(interest - record.amount, decimals),
+                totalValue: ethers.formatUnits(interest, decimals),
                 stakeDate: new Date(stakeTimeInSeconds * 1000).toLocaleString('zh-CN', {
                     year: 'numeric',
                     month: '2-digit',
@@ -540,6 +541,11 @@ const displayedPages = computed(() => {
 .tf-btn.style-2 {
     background-color: #161c416b;
     width: 100px;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+}
+
+.tf-btn.style-2:not([disabled]) {
+    animation: breathe-glow 6s ease-in-out infinite;
 }
 
 .tf-btn[disabled] {
@@ -548,9 +554,9 @@ const displayedPages = computed(() => {
 }
 
 .pagination-item.active {
-  background-color: var(--primary);
-  border-color: var(--primary);
-  color: #fff;
+  background-color: #fff;
+  border-color: #fff;
+  color: #222;
 }
 
 .pagination-item.disabled {
@@ -693,6 +699,21 @@ const displayedPages = computed(() => {
   }
   to {
     transform: translateY(-250px);
+  }
+}
+
+@keyframes breathe-glow {
+  0% {
+    text-shadow: 0 0 8px rgba(220, 220, 220, 0.7);
+    box-shadow: 0 0 10px rgba(220, 220, 220, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 16px rgba(220, 220, 220, 1);
+    box-shadow: 0 0 20px rgba(220, 220, 220, 0.7);
+  }
+  100% {
+    text-shadow: 0 0 8px rgba(220, 220, 220, 0.7);
+    box-shadow: 0 0 10px rgba(220, 220, 220, 0.3);
   }
 }
 
