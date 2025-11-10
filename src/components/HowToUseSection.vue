@@ -719,37 +719,14 @@ const displayedPages = computed(() => {
 }
 
 .redeem-glow {
-  /* A slow, breathing glow effect */
-  animation: redeem-breathing-glow 6s ease-in-out infinite;
+  /* Constant glow effect */
+  box-shadow: 0 0 12px rgba(220, 220, 220, 0.7);
   border: 1px solid rgba(220, 220, 220, 0.3); /* A subtle border to complement the glow */
 }
 
-@keyframes redeem-breathing-glow {
-  0% {
-    box-shadow: 0 0 3px rgba(220, 220, 220, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 12px rgba(220, 220, 220, 0.7);
-  }
-  100% {
-    box-shadow: 0 0 3px rgba(220, 220, 220, 0.2);
-  }
-}
-
 .redeem-text-glow {
-  animation: redeem-text-breathing-glow 6s ease-in-out infinite;
-}
-
-@keyframes redeem-text-breathing-glow {
-  0% {
-    text-shadow: 0 0 2px rgba(220, 220, 0.3);
-  }
-  50% {
-    text-shadow: 0 0 10px rgba(220, 220, 0.8);
-  }
-  100% {
-    text-shadow: 0 0 2px rgba(220, 220, 0.3);
-  }
+    /* Constant text glow */
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
 }
 </style>
 
