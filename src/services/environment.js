@@ -68,3 +68,9 @@ export const GLOBAL_STAKE_LIMIT_USDT = 1;
  * Set to true to disable console.log/debug/info in production environment
  */
 export const DISABLE_CONSOLE_IN_PROD = true;
+
+/**
+ * Feature flag to enable or disable the xBrokers entrance on the homepage.
+ * Set to `true` to show the CTA section, `false` to hide it.
+ */
+export const ENABLE_XBROKERS_ENTRANCE = false;

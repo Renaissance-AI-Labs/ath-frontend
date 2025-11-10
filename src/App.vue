@@ -18,9 +18,9 @@
               <div class="video-fade-overlay"></div>
           </div>
       </div>
-      <Header @open-get-started-modal="openModal" @open-language-modal="openLanguageModal" />
+      <Header v-if="$route.path !== '/xbrokers-event'" @open-get-started-modal="openModal" @open-language-modal="openLanguageModal" />
       <router-view />
-      <Footer />
+      <Footer v-if="$route.path !== '/xbrokers-event'" />
     </div>
     <MobileMenu @open-get-started-modal="openModal" />
     <transition name="modal">

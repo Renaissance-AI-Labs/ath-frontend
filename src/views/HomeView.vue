@@ -6,9 +6,10 @@
     <HowToUseSection />
     <!-- <BenefitSection /> -->
     <!-- <PricingSection /> -->
+     <CTASection />
     <TestimonialSection />
     <!-- <FAQSection /> -->
-    <!-- <CTASection /> -->
+    
 
     <transition name="modal">
       <InjectPoolModal 
@@ -88,7 +89,7 @@ export default {
     FAQSection,
     InjectPoolModal,
     ConfirmReferrerModal,
-    // CTASection,
+    CTASection,
     ClaimRewardModal,
     ShareFriendModal,
   },
