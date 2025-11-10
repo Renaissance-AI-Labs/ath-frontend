@@ -56,7 +56,7 @@
                     </p>
                 </div>
                 <div class="row">
-                    <div class="col-md-6 offset-xl-2 col-xl-4 order-list">
+                    <div class="col-md-6 col-lg-6 offset-lg-3 order-list">
 
                         <div class="tabs-container">
                             <button class="toggle-button" @click="toggleTab">
