@@ -550,9 +550,9 @@ const displayedPages = computed(() => {
 }
 
 .pagination-item.active {
-  background-color: var(--primary);
-  border-color: var(--primary);
-  color: #fff;
+  background-color: #fff;
+  border-color: #fff;
+  color: #222;
 }
 
 .pagination-item.disabled {
