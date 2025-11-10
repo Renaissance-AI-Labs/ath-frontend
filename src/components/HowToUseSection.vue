@@ -100,7 +100,7 @@
                             <p v-else>{{ t('howToUse.noRedemptionOrders') }}</p>
                         </div>
                         <template v-else>
-                            <div class="scroll-container" @scroll="handleScroll" ref="scrollContainer">
+                            <div class="scroll-container" @scroll="throttledHandleScroll" ref="scrollContainer">
                                 <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist" :class="`list-${listMode}`">
                                     <li v-for="(item, index) in stakingItems" :key="item.id" class="nav-tab-item li-style" role="presentation">
                                         <div class="br-line has-dot"></div>
@@ -209,6 +209,18 @@ const itemsPerPage = 10; // No longer a ref, just a constant
 const listMode = ref('show');
 const unstackingStates = reactive({});
 const scrollContainer = ref(null);
+
+// Throttling function
+let throttleTimer = null;
+const throttle = (func, delay) => {
+  return (...args) => {
+    if (throttleTimer) return;
+    throttleTimer = setTimeout(() => {
+      func(...args);
+      throttleTimer = null;
+    }, delay);
+  };
+};
 
 const fetchStakingData = async () => {
     if (!walletState.isAuthenticated || !walletState.contractsInitialized || !stakingContract) {
@@ -378,6 +390,8 @@ const handleScroll = () => {
     }
   }
 };
+
+const throttledHandleScroll = throttle(handleScroll, 2000); // Throttle scroll handler to run every 2000ms
 </script>
 <style scoped>
 
