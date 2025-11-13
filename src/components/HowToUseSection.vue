@@ -225,7 +225,7 @@ const fetchStakingData = async () => {
         const status = activeTab.value === 'investment' ? 0 : 1;
         const offset = (currentPage.value - 1) * itemsPerPage.value;
 
-        console.log(`[订单列表] 正在请求数据... offset=${offset}, limit=${itemsPerPage.value}, status=${status}`);
+        // console.log(`[订单列表] 正在请求数据... offset=${offset}, limit=${itemsPerPage.value}, status=${status}`);
 
         const [pageRecords, total] = await stakingContract.getUserRecords(
             walletState.address,
@@ -234,7 +234,7 @@ const fetchStakingData = async () => {
             status
         );
 
-        console.log(`[订单列表] 从合约获取到原始数据: total=${total.toString()}, records=`, pageRecords);
+        // console.log(`[订单列表] 从合约获取到原始数据: total=${total.toString()}, records=`, pageRecords);
 
         totalItems.value = Number(total);
 
@@ -249,7 +249,7 @@ const fetchStakingData = async () => {
                 return rewardOfSlot(Number(record.id));
             });
             liveRewards = await Promise.all(rewardPromises);
-            console.log('[订单列表] 获取到进行中列表的实时奖励数据:', liveRewards);
+            // console.log('[订单列表] 获取到进行中列表的实时奖励数据:', liveRewards);
         }
 
         stakingItems.value = pageRecords.map((record, index) => {
@@ -292,7 +292,7 @@ const fetchStakingData = async () => {
             };
         });
 
-        console.log('[订单列表] 数据处理完成, 最终用于渲染的数据:', stakingItems.value);
+        // console.log('[订单列表] 数据处理完成, 最终用于渲染的数据:', stakingItems.value);
         // --- End of New Logic ---
 
     } catch (error) {
@@ -320,13 +320,13 @@ const handleUnstake = async (id) => {
 
 const startPolling = () => {
   stopPolling(); // Ensure no multiple intervals are running
-  console.log('[订单列表] 启动轮询，每15秒刷新一次数据...');
+  // console.log('[订单列表] 启动轮询，每15秒刷新一次数据...');
   pollingInterval = setInterval(fetchStakingData, 15000);
 };
 
 const stopPolling = () => {
   if (pollingInterval) {
-    console.log('[订单列表] 停止轮询。');
+    // console.log('[订单列表] 停止轮询。');
     clearInterval(pollingInterval);
     pollingInterval = null;
   }
@@ -334,7 +334,7 @@ const stopPolling = () => {
 
 
 watch(() => [walletState.isAuthenticated, walletState.address, walletState.contractsInitialized], ([isAuth, address, contractsReady]) => {
-  console.log(`[订单列表-检查] 监听到状态变化 -> isAuth: ${isAuth}, address: ${address}, contractsReady: ${contractsReady}`);
+  // console.log(`[订单列表-检查] 监听到状态变化 -> isAuth: ${isAuth}, address: ${address}, contractsReady: ${contractsReady}`);
   // Only fetch data when both authenticated and contracts are ready
   if (isAuth && contractsReady) {
     // Set loading to true only for the initial fetch after connection, not for polling.
