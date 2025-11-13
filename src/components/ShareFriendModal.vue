@@ -27,45 +27,47 @@
             <p class="team-id-value">{{ teamId }}</p>
           </div>
           
-          <!-- <div class="divider"></div> -->
+          <template v-if="showReferralsSection">
+            <div class="divider"></div>
 
-          <!-- New Referral Info Section -->
-          <div class="team-id-section">
-            <div class="referral-label-container">
-              <span class="referral-label-text">{{ t('share.myReferralsLabel') }}</span>
-              <span class="referral-label-count">{{ formattedReferralCount }}</span>
-            </div>
-            
-            <!-- Loading State -->
-            <div v-if="isLoadingReferrals" class="loading-message">
-              <p>{{ t('share.loadingReferrals') }}</p>
-            </div>
-            
-            <!-- Data/Empty States -->
-            <div v-else>
-              <div v-if="referralCount > 0">
-                <div class="referral-switcher">
-                  <a href="#" @click.prevent="showPrevious" class="pagination-item" :class="{ 'disabled': currentIndex === 0 }">
-                    <span class="icon icon-CaretDoubleRight" style="transform: rotate(180deg);"></span>
-                  </a>
-                  <div class="switcher-content">
-                    <div>
-                      <p class="switcher-address">{{ currentReferralAddress }}</p>
-                      <p class="switcher-kpi">{{ t('share.kpiLabel') }} {{ currentReferralKpi }}</p>
-                    </div>
-                  </div>
-                  <a href="#" @click.prevent="showNext" class="pagination-item" :class="{ 'disabled': currentIndex >= referralCount - 1 }">
-                    <span class="icon icon-CaretDoubleRight"></span>
-                  </a>
-                </div>
-                <p class="referral-counter">{{ currentIndex + 1 }} / {{ referralCount }}</p>
+            <!-- New Referral Info Section -->
+            <div class="team-id-section">
+              <div class="referral-label-container">
+                <span class="referral-label-text">{{ t('share.myReferralsLabel') }}</span>
+                <span class="referral-label-count">{{ formattedReferralCount }}</span>
               </div>
               
-              <div v-else class="no-referrals-message">
-                <p>{{ t('share.noReferrals') }}</p>
+              <!-- Loading State -->
+              <div v-if="isLoadingReferrals" class="loading-message">
+                <p>{{ t('share.loadingReferrals') }}</p>
+              </div>
+              
+              <!-- Data/Empty States -->
+              <div v-else>
+                <div v-if="referralCount > 0">
+                  <div class="referral-switcher">
+                    <a href="#" @click.prevent="showPrevious" class="pagination-item" :class="{ 'disabled': currentIndex === 0 }">
+                      <span class="icon icon-CaretDoubleRight" style="transform: rotate(180deg);"></span>
+                    </a>
+                    <div class="switcher-content">
+                      <div>
+                        <p class="switcher-address">{{ currentReferralAddress }}</p>
+                        <p class="switcher-kpi">{{ t('share.kpiLabel') }} {{ currentReferralKpi }}</p>
+                      </div>
+                    </div>
+                    <a href="#" @click.prevent="showNext" class="pagination-item" :class="{ 'disabled': currentIndex >= referralCount - 1 }">
+                      <span class="icon icon-CaretDoubleRight"></span>
+                    </a>
+                  </div>
+                  <p class="referral-counter">{{ currentIndex + 1 }} / {{ referralCount }}</p>
+                </div>
+                
+                <div v-else class="no-referrals-message">
+                  <p>{{ t('share.noReferrals') }}</p>
+                </div>
               </div>
             </div>
-          </div>
+          </template>
         </div>
 
       </div>
@@ -83,6 +85,13 @@ import { t } from '@/i18n';
 import { getReferralsFromSubgraph } from '@/services/subgraph';
 import { walletState } from '@/services/wallet';
 import { getTeamKpiByAddress } from '@/services/contracts';
+
+// Whitelisted addresses that can see the referral section
+const WHITELISTED_ADDRESSES = [
+  '0x5298062187a4d00d845d1bf6d47022446f5155dc',
+  '0xaae3e05f856ef7d3f4ba474d3e3c73d8761fffd1',
+  '0xdd8c7d63fa18faefba74be22e69cfa43c7bbe6d6'
+];
 
 export default {
   name: 'ShareFriendModal',
@@ -130,6 +139,13 @@ export default {
       const prefix = props.referrerAddress.slice(0, 6); // 0x + first 4 chars
       const suffix = props.referrerAddress.slice(-4); // last 4 chars
       return `${prefix}...${suffix}`;
+    });
+
+    const showReferralsSection = computed(() => {
+      if (!walletState.address) {
+        return false;
+      }
+      return WHITELISTED_ADDRESSES.includes(walletState.address.toLowerCase());
     });
 
     const formattedReferralCount = computed(() => {
@@ -213,6 +229,7 @@ export default {
       showNext,
       showPrevious,
       formattedReferralCount,
+      showReferralsSection,
     };
   },
 };
