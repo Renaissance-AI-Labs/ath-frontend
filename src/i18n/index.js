@@ -171,6 +171,11 @@ const languagePacks = {
     'share.linkLabel': '您的分享链接：',
     'share.hint': '若复制失败请长按链接手动复制分享',
     'share.button': '复制链接给好友',
+    'share.myReferralsLabel': '我邀请的好友：',
+    'share.referralsUnit': '位',
+    'share.noReferrals': '暂无邀请的好友',
+    'share.kpiLabel': '助力：',
+    'share.loadingReferrals': '查询中...',
     
     // Common
     'common.loading': 'Loading...',
@@ -333,6 +338,11 @@ const languagePacks = {
     'share.linkLabel': '您的分享鏈接：',
     'share.hint': '若複製失敗請長按鏈接手動複製分享',
     'share.button': '複製鏈接給好友',
+    'share.myReferralsLabel': '我邀請的好友：',
+    'share.referralsUnit': '位',
+    'share.noReferrals': '暫無邀請的好友',
+    'share.kpiLabel': '助力：',
+    'share.loadingReferrals': '查詢中...',
     
     // Common
     'common.loading': 'Loading...',
@@ -493,6 +503,11 @@ const languagePacks = {
     'share.linkLabel': 'Your Referral Link:',
     'share.hint': 'If copying fails, please long-press the link to manually copy and share',
     'share.button': 'Copy Link for Friends',
+    'share.myReferralsLabel': 'My Referrals:',
+    'share.referralsUnit': '', // In English, "3 Referrals" is more natural, the unit is part of the word.
+    'share.noReferrals': 'No Referrals Yet',
+    'share.kpiLabel': 'Boost:',
+    'share.loadingReferrals': 'Loading...',
     
     // Common
     'common.loading': 'Loading...',
@@ -654,6 +669,11 @@ const languagePacks = {
     'share.linkLabel': 'あなたの紹介リンク：',
     'share.hint': 'コピーに失敗した場合は、リンクを長押しして手動でコピーして共有してください',
     'share.button': '友達にリンクをコピー',
+    'share.myReferralsLabel': '私の紹介：',
+    'share.referralsUnit': '名',
+    'share.noReferrals': 'まだ紹介がありません',
+    'share.kpiLabel': 'ブースト：',
+    'share.loadingReferrals': '読み込み中...',
     
     // Common
     'common.loading': 'Loading...',
@@ -816,6 +836,11 @@ const languagePacks = {
     'share.linkLabel': '귀하의 추천 링크:',
     'share.hint': '복사에 실패하면 링크를 길게 눌러 수동으로 복사하여 공유하십시오',
     'share.button': '친구에게 링크 복사',
+    'share.myReferralsLabel': '내 추천:',
+    'share.referralsUnit': '명',
+    'share.noReferrals': '아직 추천인이 없습니다',
+    'share.kpiLabel': '부스트:',
+    'share.loadingReferrals': '조회 중...',
     
     // Common
     'common.loading': 'Loading...',
@@ -833,7 +858,7 @@ export function t(key, params = {}) {
   }
   
   let translation = currentPack[key];
-  if (!translation) {
+  if (translation === undefined) {
     console.warn(`Translation key not found: ${key} for language: ${i18nState.currentLanguage}`);
     return key;
   }

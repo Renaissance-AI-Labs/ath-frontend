@@ -26,6 +26,48 @@
             <label class="team-id-label">{{ t('share.teamId') }}</label>
             <p class="team-id-value">{{ teamId }}</p>
           </div>
+          
+          <template v-if="showReferralsSection">
+            <div class="divider"></div>
+
+            <!-- New Referral Info Section -->
+            <div class="team-id-section">
+              <div class="referral-label-container">
+                <span class="referral-label-text">{{ t('share.myReferralsLabel') }}</span>
+                <span class="referral-label-count">{{ formattedReferralCount }}</span>
+              </div>
+              
+              <!-- Loading State -->
+              <div v-if="isLoadingReferrals" class="loading-message">
+                <p>{{ t('share.loadingReferrals') }}</p>
+              </div>
+              
+              <!-- Data/Empty States -->
+              <div v-else>
+                <div v-if="referralCount > 0">
+                  <div class="referral-switcher">
+                    <a href="#" @click.prevent="showPrevious" class="pagination-item" :class="{ 'disabled': currentIndex === 0 }">
+                      <span class="icon icon-CaretDoubleRight" style="transform: rotate(180deg);"></span>
+                    </a>
+                    <div class="switcher-content">
+                      <div>
+                        <p class="switcher-address">{{ currentReferralAddress }}</p>
+                        <p class="switcher-kpi">{{ t('share.kpiLabel') }} {{ currentReferralKpi }}</p>
+                      </div>
+                    </div>
+                    <a href="#" @click.prevent="showNext" class="pagination-item" :class="{ 'disabled': currentIndex >= referralCount - 1 }">
+                      <span class="icon icon-CaretDoubleRight"></span>
+                    </a>
+                  </div>
+                  <p class="referral-counter">{{ currentIndex + 1 }} / {{ referralCount }}</p>
+                </div>
+                
+                <div v-else class="no-referrals-message">
+                  <p>{{ t('share.noReferrals') }}</p>
+                </div>
+              </div>
+            </div>
+          </template>
         </div>
 
       </div>
@@ -37,9 +79,19 @@
 </template>
 
 <script>
-import { onMounted, onUnmounted, computed } from 'vue';
+import { onMounted, onUnmounted, computed, ref, watch } from 'vue';
 import { showToast } from '@/services/notification';
 import { t } from '@/i18n';
+import { getReferralsFromSubgraph } from '@/services/subgraph';
+import { walletState } from '@/services/wallet';
+import { getTeamKpiByAddress } from '@/services/contracts';
+
+// Whitelisted addresses that can see the referral section
+const WHITELISTED_ADDRESSES = [
+  '0x5298062187a4d00d845d1bf6d47022446f5155dc',
+  '0xaae3e05f856ef7d3f4ba474d3e3c73d8761fffd1',
+  '0xdd8c7d63fa18faefba74be22e69cfa43c7bbe6d6'
+];
 
 export default {
   name: 'ShareFriendModal',
@@ -54,6 +106,12 @@ export default {
     },
   },
   setup(props, { emit }) {
+    const referralCount = ref(0);
+    const referrals = ref([]);
+    const currentIndex = ref(0);
+    const currentReferralKpi = ref(null);
+    const isLoadingReferrals = ref(true);
+
     const close = () => {
       emit('close');
     };
@@ -83,8 +141,75 @@ export default {
       return `${prefix}...${suffix}`;
     });
 
-    onMounted(() => {
+    const showReferralsSection = computed(() => {
+      if (!walletState.address) {
+        return false;
+      }
+      return WHITELISTED_ADDRESSES.includes(walletState.address.toLowerCase());
+    });
+
+    const formattedReferralCount = computed(() => {
+      const unit = t('share.referralsUnit');
+      return unit ? `${referralCount.value} ${unit}` : referralCount.value;
+    });
+
+    const currentReferralAddress = computed(() => {
+      if (referrals.value.length === 0) {
+        return '';
+      }
+      const address = referrals.value[currentIndex.value];
+      const prefix = address.slice(0, 6);
+      const suffix = address.slice(-4);
+      return `${prefix}...${suffix}`;
+    });
+
+    const showNext = () => {
+      if (currentIndex.value < referralCount.value - 1) {
+        currentIndex.value++;
+      }
+    };
+
+    const showPrevious = () => {
+      if (currentIndex.value > 0) {
+        currentIndex.value--;
+      }
+    };
+    
+    const fetchReferralData = async () => {
+      isLoadingReferrals.value = true;
+      const userAddress = walletState.address;
+      if (!userAddress) {
+        console.error("User address not found");
+        isLoadingReferrals.value = false;
+        return;
+      }
+      const data = await getReferralsFromSubgraph(userAddress);
+      referralCount.value = data.referralCount;
+      referrals.value = data.referrals;
+      isLoadingReferrals.value = false;
+    };
+
+    const fetchKpiForCurrentReferral = async () => {
+      if (referrals.value.length === 0) return;
+      
+      try {
+        const address = referrals.value[currentIndex.value];
+        const kpi = await getTeamKpiByAddress(address);
+        currentReferralKpi.value = parseFloat(kpi).toFixed(6);
+      } catch (error) {
+        console.error("Failed to fetch team KPI:", error);
+        currentReferralKpi.value = 'N/A';
+      }
+    };
+
+    watch(currentIndex, fetchKpiForCurrentReferral);
+
+    onMounted(async () => {
       document.body.style.overflow = 'hidden';
+      await fetchReferralData();
+      if (referralCount.value > 0) {
+        await fetchKpiForCurrentReferral();
+      }
     });
 
     onUnmounted(() => {
@@ -96,6 +221,15 @@ export default {
       copyLink,
       teamId,
       t,
+      referralCount,
+      currentIndex,
+      currentReferralAddress,
+      currentReferralKpi,
+      isLoadingReferrals,
+      showNext,
+      showPrevious,
+      formattedReferralCount,
+      showReferralsSection,
     };
   },
 };
@@ -182,6 +316,126 @@ export default {
 .team-id-section {
   width: 100%;
   text-align: left;
+  margin-bottom: 20px; /* Add margin to separate from the new section */
+}
+
+/* New styles for the split label */
+.referral-label-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 8px; /* Same margin as the old label had */
+}
+
+.referral-label-text,
+.referral-label-count {
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.referral-label-count {
+  font-family: 'monospace', 'BlinkMacSystemFont', sans-serif;
+}
+
+
+/* Remove the old wrapper class */
+.referral-switcher, .no-referrals-message, .loading-message {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 15px; /* Match team-id-value for consistency */
+  min-height: 80px; /* Ensure a consistent height */
+}
+
+.no-referrals-message, .loading-message {
+  justify-content: center;
+  color: var(--text-2);
+  font-size: 14px;
+  min-height: 110px; /* Match the height of switcher + counter */
+}
+.no-referrals-message p, .loading-message p {
+  margin: 0;
+}
+
+/* Styles from HowToUseSection for pagination buttons */
+.pagination-item {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--text-2);
+    font-weight: 600;
+    transition: all .3s ease;
+    text-decoration: none;
+}
+
+.pagination-item:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.pagination-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+
+.switcher-arrow {
+  background: transparent;
+  border: none;
+  color: var(--white);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.switcher-arrow:disabled {
+  color: var(--text-2);
+  cursor: not-allowed;
+}
+
+.switcher-content {
+  text-align: center;
+}
+
+.switcher-address, .switcher-kpi {
+  color: var(--white);
+  font-size: 14px;
+  margin: 0;
+  font-family: 'monospace', 'BlinkMacSystemFont', sans-serif;
+}
+
+.switcher-kpi {
+  margin-top: 8px;
+  /* color: var(--primary); */ /* Highlight the KPI */
+  font-weight: bold;
+}
+
+.switcher-loading {
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.referral-counter {
+  margin-top: 15px;
+  font-size: 12px;
+  color: var(--text-2);
+  width: 100%;
+  text-align: center;
 }
 
 .team-id-label {

@@ -267,6 +267,31 @@ export const getFriendsBoost = async () => {
 };
 
 /**
+ * Fetches the team KPI for a specific address.
+ * @param {string} address The user address to query.
+ * @returns {Promise<string>} The user's team KPI, formatted as a string.
+ */
+export const getTeamKpiByAddress = async (address) => {
+  if (!stakingContract) {
+    console.warn("Staking contract not initialized.");
+    return "0";
+  }
+  if (!address) {
+    console.warn("Address not provided for getTeamKpiByAddress.");
+    return "0";
+  }
+  try {
+    const kpi = await stakingContract.getTeamKpi(address);
+    // Format from Wei to standard unit
+    const formattedKpi = ethers.formatUnits(kpi, 18); // Assuming 18 decimals
+    return formattedKpi;
+  } catch (error) {
+    console.error(`Error fetching team KPI for address ${address}:`, error);
+    return "0";
+  }
+};
+
+/**
  * Generic function to fetch pending rewards from a pool contract.
  * @param {ethers.Contract} poolContract The contract instance (e.g., s5poolContract).
  * @returns {Promise<string>} Formatted pending rewards.
