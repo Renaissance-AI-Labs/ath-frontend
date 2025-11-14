@@ -167,7 +167,7 @@ const languagePacks = {
     
     // Share Friend Modal
     'share.title': '分享链接给好友',
-    'share.teamId': '您的团队编号：',
+    'share.teamId': '邀请您的好友：',
     'share.linkLabel': '您的分享链接：',
     'share.hint': '若复制失败请长按链接手动复制分享',
     'share.button': '复制链接给好友',
@@ -334,7 +334,7 @@ const languagePacks = {
     
     // Share Friend Modal
     'share.title': '分享鏈接給好友',
-    'share.teamId': '您的團隊編號：',
+    'share.teamId': '邀請您的好友：',
     'share.linkLabel': '您的分享鏈接：',
     'share.hint': '若複製失敗請長按鏈接手動複製分享',
     'share.button': '複製鏈接給好友',
@@ -499,7 +499,7 @@ const languagePacks = {
     
     // Share Friend Modal
     'share.title': 'Share Link with Friends',
-    'share.teamId': 'Your Team ID:',
+    'share.teamId': 'Your Referrer:',
     'share.linkLabel': 'Your Referral Link:',
     'share.hint': 'If copying fails, please long-press the link to manually copy and share',
     'share.button': 'Copy Link for Friends',
@@ -665,7 +665,7 @@ const languagePacks = {
     
     // Share Friend Modal
     'share.title': '友達にリンクを共有',
-    'share.teamId': 'あなたのチームID：',
+    'share.teamId': '紹介者：',
     'share.linkLabel': 'あなたの紹介リンク：',
     'share.hint': 'コピーに失敗した場合は、リンクを長押しして手動でコピーして共有してください',
     'share.button': '友達にリンクをコピー',
@@ -832,7 +832,7 @@ const languagePacks = {
     
     // Share Friend Modal
     'share.title': '친구에게 링크 공유',
-    'share.teamId': '귀하의 팀 ID:',
+    'share.teamId': '추천인:',
     'share.linkLabel': '귀하의 추천 링크:',
     'share.hint': '복사에 실패하면 링크를 길게 눌러 수동으로 복사하여 공유하십시오',
     'share.button': '친구에게 링크 복사',
