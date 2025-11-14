@@ -174,7 +174,8 @@ const languagePacks = {
     'share.myReferralsLabel': '我邀请的好友：',
     'share.referralsUnit': '位',
     'share.noReferrals': '暂无邀请的好友',
-    'share.kpiLabel': '助力：',
+    'share.kpiLabel': '助力',
+    'share.assetsLabel': '资产',
     'share.loadingReferrals': '查询中...',
     
     // Common
@@ -341,7 +342,8 @@ const languagePacks = {
     'share.myReferralsLabel': '我邀請的好友：',
     'share.referralsUnit': '位',
     'share.noReferrals': '暫無邀請的好友',
-    'share.kpiLabel': '助力：',
+    'share.kpiLabel': '助力',
+    'share.assetsLabel': '資產',
     'share.loadingReferrals': '查詢中...',
     
     // Common
@@ -506,7 +508,8 @@ const languagePacks = {
     'share.myReferralsLabel': 'My Referrals:',
     'share.referralsUnit': '', // In English, "3 Referrals" is more natural, the unit is part of the word.
     'share.noReferrals': 'No Referrals Yet',
-    'share.kpiLabel': 'Boost:',
+    'share.kpiLabel': 'Boost',
+    'share.assetsLabel': 'Assets',
     'share.loadingReferrals': 'Loading...',
     
     // Common
@@ -672,7 +675,8 @@ const languagePacks = {
     'share.myReferralsLabel': '私の紹介：',
     'share.referralsUnit': '名',
     'share.noReferrals': 'まだ紹介がありません',
-    'share.kpiLabel': 'ブースト：',
+    'share.kpiLabel': 'ブースト',
+    'share.assetsLabel': '資産',
     'share.loadingReferrals': '読み込み中...',
     
     // Common
@@ -839,7 +843,8 @@ const languagePacks = {
     'share.myReferralsLabel': '내 추천:',
     'share.referralsUnit': '명',
     'share.noReferrals': '아직 추천인이 없습니다',
-    'share.kpiLabel': '부스트:',
+    'share.kpiLabel': '부스트',
+    'share.assetsLabel': '자산',
     'share.loadingReferrals': '조회 중...',
     
     // Common

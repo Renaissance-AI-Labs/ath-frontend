@@ -245,6 +245,30 @@ export const getUserStakedBalance = async () => {
 };
 
 /**
+ * Fetches the total real-time value (principal + interest) of a specific user's stakes.
+ * @param {string} address The user address to query.
+ * @returns {Promise<string>} The user's total staked value, formatted as a string.
+ */
+export const getUserStakedBalanceByAddress = async (address) => {
+  if (!stakingContract) {
+    console.warn("Staking contract not initialized.");
+    return "0";
+  }
+  if (!address) {
+    console.warn("Address not provided for getUserStakedBalanceByAddress.");
+    return "0";
+  }
+  try {
+    const totalValue = await stakingContract.balanceOf(address);
+    const formattedValue = ethers.formatUnits(totalValue, 18); // Assuming 18 decimals
+    return formattedValue;
+  } catch (error) {
+    console.error(`Error fetching staked balance for address ${address}:`, error);
+    return "0";
+  }
+};
+
+/**
  * Fetches the team KPI (friends boost) for the current user.
  * @returns {Promise<string>} The user's team KPI, formatted as a string.
  */

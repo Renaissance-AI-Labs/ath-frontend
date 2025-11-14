@@ -45,16 +45,25 @@
             <div v-else>
               <div v-if="referralCount > 0">
                 <div class="referral-switcher">
-                  <a href="#" @click.prevent="showPrevious" class="pagination-item" :class="{ 'disabled': currentIndex === 0 }">
+                  <a href="#" @click.prevent="showPrevious" style="margin-top: 28px;" class="pagination-item" :class="{ 'disabled': currentIndex === 0 }">
                     <span class="icon icon-CaretDoubleRight" style="transform: rotate(180deg);"></span>
                   </a>
                   <div class="switcher-content">
                     <div>
                       <p class="switcher-address">{{ currentReferralAddress }}</p>
-                      <p class="switcher-kpi">{{ t('share.kpiLabel') }} {{ currentReferralKpi }}</p>
+                      <div class="info-container">
+                        <div class="info-row asset-row">
+                          <span class="info-label">{{ t('share.assetsLabel') }}</span>
+                          <span class="info-value">{{ formattedBalance }}</span>
+                        </div>
+                        <div class="info-row kpi-row">
+                          <span class="info-label">{{ t('share.kpiLabel') }}</span>
+                          <span class="info-value">{{ formattedKpi }}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <a href="#" @click.prevent="showNext" class="pagination-item" :class="{ 'disabled': currentIndex >= referralCount - 1 }">
+                  <a href="#" @click.prevent="showNext" style="margin-top: 28px;" class="pagination-item" :class="{ 'disabled': currentIndex >= referralCount - 1 }">
                     <span class="icon icon-CaretDoubleRight"></span>
                   </a>
                 </div>
@@ -82,7 +91,7 @@ import { showToast } from '@/services/notification';
 import { t } from '@/i18n';
 import { getReferralsFromSubgraph } from '@/services/subgraph';
 import { walletState } from '@/services/wallet';
-import { getTeamKpiByAddress } from '@/services/contracts';
+import { getTeamKpiByAddress, getUserStakedBalanceByAddress } from '@/services/contracts';
 
 export default {
   name: 'ShareFriendModal',
@@ -100,7 +109,8 @@ export default {
     const referralCount = ref(0);
     const referrals = ref([]);
     const currentIndex = ref(0);
-    const currentReferralKpi = ref(null);
+    const currentReferralKpiRaw = ref(null);
+    const currentReferralBalanceRaw = ref(null);
     const isLoadingReferrals = ref(true);
 
     const close = () => {
@@ -130,6 +140,16 @@ export default {
       const prefix = props.referrerAddress.slice(0, 6); // 0x + first 4 chars
       const suffix = props.referrerAddress.slice(-4); // last 4 chars
       return `${prefix}...${suffix}`;
+    });
+
+    const formattedKpi = computed(() => {
+      if (currentReferralKpiRaw.value === null) return '--';
+      return parseFloat(currentReferralKpiRaw.value).toFixed(2);
+    });
+
+    const formattedBalance = computed(() => {
+      if (currentReferralBalanceRaw.value === null) return '--';
+      return parseFloat(currentReferralBalanceRaw.value).toFixed(2);
     });
 
     const formattedReferralCount = computed(() => {
@@ -173,26 +193,35 @@ export default {
       isLoadingReferrals.value = false;
     };
 
-    const fetchKpiForCurrentReferral = async () => {
+    const fetchDataForCurrentReferral = async () => {
       if (referrals.value.length === 0) return;
       
       try {
         const address = referrals.value[currentIndex.value];
-        const kpi = await getTeamKpiByAddress(address);
-        currentReferralKpi.value = parseFloat(kpi).toFixed(6);
+        
+        // Fetch KPI and Balance in parallel
+        const [kpi, balance] = await Promise.all([
+          getTeamKpiByAddress(address),
+          getUserStakedBalanceByAddress(address)
+        ]);
+
+        currentReferralKpiRaw.value = kpi;
+        currentReferralBalanceRaw.value = balance;
+
       } catch (error) {
-        console.error("Failed to fetch team KPI:", error);
-        currentReferralKpi.value = 'N/A';
+        console.error("Failed to fetch referral data:", error);
+        currentReferralKpiRaw.value = null;
+        currentReferralBalanceRaw.value = null;
       }
     };
 
-    watch(currentIndex, fetchKpiForCurrentReferral);
+    watch(currentIndex, fetchDataForCurrentReferral);
 
     onMounted(async () => {
       document.body.style.overflow = 'hidden';
       await fetchReferralData();
       if (referralCount.value > 0) {
-        await fetchKpiForCurrentReferral();
+        await fetchDataForCurrentReferral();
       }
     });
 
@@ -208,7 +237,8 @@ export default {
       referralCount,
       currentIndex,
       currentReferralAddress,
-      currentReferralKpi,
+      formattedKpi,
+      formattedBalance,
       isLoadingReferrals,
       showNext,
       showPrevious,
@@ -392,19 +422,39 @@ export default {
 }
 
 .switcher-content {
-  text-align: center;
+  text-align: left;
+  flex-grow: 1;
+  padding: 0 10px;
 }
 
-.switcher-address, .switcher-kpi {
+.switcher-address, .switcher-kpi, .switcher-assets, .info-label, .info-value {
   color: var(--white);
   font-size: 14px;
-  margin: 0;
   font-family: 'monospace', 'BlinkMacSystemFont', sans-serif;
 }
 
-.switcher-kpi {
-  margin-top: 8px;
-  /* color: var(--primary); */ /* Highlight the KPI */
+.switcher-address {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.info-container {
+  width: 100%;
+  padding: 0 20px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info-row + .info-row {
+  margin-top: 0px;
+}
+
+.asset-row .info-label,
+.asset-row .info-value {
   font-weight: bold;
 }
 
