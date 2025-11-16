@@ -26,6 +26,11 @@
             <label class="team-id-label">{{ t('share.teamId') }}</label>
             <p class="team-id-value">{{ teamId }}</p>
           </div>
+
+          <div class="team-id-section">
+            <label class="team-id-label">{{ t('share.rewardsFromFriends') }}</label>
+            <p class="team-id-value">{{ formattedEstimatedRewards }}</p>
+          </div>
           
           <!-- <div class="divider"></div> -->
 
@@ -92,6 +97,7 @@ import { t } from '@/i18n';
 import { getReferralsFromSubgraph } from '@/services/subgraph';
 import { walletState } from '@/services/wallet';
 import { getTeamKpiByAddress, getUserStakedBalanceByAddress } from '@/services/contracts';
+import { ethers } from 'ethers';
 
 export default {
   name: 'ShareFriendModal',
@@ -112,6 +118,7 @@ export default {
     const currentReferralKpiRaw = ref(null);
     const currentReferralBalanceRaw = ref(null);
     const isLoadingReferrals = ref(true);
+    const estimatedRewards = ref('0');
 
     const close = () => {
       emit('close');
@@ -140,6 +147,17 @@ export default {
       const prefix = props.referrerAddress.slice(0, 6); // 0x + first 4 chars
       const suffix = props.referrerAddress.slice(-4); // last 4 chars
       return `${prefix}...${suffix}`;
+    });
+
+    const formattedEstimatedRewards = computed(() => {
+      if (estimatedRewards.value === null) return '--';
+      try {
+        const rewardsInEth = ethers.formatUnits(estimatedRewards.value, 18);
+        return parseFloat(rewardsInEth).toFixed(2);
+      } catch (e) {
+        console.error("Error formatting estimated rewards:", e);
+        return '0.00';
+      }
     });
 
     const formattedKpi = computed(() => {
@@ -190,6 +208,7 @@ export default {
       const data = await getReferralsFromSubgraph(userAddress);
       referralCount.value = data.referralCount;
       referrals.value = data.referrals;
+      estimatedRewards.value = data.estimatedDynamicRewards;
       isLoadingReferrals.value = false;
     };
 
@@ -243,6 +262,7 @@ export default {
       showNext,
       showPrevious,
       formattedReferralCount,
+      formattedEstimatedRewards,
     };
   },
 };

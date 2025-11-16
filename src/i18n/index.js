@@ -177,6 +177,7 @@ const languagePacks = {
     'share.kpiLabel': '助力',
     'share.assetsLabel': '资产',
     'share.loadingReferrals': '查询中...',
+    'share.rewardsFromFriends': '好友带来收益：',
     
     // Common
     'common.loading': 'Loading...',
@@ -345,6 +346,7 @@ const languagePacks = {
     'share.kpiLabel': '助力',
     'share.assetsLabel': '資產',
     'share.loadingReferrals': '查詢中...',
+    'share.rewardsFromFriends': '好友帶來收益：',
     
     // Common
     'common.loading': 'Loading...',
@@ -511,6 +513,7 @@ const languagePacks = {
     'share.kpiLabel': 'Boost',
     'share.assetsLabel': 'Assets',
     'share.loadingReferrals': 'Loading...',
+    'share.rewardsFromFriends': 'Rewards from Friend:',
     
     // Common
     'common.loading': 'Loading...',
@@ -678,6 +681,7 @@ const languagePacks = {
     'share.kpiLabel': 'ブースト',
     'share.assetsLabel': '資産',
     'share.loadingReferrals': '読み込み中...',
+    'share.rewardsFromFriends': '友達からの報酬:',
     
     // Common
     'common.loading': 'Loading...',
@@ -846,6 +850,7 @@ const languagePacks = {
     'share.kpiLabel': '부스트',
     'share.assetsLabel': '자산',
     'share.loadingReferrals': '조회 중...',
+    'share.rewardsFromFriends': '친구로부터의 보상:',
     
     // Common
     'common.loading': 'Loading...',

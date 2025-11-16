@@ -17,6 +17,7 @@ export async function getReferralsFromSubgraph(address) {
     query GetUserReferrals($address: Bytes!) {
       user(id: $address) {
         referralCount
+        estimatedDynamicRewards
         referrals {
           id
         }
@@ -47,20 +48,21 @@ export async function getReferralsFromSubgraph(address) {
 
     if (response.data.errors) {
       console.error('Subgraph query error:', response.data.errors);
-      return { referralCount: 0, referrals: [] };
+      return { referralCount: 0, referrals: [], estimatedDynamicRewards: '0' };
     }
 
     const user = response.data.data.user;
     if (!user) {
-      return { referralCount: 0, referrals: [] };
+      return { referralCount: 0, referrals: [], estimatedDynamicRewards: '0' };
     }
 
     return {
       referralCount: parseInt(user.referralCount, 10),
       referrals: user.referrals.map(r => r.id),
+      estimatedDynamicRewards: user.estimatedDynamicRewards || '0',
     };
   } catch (error) {
     console.error('Error fetching referrals from subgraph:', error);
-    return { referralCount: 0, referrals: [] };
+    return { referralCount: 0, referrals: [], estimatedDynamicRewards: '0' };
   }
 }
