@@ -30,6 +30,10 @@
           <div class="team-id-section">
             <label class="team-id-label">{{ t('share.rewardsFromFriends') }}</label>
             <p class="team-id-value">{{ formattedEstimatedRewards }}</p>
+            <div class="rewards-disclaimer">
+              <span class="icon-info">i</span>
+              <p>{{ t('share.rewardsDisclaimer') }}</p>
+            </div>
           </div>
           
           <!-- <div class="divider"></div> -->
@@ -491,6 +495,37 @@ export default {
   text-align: center;
 }
 
+.rewards-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 8px;
+  text-align: left;
+}
+
+.rewards-disclaimer p {
+  margin: 0;
+  line-height: 1.4;
+  color: #999; /* Set text color to gray */
+}
+
+.icon-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid #999; /* Set border color to gray */
+  font-size: 10px;
+  font-weight: bold;
+  color: #999; /* Set icon color to gray */
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
 .team-id-label {
   display: block;
   color: var(--white);
@@ -516,13 +551,13 @@ export default {
 .share-hint {
   color: var(--text-2);
   font-size: 14px;
-  margin-bottom: 15px;
+  margin-bottom: 4px;
   text-align: center;
 }
 
 .input-wrapper {
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .share-link-label {
