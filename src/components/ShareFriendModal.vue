@@ -156,7 +156,8 @@ export default {
     const formattedEstimatedRewards = computed(() => {
       if (estimatedRewards.value === null) return '--';
       try {
-        const rewardsInEth = ethers.formatUnits(estimatedRewards.value, 18);
+        const rewardsInWei = estimatedRewards.value.split('.')[0];
+        const rewardsInEth = ethers.formatUnits(rewardsInWei, 18);
         return parseFloat(rewardsInEth).toFixed(2);
       } catch (e) {
         console.error("Error formatting estimated rewards:", e);
