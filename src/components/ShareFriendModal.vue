@@ -26,6 +26,15 @@
             <label class="team-id-label">{{ t('share.teamId') }}</label>
             <p class="team-id-value">{{ teamId }}</p>
           </div>
+
+          <div class="team-id-section">
+            <label class="team-id-label">{{ t('share.rewardsFromFriends') }}</label>
+            <p class="team-id-value">{{ formattedEstimatedRewards }}</p>
+            <div class="rewards-disclaimer">
+              <span class="icon-info">i</span>
+              <p>{{ t('share.rewardsDisclaimer') }}</p>
+            </div>
+          </div>
           
           <!-- <div class="divider"></div> -->
 
@@ -92,6 +101,7 @@ import { t } from '@/i18n';
 import { getReferralsFromSubgraph } from '@/services/subgraph';
 import { walletState } from '@/services/wallet';
 import { getTeamKpiByAddress, getUserStakedBalanceByAddress } from '@/services/contracts';
+import { ethers } from 'ethers';
 
 export default {
   name: 'ShareFriendModal',
@@ -112,6 +122,7 @@ export default {
     const currentReferralKpiRaw = ref(null);
     const currentReferralBalanceRaw = ref(null);
     const isLoadingReferrals = ref(true);
+    const estimatedRewards = ref('0');
 
     const close = () => {
       emit('close');
@@ -140,6 +151,17 @@ export default {
       const prefix = props.referrerAddress.slice(0, 6); // 0x + first 4 chars
       const suffix = props.referrerAddress.slice(-4); // last 4 chars
       return `${prefix}...${suffix}`;
+    });
+
+    const formattedEstimatedRewards = computed(() => {
+      if (estimatedRewards.value === null) return '--';
+      try {
+        const rewardsInEth = ethers.formatUnits(estimatedRewards.value, 18);
+        return parseFloat(rewardsInEth).toFixed(2);
+      } catch (e) {
+        console.error("Error formatting estimated rewards:", e);
+        return '0.00';
+      }
     });
 
     const formattedKpi = computed(() => {
@@ -190,6 +212,7 @@ export default {
       const data = await getReferralsFromSubgraph(userAddress);
       referralCount.value = data.referralCount;
       referrals.value = data.referrals;
+      estimatedRewards.value = data.estimatedDynamicRewards;
       isLoadingReferrals.value = false;
     };
 
@@ -243,6 +266,7 @@ export default {
       showNext,
       showPrevious,
       formattedReferralCount,
+      formattedEstimatedRewards,
     };
   },
 };
@@ -471,6 +495,37 @@ export default {
   text-align: center;
 }
 
+.rewards-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 8px;
+  text-align: left;
+}
+
+.rewards-disclaimer p {
+  margin: 0;
+  line-height: 1.4;
+  color: #999; /* Set text color to gray */
+}
+
+.icon-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid #999; /* Set border color to gray */
+  font-size: 10px;
+  font-weight: bold;
+  color: #999; /* Set icon color to gray */
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
 .team-id-label {
   display: block;
   color: var(--white);
@@ -496,13 +551,13 @@ export default {
 .share-hint {
   color: var(--text-2);
   font-size: 14px;
-  margin-bottom: 15px;
+  margin-bottom: 4px;
   text-align: center;
 }
 
 .input-wrapper {
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .share-link-label {
