@@ -177,7 +177,7 @@ const languagePacks = {
     'share.kpiLabel': '助力',
     'share.assetsLabel': '资产',
     'share.loadingReferrals': '查询中...',
-    'share.rewardsFromFriends': '好友当前带来收益：',
+    'share.rewardsFromFriends': '好友当前带来预估收益：',
     'share.rewardsDisclaimer': '此收益以质押时的状态进行预估，仅供参考，实际赎回时收益可能会发生变化',
     
     // Common
@@ -347,7 +347,7 @@ const languagePacks = {
     'share.kpiLabel': '助力',
     'share.assetsLabel': '資產',
     'share.loadingReferrals': '查詢中...',
-    'share.rewardsFromFriends': '好友當前帶來收益：',
+    'share.rewardsFromFriends': '好友當前帶來預估收益：',
     'share.rewardsDisclaimer': '此收益以質押時的狀態進行預估，僅供參考，實際贖回時收益可能會發生變化',
     
     // Common
@@ -515,7 +515,7 @@ const languagePacks = {
     'share.kpiLabel': 'Boost',
     'share.assetsLabel': 'Assets',
     'share.loadingReferrals': 'Loading...',
-    'share.rewardsFromFriends': 'Current Rewards from Friend:',
+    'share.rewardsFromFriends': 'Current Estimated Rewards from Friend:',
     'share.rewardsDisclaimer': 'This income is estimated based on the state at the time of staking and is for reference only. The actual income may change upon redemption.',
     
     // Common
@@ -684,7 +684,7 @@ const languagePacks = {
     'share.kpiLabel': 'ブースト',
     'share.assetsLabel': '資産',
     'share.loadingReferrals': '読み込み中...',
-    'share.rewardsFromFriends': '現在の友達からの報酬:',
+    'share.rewardsFromFriends': '現在の友達からの推定報酬:',
     'share.rewardsDisclaimer': 'この収益はステーキング時の状態で推定されたもので、参考用です。実際の償還時に収益は変動する可能性があります。',
     
     // Common
@@ -854,7 +854,7 @@ const languagePacks = {
     'share.kpiLabel': '부스트',
     'share.assetsLabel': '자산',
     'share.loadingReferrals': '조회 중...',
-    'share.rewardsFromFriends': '현재 친구로부터의 보상:',
+    'share.rewardsFromFriends': '현재 친구로부터의 예상 보상:',
     'share.rewardsDisclaimer': '이 수익은 스테이킹 시점의 상태를 기준으로 추정된 것이며 참고용입니다. 실제 상환 시 수익이 변경될 수 있습니다.',
     
     // Common
