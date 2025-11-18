@@ -75,6 +75,7 @@ export default {
             metamask: '/asset/images/wallet/MetaMask-icon-fox-with-margins.svg',
             tokenpocket: '/asset/images/wallet/tp-logo.png',
             okx: '/asset/images/wallet/okx-logo.png',
+            binance: '/asset/images/wallet/binance-logo.png',
         };
         return icons[walletId] || '/asset/images/wallet/default-icon.png';
     };
@@ -228,6 +229,11 @@ export default {
 
 .okx-icon {
   background-color: white;
+}
+
+.binance-icon {
+  padding: 8px;
+  box-sizing: border-box;
 }
 
 .metamask-icon {
