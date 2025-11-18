@@ -22,14 +22,14 @@ const networks = {
     chainId: '0x38', // 56
     chainName: 'BNB Smart Chain Mainnet',
     nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
-    rpcUrls: ['https://bsc-mainnet.public.blastapi.io'],
+    rpcUrls: ['https://bsc-rpc.publicnode.com'],
     blockExplorerUrls: ['https://bscscan.com']
   },
   bnbTestnet: {
     chainId: '0x61', // 97
     chainName: 'BNB Smart Chain Testnet',
     nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
-    rpcUrls: ['https://bsc-testnet.public.blastapi.io'],
+    rpcUrls: ['https://bsc-testnet-rpc.publicnode.com'],
     blockExplorerUrls: ['https://testnet.bscscan.com']
   }
 };
@@ -487,7 +487,7 @@ export const detectWallets = () => {
 
   // Check for Binance Web3 Wallet
   if (window.binancew3w) {
-    wallets.push({ id: 'binance', name: 'Binance Web3 Wallet' });
+    wallets.push({ id: 'binance', name: 'Binance Wallet' });
   }
   
   return wallets;
