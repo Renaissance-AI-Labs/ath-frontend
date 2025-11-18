@@ -232,7 +232,8 @@ export default {
 }
 
 .binance-icon {
-  padding: 8px;
+  background-color: #fff;
+  padding: 5px;
   box-sizing: border-box;
 }
 

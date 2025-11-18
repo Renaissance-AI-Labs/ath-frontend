@@ -487,7 +487,7 @@ export const detectWallets = () => {
 
   // Check for Binance Web3 Wallet
   if (window.binancew3w) {
-    wallets.push({ id: 'binance', name: 'Binance Web3 Wallet' });
+    wallets.push({ id: 'binance', name: 'Binance Wallet' });
   }
   
   return wallets;
