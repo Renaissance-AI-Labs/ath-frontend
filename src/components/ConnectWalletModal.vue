@@ -12,7 +12,7 @@
         <!-- Not Connected View -->
         <div v-if="!walletState.isConnected">
           <div class="title_holder">
-            <h3>{{ t('wallet.connectTitle') }}</h3>
+            <h3 @click="handleTitleClick">{{ t('wallet.connectTitle') }}</h3>
             <p class="connect-text-1">{{ t('wallet.connectSubtitle') }}</p>
           </div>
           <div class="wallet-list" v-if="availableWallets.length > 0">
@@ -61,14 +61,50 @@
 </template>
 
 <script>
-import { reactive, onMounted, ref } from 'vue';
+import { reactive, onMounted, ref, computed } from 'vue';
 import { walletState, connectWallet, disconnectWallet, detectWallets } from '@/services/wallet.js';
 import { t } from '@/i18n';
 
 export default {
   name: 'ConnectWalletModal',
   setup(props, { emit }) {
-    const availableWallets = ref([]);
+    const allWallets = ref([]);
+    const showBinanceWallet = ref(false);
+    const clickCount = ref(0);
+    const clickTimer = ref(null);
+
+    const handleTitleClick = () => {
+      clickCount.value++;
+
+      if (clickCount.value === 1) {
+        clickTimer.value = setTimeout(() => {
+          clickCount.value = 0;
+          clickTimer.value = null; // Clear timer ref
+        }, 3000);
+      }
+
+      if (clickCount.value >= 5) {
+        showBinanceWallet.value = !showBinanceWallet.value;
+        clickCount.value = 0;
+        if (clickTimer.value) {
+          clearTimeout(clickTimer.value);
+          clickTimer.value = null;
+        }
+      }
+    };
+    
+    const availableWallets = computed(() => {
+      const binanceWallet = allWallets.value.find(wallet => wallet.id === 'binance');
+      if (!binanceWallet) {
+        return allWallets.value;
+      }
+
+      if (showBinanceWallet.value) {
+        return allWallets.value;
+      } else {
+        return allWallets.value.filter(wallet => wallet.id !== 'binance');
+      }
+    });
 
     const getWalletIcon = (walletId) => {
         const icons = {
@@ -97,7 +133,7 @@ export default {
     };
     
     onMounted(() => {
-      availableWallets.value = detectWallets();
+      allWallets.value = detectWallets();
     });
 
     return {
@@ -106,6 +142,7 @@ export default {
       getWalletIcon,
       handleConnect,
       handleDisconnect,
+      handleTitleClick,
       close,
       t,
     };
