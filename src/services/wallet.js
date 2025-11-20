@@ -217,11 +217,14 @@ export const connectWallet = async (walletType) => {
         }
         rawProvider = window.okexchain;
     } else if (walletType === 'binance') {
-        if (!window.binancew3w?.ethereum) {
+        if (window.binancew3w?.ethereum) {
+            rawProvider = window.binancew3w.ethereum;
+        } else if (window.ethereum?.isBinance) {
+            rawProvider = window.ethereum;
+        } else {
             alert('Binance Web3 Wallet not detected!');
             return false;
         }
-        rawProvider = window.binancew3w.ethereum;
     } else {
         // No valid wallet type provided
         alert('Please select a valid wallet (OKX, TokenPocket or Binance)!');
@@ -374,7 +377,7 @@ export const autoConnectWallet = async () => {
     if (savedAddress && savedWalletType) {
       // Check for provider existence *inside* the timeout to ensure it has loaded.
       // Only support OKX and TokenPocket
-      if (window.tokenpocket || window.okexchain || window.binancew3w) {
+      if (window.tokenpocket || window.okexchain || window.binancew3w || window.ethereum?.isBinance) {
           console.log(`Attempting to auto-connect with ${savedWalletType}...`);
           // Use the saved wallet type for reconnection
           await connectWallet(savedWalletType);
@@ -485,8 +488,8 @@ export const detectWallets = () => {
       wallets.push({ id: 'okx', name: 'OKX Wallet' });
   }
 
-  // Check for Binance Web3 Wallet
-  if (window.binancew3w) {
+  // Check for Binance Web3 Wallet (covers both desktop extension and mobile dApp browser)
+  if (window.binancew3w || window.ethereum?.isBinance) {
     wallets.push({ id: 'binance', name: 'Binance Wallet' });
   }
   
