@@ -19,39 +19,42 @@
             <div v-if="isLoading" class="loading-state-rewards">
                 <p>{{ t('claim.loading') }}</p>
             </div>
-            <div v-else class="hexagon-container">
-                <div class="hexagon-wrapper">
-                    <div class="hexagon" :class="{ 'is-unlocked': s5_kpiMet }">
-                        <span class="level-text level-s5">S5</span>
+            <div v-else class="level-reward-section">
+                <div class="level-reward-title">{{ t('claim.levelRewardTitle') }}</div>
+                <div class="hexagon-container">
+                    <div class="hexagon-wrapper">
+                        <div class="hexagon" :class="{ 'is-unlocked': s5_kpiMet }">
+                            <span class="level-text level-s5">S5</span>
+                        </div>
+                        <div class="reward-display">
+                            <span>{{ parseFloat(s5_rewards) > 0 ? parseFloat(s5_rewards).toFixed(2) + ' ' + t('common.ath') : t('claim.noReward') }}</span>
+                        </div>
+                        <button @click="claim(5)" :disabled="parseFloat(s5_rewards) <= 0 || isClaiming[5]" class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
+                            {{ isClaiming[5] ? t('claim.claiming') : t('claim.claim') }}
+                        </button>
                     </div>
-                    <div class="reward-display">
-                        <span>{{ parseFloat(s5_rewards) > 0 ? parseFloat(s5_rewards).toFixed(2) + ' ' + t('common.ath') : t('claim.noReward') }}</span>
+                    <div class="hexagon-wrapper">
+                        <div class="hexagon" :class="{ 'is-unlocked': s6_kpiMet }">
+                            <span class="level-text level-s6">S6</span>
+                        </div>
+                        <div class="reward-display">
+                            <span>{{ parseFloat(s6_rewards) > 0 ? parseFloat(s6_rewards).toFixed(2) + ' ' + t('common.ath') : t('claim.noReward') }}</span>
+                        </div>
+                        <button @click="claim(6)" :disabled="parseFloat(s6_rewards) <= 0 || isClaiming[6]" class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
+                            {{ isClaiming[6] ? t('claim.claiming') : t('claim.claim') }}
+                        </button>
                     </div>
-                    <button @click="claim(5)" :disabled="parseFloat(s5_rewards) <= 0 || isClaiming[5]" class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
-                        {{ isClaiming[5] ? t('claim.claiming') : t('claim.claim') }}
-                    </button>
-                </div>
-                <div class="hexagon-wrapper">
-                    <div class="hexagon" :class="{ 'is-unlocked': s6_kpiMet }">
-                        <span class="level-text level-s6">S6</span>
+                    <div class="hexagon-wrapper">
+                        <div class="hexagon" :class="{ 'is-unlocked': s7_kpiMet }">
+                            <span class="level-text level-s7">S7</span>
+                        </div>
+                        <div class="reward-display">
+                            <span>{{ parseFloat(s7_rewards) > 0 ? parseFloat(s7_rewards).toFixed(2) + ' ' + t('common.ath') : t('claim.noReward') }}</span>
+                        </div>
+                        <button @click="claim(7)" :disabled="parseFloat(s7_rewards) <= 0 || isClaiming[7]" class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
+                            {{ isClaiming[7] ? t('claim.claiming') : t('claim.claim') }}
+                        </button>
                     </div>
-                    <div class="reward-display">
-                        <span>{{ parseFloat(s6_rewards) > 0 ? parseFloat(s6_rewards).toFixed(2) + ' ' + t('common.ath') : t('claim.noReward') }}</span>
-                    </div>
-                    <button @click="claim(6)" :disabled="parseFloat(s6_rewards) <= 0 || isClaiming[6]" class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
-                        {{ isClaiming[6] ? t('claim.claiming') : t('claim.claim') }}
-                    </button>
-                </div>
-                <div class="hexagon-wrapper">
-                    <div class="hexagon" :class="{ 'is-unlocked': s7_kpiMet }">
-                        <span class="level-text level-s7">S7</span>
-                    </div>
-                    <div class="reward-display">
-                        <span>{{ parseFloat(s7_rewards) > 0 ? parseFloat(s7_rewards).toFixed(2) + ' ' + t('common.ath') : t('claim.noReward') }}</span>
-                    </div>
-                    <button @click="claim(7)" :disabled="parseFloat(s7_rewards) <= 0 || isClaiming[7]" class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
-                        {{ isClaiming[7] ? t('claim.claiming') : t('claim.claim') }}
-                    </button>
                 </div>
             </div>
         </div>
@@ -262,7 +265,22 @@ watch(() => walletState.isAuthenticated, (isAuth) => {
     justify-content: center;
     align-items: center;
     margin-bottom: 30px;
-    margin: 70px 0;
+    margin: 50px 0;
+}
+
+.level-reward-section {
+    border: 1px solid var(--line);
+    border-radius: 15px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.level-reward-title {
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: 'ChillRoundF', sans-serif;
 }
 
 .unauthenticated-view {
@@ -287,7 +305,7 @@ watch(() => walletState.isAuthenticated, (isAuth) => {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px; /* Space between hexagons */
+    gap: 10px; /* Space between hexagons */
 }
 
 .hexagon-wrapper {
@@ -368,7 +386,7 @@ watch(() => walletState.isAuthenticated, (isAuth) => {
 .btn-claim {
     padding: 8px 24px;
     font-size: 14px;
-    min-width: 100px;
+    min-width: 90px;
     /* The disabled styles are now handled by the .tf-btn[disabled] selector from the global CSS */
 }
 

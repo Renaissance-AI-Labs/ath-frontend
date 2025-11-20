@@ -81,6 +81,7 @@ const languagePacks = {
     'claim.claim': '领取',
     'claim.close': '关闭',
     'claim.connectWallet': '请先连接并授权您的钱包',
+    'claim.levelRewardTitle': '等级奖励',
     
     // Confirm Referrer Modal
     'referrer.title': '请确认推荐人',
@@ -252,6 +253,7 @@ const languagePacks = {
     'claim.claim': '領取',
     'claim.close': '關閉',
     'claim.connectWallet': '請先連接並授權您的錢包',
+    'claim.levelRewardTitle': '等級獎勵',
     
     // Confirm Referrer Modal
     'referrer.title': '請確認推薦人',
@@ -422,6 +424,7 @@ const languagePacks = {
     'claim.claim': 'Claim',
     'claim.close': 'Close',
     'claim.connectWallet': 'Please connect and authorize your wallet first',
+    'claim.levelRewardTitle': 'Level Rewards',
     
     // Confirm Referrer Modal
     'referrer.title': 'Please Confirm Referrer',
@@ -589,6 +592,7 @@ const languagePacks = {
     'claim.claim': '受け取る',
     'claim.close': '閉じる',
     'claim.connectWallet': 'まずウォレットを接続して承認してください',
+    'claim.levelRewardTitle': 'レベル報酬',
     
     // Confirm Referrer Modal
     'referrer.title': '紹介者を確認してください',
@@ -759,6 +763,7 @@ const languagePacks = {
     'claim.claim': '받기',
     'claim.close': '닫기',
     'claim.connectWallet': '먼저 지갑을 연결하고 승인하세요',
+    'claim.levelRewardTitle': '레벨 보상',
     
     // Confirm Referrer Modal
     'referrer.title': '추천인을 확인하세요',
