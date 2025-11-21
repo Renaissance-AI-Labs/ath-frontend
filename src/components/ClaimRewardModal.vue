@@ -60,10 +60,10 @@
                 </div>
 
                 <!-- Node Rewards Section -->
-                <div class="node-reward-section">
+                <div v-if="showNodePointSection" class="node-reward-section">
                     <div class="node-reward-title">{{ t('claim.nodeRewardTitle') }}</div>
                     <div class="node-reward-content">
-                        <span class="reward-amount">{{ parseFloat(node_rewards).toFixed(2) }} {{ t('common.ath') }}</span>
+                        <span class="reward-amount">{{ truncatedNodeRewards }} {{ t('common.ath') }}</span>
                         <button 
                             @click="claimNodeReward" 
                             :disabled="parseFloat(node_rewards) <= 0 || isClaimingNodeReward" 
@@ -96,7 +96,8 @@
 import {
     ref,
     onMounted,
-    watch
+    watch,
+    computed
 } from 'vue';
 import {
     walletState
@@ -109,12 +110,16 @@ import {
     claimS5Rewards,
     claimS6Rewards,
     claimS7Rewards,
+    getNodePointRewards,
+    claimNodePointRewards,
     S5_THRESHOLD,
     S6_THRESHOLD,
     S7_THRESHOLD
 } from '../services/contracts';
 import { t } from '@/i18n';
+import { showToast } from '../services/notification';
 
+const emit = defineEmits(['close']);
 const isLoading = ref(true);
 const s5_kpiMet = ref(false);
 const s6_kpiMet = ref(false);
@@ -122,7 +127,8 @@ const s7_kpiMet = ref(false);
 const s5_rewards = ref('0');
 const s6_rewards = ref('0');
 const s7_rewards = ref('0');
-const node_rewards = ref('123.45'); // Mock data for node rewards
+const node_rewards = ref('0');
+const showNodePointSection = ref(false);
 const isClaiming = ref({
     5: false,
     6: false,
@@ -130,17 +136,26 @@ const isClaiming = ref({
 });
 const isClaimingNodeReward = ref(false);
 
+const truncatedNodeRewards = computed(() => {
+    const num = parseFloat(node_rewards.value);
+    if (isNaN(num)) return '0.0000';
+    // Truncate to 4 decimal places without rounding
+    const truncated = Math.floor(num * 10000) / 10000;
+    return truncated.toFixed(4); // Use toFixed to ensure 4 decimal places are shown
+});
+
 const fetchRewardData = async () => {
     // This check is now slightly redundant due to the watcher, but good for safety.
     if (!walletState.isAuthenticated || !walletState.contractsInitialized) return;
 
     isLoading.value = true;
     try {
-        const [kpi, s5Rewards, s6Rewards, s7Rewards] = await Promise.all([
+        const [kpi, s5Rewards, s6Rewards, s7Rewards, nodeRewards] = await Promise.all([
             getTeamKpiBigNumber(),
             getS5PendingRewards(),
             getS6PendingRewards(),
             getS7PendingRewards(),
+            getNodePointRewards(),
         ]);
 
         // --- Exclusive Level Check Logic ---
@@ -156,6 +171,12 @@ const fetchRewardData = async () => {
         s5_rewards.value = s5Rewards;
         s6_rewards.value = s6Rewards;
         s7_rewards.value = s7Rewards;
+        node_rewards.value = nodeRewards;
+
+        // --- Conditional Visibility for Node Point Section ---
+        const nodeRewardsNum = parseFloat(nodeRewards);
+        // The section is shown if the value truncated to 4 decimal places is greater than 0.
+        showNodePointSection.value = Math.floor(nodeRewardsNum * 10000) > 0;
 
         console.log(`[成就奖励数据] 获取成功:
           - 用户KPI (原始值): ${kpi.toString()}
@@ -165,6 +186,7 @@ const fetchRewardData = async () => {
           - S5待领奖励: ${s5_rewards.value} ATH
           - S6待领奖励: ${s6_rewards.value} ATH
           - S7待领奖励: ${s7_rewards.value} ATH
+          - Node Point待领奖励: ${node_rewards.value} ATH
         `);
 
     } catch (error) {
@@ -213,19 +235,20 @@ const claim = async (level) => {
 const claimNodeReward = async () => {
     if (isClaimingNodeReward.value || parseFloat(node_rewards.value) <= 0) return;
     isClaimingNodeReward.value = true;
-    console.log('[领取操作] 开始为 节点 领取奖励...');
+    console.log('[领取操作] 开始为 Node Point 领取奖励...');
 
-    // Simulate claim logic
     try {
-        // Here you would call the actual contract method for claiming node rewards
-        // For now, we'll just simulate a delay and success
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        console.log('[领取操作] 节点 奖励领取成功, 正在刷新数据...');
-        node_rewards.value = '0'; // Reset after successful claim
-        // Optionally, refetch all data
-        // await fetchRewardData();
+        const success = await claimNodePointRewards();
+        if (success) {
+            console.log('[领取操作] Node Point 奖励领取成功!');
+            showToast(t('toast.claimSuccess')); // Using a generic success message for now
+            emit('close');
+        } else {
+            console.log('[领取操作] Node Point 奖励领取失败或用户取消。');
+            // Failure toast is handled in contracts.js
+        }
     } catch (error) {
-        console.error('[领取操作] 节点 领取过程中发生意外错误:', error);
+        console.error('[领取操作] Node Point 领取过程中发生意外错误:', error);
     } finally {
         isClaimingNodeReward.value = false;
     }
@@ -244,7 +267,8 @@ watch(() => walletState.isAuthenticated, (isAuth) => {
         s5_rewards.value = '0';
         s6_rewards.value = '0';
         s7_rewards.value = '0';
-        node_rewards.value = '123.45'; // Reset node rewards
+        node_rewards.value = '0';
+        showNodePointSection.value = false;
     }
 }, {
     immediate: true
