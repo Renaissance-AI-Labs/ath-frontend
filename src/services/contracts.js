@@ -480,6 +480,26 @@ export const checkIsPreacher = async () => {
 };
 
 /**
+ * Fetches the user's total principal staked balance (excluding interest).
+ * @returns {Promise<string>} The user's total principal, formatted as a string.
+ */
+export const getUserPrincipalBalance = async () => {
+  if (!stakingContract || !walletState.address) {
+    console.warn("Staking contract not initialized or user not connected.");
+    return "0";
+  }
+  try {
+    const principal = await stakingContract.balances(walletState.address);
+    // Assuming 18 decimals for the principal amount, similar to other values.
+    const formattedPrincipal = ethers.formatUnits(principal, 18);
+    return formattedPrincipal;
+  } catch (error) {
+    console.error("Error fetching user principal balance:", error);
+    return "0";
+  }
+};
+
+/**
  * Checks all reward pools to see if the user has any pending rewards.
  * Updates the global walletState.hasClaimableRewards.
  * @returns {Promise<boolean>} True if there are any claimable rewards.
@@ -708,7 +728,7 @@ const getExpectedAthAmount = async (usdtAmountIn) => {
   const env = APP_ENV === 'PROD' ? 'production' : 'development';
   const usdtAddress = contractAddresses.usdt[env];
   const athAddress = contractAddresses.ath[env];
-  
+
   console.log(`[滑点计算] 预查询参数:`, {
     '输入USDT (wei)': usdtAmountIn.toString(),
     'USDT地址': usdtAddress,
@@ -836,7 +856,7 @@ export const stakeWithInviter = async (amount, stakeIndex, parentAddress) => {
   try {
     const decimals = getUsdtDecimals();
     const amountInWei = ethers.parseUnits(amount, decimals);
-    
+
     // --- Calculate amountOutMin with 5% slippage ---
     const expectedAth = await getExpectedAthAmount(amountInWei / 2n); // Only half is swapped
     if (expectedAth === 0n) {
@@ -846,7 +866,7 @@ export const stakeWithInviter = async (amount, stakeIndex, parentAddress) => {
     }
     const slippageTolerance = 10n; // 10%
     const amountOutMin = (expectedAth * (100n - slippageTolerance)) / 100n;
-    
+
     console.log(`[滑点计算] 结果:`, {
       '预期获得ATH (wei)': expectedAth.toString(),
       '最小接受ATH (wei)': amountOutMin.toString()
@@ -859,7 +879,7 @@ export const stakeWithInviter = async (amount, stakeIndex, parentAddress) => {
       _stakeIndex: stakeIndex,
       parent: parentAddress
     });
-    
+
     const tx = await stakingContract.stakeWithInviter(
       amountInWei,
       amountOutMin,
