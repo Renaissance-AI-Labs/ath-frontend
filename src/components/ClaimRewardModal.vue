@@ -19,39 +19,59 @@
             <div v-if="isLoading" class="loading-state-rewards">
                 <p>{{ t('claim.loading') }}</p>
             </div>
-            <div v-else class="hexagon-container">
-                <div class="hexagon-wrapper">
-                    <div class="hexagon" :class="{ 'is-unlocked': s5_kpiMet }">
-                        <span class="level-text level-s5">S5</span>
+            <div v-else>
+                <div class="level-reward-section">
+                    <div class="level-reward-title">{{ t('claim.levelRewardTitle') }}</div>
+                    <div class="hexagon-container">
+                        <div class="hexagon-wrapper">
+                            <div class="hexagon" :class="{ 'is-unlocked': s5_kpiMet }">
+                                <span class="level-text level-s5">S5</span>
+                            </div>
+                            <div class="reward-display">
+                                <span>{{ parseFloat(s5_rewards) > 0 ? parseFloat(s5_rewards).toFixed(2) + ' ' + t('common.ath') : t('claim.noReward') }}</span>
+                            </div>
+                            <button @click="claim(5)" :disabled="parseFloat(s5_rewards) <= 0 || isClaiming[5]" class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
+                                {{ isClaiming[5] ? t('claim.claiming') : t('claim.claim') }}
+                            </button>
+                        </div>
+                        <div class="hexagon-wrapper">
+                            <div class="hexagon" :class="{ 'is-unlocked': s6_kpiMet }">
+                                <span class="level-text level-s6">S6</span>
+                            </div>
+                            <div class="reward-display">
+                                <span>{{ parseFloat(s6_rewards) > 0 ? parseFloat(s6_rewards).toFixed(2) + ' ' + t('common.ath') : t('claim.noReward') }}</span>
+                            </div>
+                            <button @click="claim(6)" :disabled="parseFloat(s6_rewards) <= 0 || isClaiming[6]" class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
+                                {{ isClaiming[6] ? t('claim.claiming') : t('claim.claim') }}
+                            </button>
+                        </div>
+                        <div class="hexagon-wrapper">
+                            <div class="hexagon" :class="{ 'is-unlocked': s7_kpiMet }">
+                                <span class="level-text level-s7">S7</span>
+                            </div>
+                            <div class="reward-display">
+                                <span>{{ parseFloat(s7_rewards) > 0 ? parseFloat(s7_rewards).toFixed(2) + ' ' + t('common.ath') : t('claim.noReward') }}</span>
+                            </div>
+                            <button @click="claim(7)" :disabled="parseFloat(s7_rewards) <= 0 || isClaiming[7]" class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
+                                {{ isClaiming[7] ? t('claim.claiming') : t('claim.claim') }}
+                            </button>
+                        </div>
                     </div>
-                    <div class="reward-display">
-                        <span>{{ parseFloat(s5_rewards) > 0 ? parseFloat(s5_rewards).toFixed(2) + ' ' + t('common.ath') : t('claim.noReward') }}</span>
-                    </div>
-                    <button @click="claim(5)" :disabled="parseFloat(s5_rewards) <= 0 || isClaiming[5]" class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
-                        {{ isClaiming[5] ? t('claim.claiming') : t('claim.claim') }}
-                    </button>
                 </div>
-                <div class="hexagon-wrapper">
-                    <div class="hexagon" :class="{ 'is-unlocked': s6_kpiMet }">
-                        <span class="level-text level-s6">S6</span>
+
+                <!-- Node Rewards Section -->
+                <div v-if="showNodePointSection" class="node-reward-section">
+                    <div class="node-reward-title">{{ t('claim.nodeRewardTitle') }}</div>
+                    <div class="node-reward-content">
+                        <span class="reward-amount">{{ truncatedNodeRewards }} {{ t('common.ath') }}</span>
+                        <button 
+                            @click="claimNodeReward" 
+                            :disabled="parseFloat(node_rewards) <= 0 || isClaimingNodeReward" 
+                            :class="{ 'pseudo-disabled': !isPreacher }"
+                            class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
+                            {{ isClaimingNodeReward ? t('claim.claiming') : t('claim.claim') }}
+                        </button>
                     </div>
-                    <div class="reward-display">
-                        <span>{{ parseFloat(s6_rewards) > 0 ? parseFloat(s6_rewards).toFixed(2) + ' ' + t('common.ath') : t('claim.noReward') }}</span>
-                    </div>
-                    <button @click="claim(6)" :disabled="parseFloat(s6_rewards) <= 0 || isClaiming[6]" class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
-                        {{ isClaiming[6] ? t('claim.claiming') : t('claim.claim') }}
-                    </button>
-                </div>
-                <div class="hexagon-wrapper">
-                    <div class="hexagon" :class="{ 'is-unlocked': s7_kpiMet }">
-                        <span class="level-text level-s7">S7</span>
-                    </div>
-                    <div class="reward-display">
-                        <span>{{ parseFloat(s7_rewards) > 0 ? parseFloat(s7_rewards).toFixed(2) + ' ' + t('common.ath') : t('claim.noReward') }}</span>
-                    </div>
-                    <button @click="claim(7)" :disabled="parseFloat(s7_rewards) <= 0 || isClaiming[7]" class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
-                        {{ isClaiming[7] ? t('claim.claiming') : t('claim.claim') }}
-                    </button>
                 </div>
             </div>
         </div>
@@ -77,7 +97,8 @@
 import {
     ref,
     onMounted,
-    watch
+    watch,
+    computed
 } from 'vue';
 import {
     walletState
@@ -90,12 +111,17 @@ import {
     claimS5Rewards,
     claimS6Rewards,
     claimS7Rewards,
+    getNodePointRewards,
+    claimNodePointRewards,
+    checkIsPreacher,
     S5_THRESHOLD,
     S6_THRESHOLD,
     S7_THRESHOLD
 } from '../services/contracts';
 import { t } from '@/i18n';
+import { showToast } from '../services/notification';
 
+const emit = defineEmits(['close']);
 const isLoading = ref(true);
 const s5_kpiMet = ref(false);
 const s6_kpiMet = ref(false);
@@ -103,10 +129,22 @@ const s7_kpiMet = ref(false);
 const s5_rewards = ref('0');
 const s6_rewards = ref('0');
 const s7_rewards = ref('0');
+const node_rewards = ref('0');
+const showNodePointSection = ref(false);
+const isPreacher = ref(false);
 const isClaiming = ref({
     5: false,
     6: false,
     7: false
+});
+const isClaimingNodeReward = ref(false);
+
+const truncatedNodeRewards = computed(() => {
+    const num = parseFloat(node_rewards.value);
+    if (isNaN(num)) return '0.0000';
+    // Truncate to 4 decimal places without rounding
+    const truncated = Math.floor(num * 10000) / 10000;
+    return truncated.toFixed(4); // Use toFixed to ensure 4 decimal places are shown
 });
 
 const fetchRewardData = async () => {
@@ -115,11 +153,13 @@ const fetchRewardData = async () => {
 
     isLoading.value = true;
     try {
-        const [kpi, s5Rewards, s6Rewards, s7Rewards] = await Promise.all([
+        const [kpi, s5Rewards, s6Rewards, s7Rewards, nodeRewards, preacherStatus] = await Promise.all([
             getTeamKpiBigNumber(),
             getS5PendingRewards(),
             getS6PendingRewards(),
             getS7PendingRewards(),
+            getNodePointRewards(),
+            checkIsPreacher(),
         ]);
 
         // --- Exclusive Level Check Logic ---
@@ -135,6 +175,13 @@ const fetchRewardData = async () => {
         s5_rewards.value = s5Rewards;
         s6_rewards.value = s6Rewards;
         s7_rewards.value = s7Rewards;
+        node_rewards.value = nodeRewards;
+        isPreacher.value = preacherStatus;
+
+        // --- Conditional Visibility for Node Point Section ---
+        const nodeRewardsNum = parseFloat(nodeRewards);
+        // The section is shown if the value truncated to 4 decimal places is greater than 0.
+        showNodePointSection.value = Math.floor(nodeRewardsNum * 10000) > 0;
 
         console.log(`[成就奖励数据] 获取成功:
           - 用户KPI (原始值): ${kpi.toString()}
@@ -144,6 +191,8 @@ const fetchRewardData = async () => {
           - S5待领奖励: ${s5_rewards.value} ATH
           - S6待领奖励: ${s6_rewards.value} ATH
           - S7待领奖励: ${s7_rewards.value} ATH
+          - Node Point待领奖励: ${node_rewards.value} ATH
+          - 是否为Preacher: ${isPreacher.value}
         `);
 
     } catch (error) {
@@ -189,6 +238,34 @@ const claim = async (level) => {
     }
 };
 
+const claimNodeReward = async () => {
+    // First, check if the user is a preacher.
+    if (!isPreacher.value) {
+        showToast(t('toast.stake200Tokens'));
+        return;
+    }
+
+    if (isClaimingNodeReward.value || parseFloat(node_rewards.value) <= 0) return;
+    isClaimingNodeReward.value = true;
+    console.log('[领取操作] 开始为 Node Point 领取奖励...');
+
+    try {
+        const success = await claimNodePointRewards();
+        if (success) {
+            console.log('[领取操作] Node Point 奖励领取成功!');
+            showToast(t('toast.claimSuccess')); // Using a generic success message for now
+            emit('close');
+        } else {
+            console.log('[领取操作] Node Point 奖励领取失败或用户取消。');
+            // Failure toast is handled in contracts.js
+        }
+    } catch (error) {
+        console.error('[领取操作] Node Point 领取过程中发生意外错误:', error);
+    } finally {
+        isClaimingNodeReward.value = false;
+    }
+};
+
 // Fetch data when the modal becomes visible and the user is authenticated.
 watch(() => walletState.isAuthenticated, (isAuth) => {
     if (isAuth && walletState.contractsInitialized) {
@@ -202,6 +279,9 @@ watch(() => walletState.isAuthenticated, (isAuth) => {
         s5_rewards.value = '0';
         s6_rewards.value = '0';
         s7_rewards.value = '0';
+        node_rewards.value = '0';
+        showNodePointSection.value = false;
+        isPreacher.value = false;
     }
 }, {
     immediate: true
@@ -262,7 +342,72 @@ watch(() => walletState.isAuthenticated, (isAuth) => {
     justify-content: center;
     align-items: center;
     margin-bottom: 30px;
-    margin: 70px 0;
+    /* Let's adjust margin since the content inside is growing */
+    margin: 40px 0;
+}
+
+.level-reward-section {
+    border: 1px solid var(--line);
+    border-radius: 15px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.level-reward-title {
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: 'ChillRoundF', sans-serif;
+}
+
+.node-reward-section {
+    /* border: 1px solid var(--line); */
+    border-radius: 15px;
+    padding: 12px 20px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.03)); /* Increased contrast */
+    background-size: 300% 300%;
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+    animation: animated-gradient 8s ease infinite;
+}
+
+@keyframes animated-gradient {
+    0% {
+        background-position: 0% 0%;
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+    50% {
+        background-position: 100% 100%;
+        border-color: rgba(255, 255, 255, 0.9); /* Brighter border at peak */
+    }
+    100% {
+        background-position: 0% 0%;
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+}
+
+.node-reward-title {
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 15px;
+    font-family: 'ChillRoundF', sans-serif;
+}
+
+.node-reward-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.reward-amount {
+    color: #fff;
+    font-size: 14px;
+    min-height: 20px;
+    font-family: 'ChillRoundF', sans-serif;
+    text-shadow: 0 0 4px var(--primary);
 }
 
 .unauthenticated-view {
@@ -287,7 +432,7 @@ watch(() => walletState.isAuthenticated, (isAuth) => {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px; /* Space between hexagons */
+    gap: 10px; /* Space between hexagons */
 }
 
 .hexagon-wrapper {
@@ -366,10 +511,17 @@ watch(() => walletState.isAuthenticated, (isAuth) => {
 }
 
 .btn-claim {
-    padding: 8px 24px;
+    padding: 8px 0px;
     font-size: 14px;
-    min-width: 100px;
+    min-width: 90px;
     /* The disabled styles are now handled by the .tf-btn[disabled] selector from the global CSS */
+}
+
+.btn-claim.pseudo-disabled {
+    background-image: none !important;
+    background-color: #21212B !important;
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
 }
 
 .btn-claim[disabled],

@@ -21,6 +21,7 @@ import s5poolAbi from '../abis/s5pool.json';
 import s6poolAbi from '../abis/s6pool.json';
 import s7poolAbi from '../abis/s7pool.json';
 import stakeLimitAbi from '../abis/stake_limit.json';
+import nodePoolAbi from '../abis/node_pool.json';
 // No need for a separate USDT ABI if it follows ERC20 standard like `ath.json`
 // import usdtAbi from '../abis/usdt.json';
 
@@ -84,6 +85,10 @@ const contractAddresses = {
   stakeLimit: {
     production: '0x06c879448299B0fE5fcdf590770d85fEfc1B122b',
     development: '0x352Ff740C6F15E35E2585Ef98826C4e4351AdA2a',
+  },
+  nodePool: {
+    production: '0xb864DeB03c90e5B8cC79396Bd6F97dC6b6E668F6',
+    development: '0x940309DF7136275F4711804bA73566491bCb3eAA',
   }
 };
 
@@ -97,9 +102,10 @@ let s5poolContract;
 let s6poolContract;
 let s7poolContract;
 let stakeLimitContract;
+let nodePoolContract;
 
 // We need to export these for other modules to use them.
-export { referralContract, stakingContract, athContract, usdtContract, s5poolContract, s6poolContract, s7poolContract, stakeLimitContract };
+export { referralContract, stakingContract, athContract, usdtContract, s5poolContract, s6poolContract, s7poolContract, stakeLimitContract, nodePoolContract };
 
 // --- KPI Thresholds (as per Staking.sol) ---
 const THRESHOLDS = {
@@ -159,6 +165,7 @@ export const initializeContracts = async () => {
   const s6poolAddress = contractAddresses.s6pool[env];
   const s7poolAddress = contractAddresses.s7pool[env];
   const stakeLimitAddress = contractAddresses.stakeLimit[env];
+  const nodePoolAddress = contractAddresses.nodePool[env];
 
   // Create new contract instances using the raw, unwrapped signer
   referralContract = new ethers.Contract(referralAddress, referralAbi, rawSigner);
@@ -170,6 +177,7 @@ export const initializeContracts = async () => {
   s6poolContract = new ethers.Contract(s6poolAddress, s6poolAbi, rawSigner);
   s7poolContract = new ethers.Contract(s7poolAddress, s7poolAbi, rawSigner);
   stakeLimitContract = new ethers.Contract(stakeLimitAddress, stakeLimitAbiWithMethod, rawSigner);
+  nodePoolContract = new ethers.Contract(nodePoolAddress, nodePoolAbi, rawSigner);
 
   console.log("Contracts initialized:", {
     referral: await referralContract.getAddress(),
@@ -181,6 +189,7 @@ export const initializeContracts = async () => {
     s6pool: await s6poolContract.getAddress(),
     s7pool: await s7poolContract.getAddress(),
     stakeLimit: await stakeLimitContract.getAddress(),
+    nodePool: await nodePoolContract.getAddress(),
   });
 
   walletState.contractsInitialized = true;
@@ -201,6 +210,7 @@ export const resetContracts = () => {
   s6poolContract = null;
   s7poolContract = null;
   stakeLimitContract = null;
+  nodePoolContract = null;
   console.log("Contract instances have been reset.");
 };
 
@@ -357,6 +367,23 @@ export const getS6PendingRewards = async () => getPendingRewards(s6poolContract)
  */
 export const getS7PendingRewards = async () => getPendingRewards(s7poolContract);
 
+/**
+ * Fetches pending rewards from the Node Pool for the current user.
+ * @returns {Promise<string>} Formatted Node Point pending rewards.
+ */
+export const getNodePointRewards = async () => {
+    if (!nodePoolContract || !walletState.address) {
+        // This is a normal state if contracts are not yet initialized.
+        return "0";
+    }
+    try {
+        const rewards = await nodePoolContract.getTokenRewards(walletState.address);
+        return ethers.formatUnits(rewards, 18); // Assuming ATH has 18 decimals
+    } catch (error) {
+        console.error(`Error fetching pending node point rewards from ${await nodePoolContract.getAddress()}:`, error);
+        return "0";
+    }
+};
 
 /**
  * Generic function to claim rewards from a pool contract.
@@ -407,6 +434,70 @@ export const claimS6Rewards = async () => claimRewards(s6poolContract);
  * @returns {Promise<boolean>} True if successful.
  */
 export const claimS7Rewards = async () => claimRewards(s7poolContract);
+
+/**
+ * Claims rewards from the Node Pool.
+ * @returns {Promise<boolean>} True if successful.
+ */
+export const claimNodePointRewards = async () => {
+    if (!nodePoolContract || !walletState.address) {
+        showToast(t('toast.poolNotInitialized')); // Reusing existing toast
+        return false;
+    }
+    try {
+        const tx = await nodePoolContract.harvest();
+        showToast(t('toast.txSent'));
+        await tx.wait();
+        // The success toast will be specific and handled in the component as requested.
+        return true;
+    } catch (error) {
+        if (error.code === 'ACTION_REJECTED') {
+            console.log("User rejected the node point claim transaction.");
+            // No toast for user rejection
+        } else {
+            console.error(`Error claiming node point rewards from ${await nodePoolContract.getAddress()}:`, error);
+            showToast(t('toast.claimFailed', { reason: error.reason || error.message || 'Unknown error' }));
+        }
+        return false;
+    }
+};
+
+/**
+ * Checks if the current user is a "Preacher" based on the staking contract.
+ * @returns {Promise<boolean>} True if the user is a preacher, false otherwise.
+ */
+export const checkIsPreacher = async () => {
+    if (!stakingContract || !walletState.address) {
+        console.warn("Staking contract not initialized or user not connected for isPreacher check.");
+        return false;
+    }
+    try {
+        return await stakingContract.isPreacher(walletState.address);
+    } catch (error) {
+        console.error("Error checking isPreacher status:", error);
+        return false;
+    }
+};
+
+/**
+ * Fetches the user's total principal staked balance (excluding interest).
+ * @returns {Promise<string>} The user's total principal, formatted as a string.
+ */
+export const getUserPrincipalBalance = async () => {
+  if (!stakingContract || !walletState.address) {
+    console.warn("Staking contract not initialized or user not connected.");
+    return "0";
+  }
+  try {
+    const principal = await stakingContract.balances(walletState.address);
+    // Assuming 18 decimals for the principal amount, similar to other values.
+    const formattedPrincipal = ethers.formatUnits(principal, 18);
+    return formattedPrincipal;
+  } catch (error) {
+    console.error("Error fetching user principal balance:", error);
+    return "0";
+  }
+};
 
 /**
  * Checks all reward pools to see if the user has any pending rewards.
@@ -637,7 +728,7 @@ const getExpectedAthAmount = async (usdtAmountIn) => {
   const env = APP_ENV === 'PROD' ? 'production' : 'development';
   const usdtAddress = contractAddresses.usdt[env];
   const athAddress = contractAddresses.ath[env];
-  
+
   console.log(`[滑点计算] 预查询参数:`, {
     '输入USDT (wei)': usdtAmountIn.toString(),
     'USDT地址': usdtAddress,
@@ -765,7 +856,7 @@ export const stakeWithInviter = async (amount, stakeIndex, parentAddress) => {
   try {
     const decimals = getUsdtDecimals();
     const amountInWei = ethers.parseUnits(amount, decimals);
-    
+
     // --- Calculate amountOutMin with 5% slippage ---
     const expectedAth = await getExpectedAthAmount(amountInWei / 2n); // Only half is swapped
     if (expectedAth === 0n) {
@@ -775,7 +866,7 @@ export const stakeWithInviter = async (amount, stakeIndex, parentAddress) => {
     }
     const slippageTolerance = 10n; // 10%
     const amountOutMin = (expectedAth * (100n - slippageTolerance)) / 100n;
-    
+
     console.log(`[滑点计算] 结果:`, {
       '预期获得ATH (wei)': expectedAth.toString(),
       '最小接受ATH (wei)': amountOutMin.toString()
@@ -788,7 +879,7 @@ export const stakeWithInviter = async (amount, stakeIndex, parentAddress) => {
       _stakeIndex: stakeIndex,
       parent: parentAddress
     });
-    
+
     const tx = await stakingContract.stakeWithInviter(
       amountInWei,
       amountOutMin,
