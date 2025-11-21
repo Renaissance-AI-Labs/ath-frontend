@@ -88,7 +88,7 @@ const contractAddresses = {
   },
   nodePool: {
     production: '0xb864DeB03c90e5B8cC79396Bd6F97dC6b6E668F6',
-    development: '0x4bf54B6196d5d797d3Efb64F7bf0c90625425d7E',
+    development: '0x940309DF7136275F4711804bA73566491bCb3eAA',
   }
 };
 
