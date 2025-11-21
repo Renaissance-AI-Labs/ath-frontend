@@ -119,6 +119,7 @@ const languagePacks = {
     'toast.stakeSuccessRefresh': '质押成功！页面即将刷新。',
     'toast.stakeFailedRetry': '质押失败，请稍后重试。',
     'toast.fetchReferrerFailed': '错误：无法获取您已绑定的推荐人地址。',
+    'toast.stake200Tokens': '需至少质押 200 TOKEN',
     
     // Testimonial Section
     'testimonial.connectFuture': '连接未来',
@@ -338,6 +339,7 @@ const languagePacks = {
     'toast.stakeSuccessRefresh': '質押成功！頁面即將刷新。',
     'toast.stakeFailedRetry': '質押失敗，請稍後重試。',
     'toast.fetchReferrerFailed': '錯誤：無法獲取您已綁定的推薦人地址。',
+    'toast.stake200Tokens': '需至少質押 200 TOKEN',
     
     // Share Friend Modal
     'share.title': '分享鏈接給好友',
@@ -508,6 +510,7 @@ const languagePacks = {
     'toast.stakeSuccessRefresh': 'Stake successful! The page will refresh shortly.',
     'toast.stakeFailedRetry': 'Stake failed, please try again later.',
     'toast.fetchReferrerFailed': 'Error: Could not retrieve your bound referrer address.',
+    'toast.stake200Tokens': 'Requires a stake of at least 200 TOKENs',
     
     // Share Friend Modal
     'share.title': 'Share Link with Friends',
@@ -679,6 +682,7 @@ const languagePacks = {
     'toast.stakeSuccessRefresh': '스테이킹 성공! 페이지가 곧 새로고침됩니다.',
     'toast.stakeFailedRetry': '스테이킹에 실패했습니다. 나중에 다시 시도해주세요.',
     'toast.fetchReferrerFailed': '오류: 연결된 추천인 주소를 가져올 수 없습니다.',
+    'toast.stake200Tokens': '最低でも200 TOKENのステークが必要です',
     
     // Share Friend Modal
     'share.title': '友達にリンクを共有',
@@ -851,6 +855,7 @@ const languagePacks = {
     'toast.stakeSuccessRefresh': '스테이킹 성공! 페이지가 곧 새로고침됩니다.',
     'toast.stakeFailedRetry': '스테이킹에 실패했습니다. 나중에 다시 시도해주세요.',
     'toast.fetchReferrerFailed': '오류: 연결된 추천인 주소를 가져올 수 없습니다.',
+    'toast.stake200Tokens': '최소 200 TOKEN의 스테이킹이 필요합니다',
     
     // Share Friend Modal
     'share.title': '친구에게 링크 공유',

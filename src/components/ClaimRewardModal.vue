@@ -67,6 +67,7 @@
                         <button 
                             @click="claimNodeReward" 
                             :disabled="parseFloat(node_rewards) <= 0 || isClaimingNodeReward" 
+                            :class="{ 'pseudo-disabled': !isPreacher }"
                             class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
                             {{ isClaimingNodeReward ? t('claim.claiming') : t('claim.claim') }}
                         </button>
@@ -112,6 +113,7 @@ import {
     claimS7Rewards,
     getNodePointRewards,
     claimNodePointRewards,
+    checkIsPreacher,
     S5_THRESHOLD,
     S6_THRESHOLD,
     S7_THRESHOLD
@@ -129,6 +131,7 @@ const s6_rewards = ref('0');
 const s7_rewards = ref('0');
 const node_rewards = ref('0');
 const showNodePointSection = ref(false);
+const isPreacher = ref(false);
 const isClaiming = ref({
     5: false,
     6: false,
@@ -150,12 +153,13 @@ const fetchRewardData = async () => {
 
     isLoading.value = true;
     try {
-        const [kpi, s5Rewards, s6Rewards, s7Rewards, nodeRewards] = await Promise.all([
+        const [kpi, s5Rewards, s6Rewards, s7Rewards, nodeRewards, preacherStatus] = await Promise.all([
             getTeamKpiBigNumber(),
             getS5PendingRewards(),
             getS6PendingRewards(),
             getS7PendingRewards(),
             getNodePointRewards(),
+            checkIsPreacher(),
         ]);
 
         // --- Exclusive Level Check Logic ---
@@ -172,6 +176,7 @@ const fetchRewardData = async () => {
         s6_rewards.value = s6Rewards;
         s7_rewards.value = s7Rewards;
         node_rewards.value = nodeRewards;
+        isPreacher.value = preacherStatus;
 
         // --- Conditional Visibility for Node Point Section ---
         const nodeRewardsNum = parseFloat(nodeRewards);
@@ -187,6 +192,7 @@ const fetchRewardData = async () => {
           - S6待领奖励: ${s6_rewards.value} ATH
           - S7待领奖励: ${s7_rewards.value} ATH
           - Node Point待领奖励: ${node_rewards.value} ATH
+          - 是否为Preacher: ${isPreacher.value}
         `);
 
     } catch (error) {
@@ -233,6 +239,12 @@ const claim = async (level) => {
 };
 
 const claimNodeReward = async () => {
+    // First, check if the user is a preacher.
+    if (!isPreacher.value) {
+        showToast(t('toast.stake200Tokens'));
+        return;
+    }
+
     if (isClaimingNodeReward.value || parseFloat(node_rewards.value) <= 0) return;
     isClaimingNodeReward.value = true;
     console.log('[领取操作] 开始为 Node Point 领取奖励...');
@@ -269,6 +281,7 @@ watch(() => walletState.isAuthenticated, (isAuth) => {
         s7_rewards.value = '0';
         node_rewards.value = '0';
         showNodePointSection.value = false;
+        isPreacher.value = false;
     }
 }, {
     immediate: true
@@ -502,6 +515,13 @@ watch(() => walletState.isAuthenticated, (isAuth) => {
     font-size: 14px;
     min-width: 90px;
     /* The disabled styles are now handled by the .tf-btn[disabled] selector from the global CSS */
+}
+
+.btn-claim.pseudo-disabled {
+    background-image: none !important;
+    background-color: #21212B !important;
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
 }
 
 .btn-claim[disabled],

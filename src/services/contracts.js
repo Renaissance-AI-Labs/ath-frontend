@@ -463,6 +463,23 @@ export const claimNodePointRewards = async () => {
 };
 
 /**
+ * Checks if the current user is a "Preacher" based on the staking contract.
+ * @returns {Promise<boolean>} True if the user is a preacher, false otherwise.
+ */
+export const checkIsPreacher = async () => {
+    if (!stakingContract || !walletState.address) {
+        console.warn("Staking contract not initialized or user not connected for isPreacher check.");
+        return false;
+    }
+    try {
+        return await stakingContract.isPreacher(walletState.address);
+    } catch (error) {
+        console.error("Error checking isPreacher status:", error);
+        return false;
+    }
+};
+
+/**
  * Checks all reward pools to see if the user has any pending rewards.
  * Updates the global walletState.hasClaimableRewards.
  * @returns {Promise<boolean>} True if there are any claimable rewards.
