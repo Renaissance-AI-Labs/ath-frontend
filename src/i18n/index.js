@@ -31,7 +31,7 @@ const languagePacks = {
     'hero.injectPool': '注入底池',
     'hero.shareFriend': '分享好友',
     'hero.achievementReward': '成就奖励',
-    'hero.totalInvestment': '您的总投资',
+    'hero.totalInvestment': '您的总质押',
     
     // Connect Wallet Modal
     'wallet.connectTitle': '连接钱包',
@@ -206,7 +206,7 @@ const languagePacks = {
     'hero.injectPool': '注入底池',
     'hero.shareFriend': '分享好友',
     'hero.achievementReward': '成就獎勵',
-    'hero.totalInvestment': '您的總投資',
+    'hero.totalInvestment': '您的總質押',
     
     // Connect Wallet Modal
     'wallet.connectTitle': '連接錢包',
@@ -380,7 +380,7 @@ const languagePacks = {
     'hero.injectPool': 'Inject Pool',
     'hero.shareFriend': 'Share Friend',
     'hero.achievementReward': 'Achievement Reward',
-    'hero.totalInvestment': 'Your Total Investment',
+    'hero.totalInvestment': 'Your Total Stake',
     
     // Connect Wallet Modal
     'wallet.connectTitle': 'Connect Wallet',
@@ -552,7 +552,7 @@ const languagePacks = {
     'hero.injectPool': 'プール注入',
     'hero.shareFriend': '友人を共有',
     'hero.achievementReward': '実績報酬',
-    'hero.totalInvestment': 'あなたの総投資額',
+    'hero.totalInvestment': 'あなたの総ステーク',
     
     // Connect Wallet Modal
     'wallet.connectTitle': 'ウォレット接続',
@@ -725,7 +725,7 @@ const languagePacks = {
     'hero.injectPool': '풀 주입',
     'hero.shareFriend': '친구 공유',
     'hero.achievementReward': '성취 보상',
-    'hero.totalInvestment': '총 투자액',
+    'hero.totalInvestment': '총 스테이킹',
     
     // Connect Wallet Modal
     'wallet.connectTitle': '지갑 연결',
