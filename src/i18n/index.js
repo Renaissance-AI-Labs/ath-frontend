@@ -31,6 +31,7 @@ const languagePacks = {
     'hero.injectPool': '注入底池',
     'hero.shareFriend': '分享好友',
     'hero.achievementReward': '成就奖励',
+    'hero.totalInvestment': '您的总质押',
     
     // Connect Wallet Modal
     'wallet.connectTitle': '连接钱包',
@@ -81,6 +82,8 @@ const languagePacks = {
     'claim.claim': '领取',
     'claim.close': '关闭',
     'claim.connectWallet': '请先连接并授权您的钱包',
+    'claim.levelRewardTitle': 'Glory Point',
+    'claim.nodeRewardTitle': 'Node Point',
     
     // Confirm Referrer Modal
     'referrer.title': '请确认推荐人',
@@ -117,6 +120,7 @@ const languagePacks = {
     'toast.stakeSuccessRefresh': '质押成功！页面即将刷新。',
     'toast.stakeFailedRetry': '质押失败，请稍后重试。',
     'toast.fetchReferrerFailed': '错误：无法获取您已绑定的推荐人地址。',
+    'toast.stake200Tokens': '需至少质押 200 TOKEN',
     
     // Testimonial Section
     'testimonial.connectFuture': '连接未来',
@@ -202,6 +206,7 @@ const languagePacks = {
     'hero.injectPool': '注入底池',
     'hero.shareFriend': '分享好友',
     'hero.achievementReward': '成就獎勵',
+    'hero.totalInvestment': '您的總質押',
     
     // Connect Wallet Modal
     'wallet.connectTitle': '連接錢包',
@@ -252,6 +257,8 @@ const languagePacks = {
     'claim.claim': '領取',
     'claim.close': '關閉',
     'claim.connectWallet': '請先連接並授權您的錢包',
+    'claim.levelRewardTitle': 'Glory Point',
+    'claim.nodeRewardTitle': 'Node Point',
     
     // Confirm Referrer Modal
     'referrer.title': '請確認推薦人',
@@ -334,6 +341,7 @@ const languagePacks = {
     'toast.stakeSuccessRefresh': '質押成功！頁面即將刷新。',
     'toast.stakeFailedRetry': '質押失敗，請稍後重試。',
     'toast.fetchReferrerFailed': '錯誤：無法獲取您已綁定的推薦人地址。',
+    'toast.stake200Tokens': '需至少質押 200 TOKEN',
     
     // Share Friend Modal
     'share.title': '分享鏈接給好友',
@@ -372,6 +380,7 @@ const languagePacks = {
     'hero.injectPool': 'Inject Pool',
     'hero.shareFriend': 'Share Friend',
     'hero.achievementReward': 'Achievement Reward',
+    'hero.totalInvestment': 'Your Total Stake',
     
     // Connect Wallet Modal
     'wallet.connectTitle': 'Connect Wallet',
@@ -397,11 +406,11 @@ const languagePacks = {
     'inject.duration15Days': '15 days, 0.6% compound',
     'inject.duration30Days': '30 days, 1.2% compound',
     'inject.days1': '1 Day',
-    'inject.rate1': '0.3% APY',
+    'inject.rate1': 'Compound 0.3%',
     'inject.days15': '15 Days',
-    'inject.rate15': '0.6% APY',
+    'inject.rate15': 'Compound 0.6%',
     'inject.days30': '30 Days',
-    'inject.rate30': '1.2% APY',
+    'inject.rate30': 'Compound 1.2%',
     'inject.cancel': 'Cancel',
     'inject.approving': 'Approving...',
     'inject.enterAmount': 'Please enter amount',
@@ -422,6 +431,8 @@ const languagePacks = {
     'claim.claim': 'Claim',
     'claim.close': 'Close',
     'claim.connectWallet': 'Please connect and authorize your wallet first',
+    'claim.levelRewardTitle': 'Glory Point',
+    'claim.nodeRewardTitle': 'Node Point',
     
     // Confirm Referrer Modal
     'referrer.title': 'Please Confirm Referrer',
@@ -502,6 +513,7 @@ const languagePacks = {
     'toast.stakeSuccessRefresh': 'Stake successful! The page will refresh shortly.',
     'toast.stakeFailedRetry': 'Stake failed, please try again later.',
     'toast.fetchReferrerFailed': 'Error: Could not retrieve your bound referrer address.',
+    'toast.stake200Tokens': 'Requires a stake of at least 200 TOKENs',
     
     // Share Friend Modal
     'share.title': 'Share Link with Friends',
@@ -540,6 +552,7 @@ const languagePacks = {
     'hero.injectPool': 'プール注入',
     'hero.shareFriend': '友人を共有',
     'hero.achievementReward': '実績報酬',
+    'hero.totalInvestment': 'あなたの総ステーク',
     
     // Connect Wallet Modal
     'wallet.connectTitle': 'ウォレット接続',
@@ -589,6 +602,8 @@ const languagePacks = {
     'claim.claim': '受け取る',
     'claim.close': '閉じる',
     'claim.connectWallet': 'まずウォレットを接続して承認してください',
+    'claim.levelRewardTitle': 'Glory Point',
+    'claim.nodeRewardTitle': 'Node Point',
     
     // Confirm Referrer Modal
     'referrer.title': '紹介者を確認してください',
@@ -664,13 +679,14 @@ const languagePacks = {
     'toast.unstakeFailed': '償還失敗: {reason}',
     'toast.calculateFailed': '予想出力の計算ができません、ステーキングを中止します',
     'toast.stakeFailed': 'ステーキング失敗: {reason}',
-    'toast.refreshData': '6秒ごとにデータを更新中...',
-    'toast.stakingRequest': 'ステーキングリクエストを処理中...',
-    'toast.insufficientBalance': 'エラー：USDT残高が不足しています（現在：{balance}）',
-    'toast.invalidReferrer': 'エラー：紹介者アドレスが無効か、ステーキングされていません',
-    'toast.stakeSuccessRefresh': 'ステーキング成功！ページを更新します。',
-    'toast.stakeFailedRetry': 'ステーキングに失敗しました。後でもう一度お試しください。',
-    'toast.fetchReferrerFailed': 'エラー：バインドされた紹介者アドレスを取得できませんでした。',
+    'toast.refreshData': '6초마다 데이터 새로고침 중...',
+    'toast.stakingRequest': '스테이킹 요청 처리 중...',
+    'toast.insufficientBalance': '오류: USDT 잔액이 부족합니다 (현재: {balance})',
+    'toast.invalidReferrer': '오류: 추천인 주소가 유효하지 않거나 스테이킹되지 않았습니다',
+    'toast.stakeSuccessRefresh': '스테이킹 성공! 페이지가 곧 새로고침됩니다.',
+    'toast.stakeFailedRetry': '스테이킹에 실패했습니다. 나중에 다시 시도해주세요.',
+    'toast.fetchReferrerFailed': '오류: 연결된 추천인 주소를 가져올 수 없습니다.',
+    'toast.stake200Tokens': '最低でも200 TOKENのステークが必要です',
     
     // Share Friend Modal
     'share.title': '友達にリンクを共有',
@@ -709,6 +725,7 @@ const languagePacks = {
     'hero.injectPool': '풀 주입',
     'hero.shareFriend': '친구 공유',
     'hero.achievementReward': '성취 보상',
+    'hero.totalInvestment': '총 스테이킹',
     
     // Connect Wallet Modal
     'wallet.connectTitle': '지갑 연결',
@@ -759,6 +776,8 @@ const languagePacks = {
     'claim.claim': '받기',
     'claim.close': '닫기',
     'claim.connectWallet': '먼저 지갑을 연결하고 승인하세요',
+    'claim.levelRewardTitle': 'Glory Point',
+    'claim.nodeRewardTitle': 'Node Point',
     
     // Confirm Referrer Modal
     'referrer.title': '추천인을 확인하세요',
@@ -841,6 +860,7 @@ const languagePacks = {
     'toast.stakeSuccessRefresh': '스테이킹 성공! 페이지가 곧 새로고침됩니다.',
     'toast.stakeFailedRetry': '스테이킹에 실패했습니다. 나중에 다시 시도해주세요.',
     'toast.fetchReferrerFailed': '오류: 연결된 추천인 주소를 가져올 수 없습니다.',
+    'toast.stake200Tokens': '최소 200 TOKEN의 스테이킹이 필요합니다',
     
     // Share Friend Modal
     'share.title': '친구에게 링크 공유',

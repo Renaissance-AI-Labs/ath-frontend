@@ -92,6 +92,18 @@
 
                                         <div class="tf-brand assets-title">
                                             <div class="container">
+                                                <h3 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content" style="font-size: 16px !important;">{{ t('hero.totalInvestment') }}</h3>
+                                            </div>
+                                        </div>
+                                        <p class="style-2 coins-title" style="text-align: center; padding: 7px 11px; margin-bottom: -16px !important; font-size: 14px !important;">
+                                          <span v-if="isLoading">{{ t('common.loading') }}</span>
+                                          <span v-else>
+                                            <AnimatedNumber :value="totalInvestmentValue" :decimals="6" /> {{ t('common.token') }}
+                                          </span>
+                                        </p>
+
+                                        <div class="tf-brand assets-title">
+                                            <div class="container">
                                                 <h3 class="title text-caption font-2 letter-space-0 fw-normal wg-counter wow fadeInUp assets-title-content" style="font-size: 16px !important;">{{ t('hero.friendsBoost') }}</h3>
                                             </div>
                                         </div>
@@ -204,7 +216,8 @@ import {
   S4_THRESHOLD,
   S5_THRESHOLD,
   S6_THRESHOLD,
-  S7_THRESHOLD
+  S7_THRESHOLD,
+  getUserPrincipalBalance
 } from '../services/contracts';
 import {
   showToast
@@ -218,6 +231,7 @@ const emits = defineEmits(['open-inject-modal', 'open-claim-reward-modal', 'open
 const stakedBalance = ref(0); // Use number type
 const friendsBoost = ref(0); // Use number type
 const userLevel = ref(''); // User's S level (e.g., 'S5', 'S6', 'S7')
+const totalInvestmentValue = ref(0); // New property for total investment value
 let fetchInterval = null;
 const isInitialFetch = ref(true); // Flag for the first fetch
 
@@ -239,9 +253,10 @@ const fetchHeroData = async () => {
 
   try {
     // Optimize: Only call getTeamKpiBigNumber once, use it for both friendsBoost and level calculation
-    const [newStakedBalance, kpi] = await Promise.all([
+    const [newStakedBalance, kpi, principalBalance] = await Promise.all([
       getUserStakedBalance(),
       getTeamKpiBigNumber(),
+      getUserPrincipalBalance()
     ]);
     
     // Convert string from contract to number for the component
@@ -249,6 +264,9 @@ const fetchHeroData = async () => {
     
     // Convert KPI BigInt to formatted number for friendsBoost display
     friendsBoost.value = parseFloat(ethers.formatUnits(kpi, 18)) || 0;
+
+    // The principalBalance is already a formatted string, just parse it.
+    totalInvestmentValue.value = parseFloat(principalBalance) || 0;
     
     // Calculate user level based on KPI
     if (kpi >= S7_THRESHOLD) {
@@ -282,6 +300,7 @@ const resetData = () => {
   stakedBalance.value = 0;
   friendsBoost.value = 0;
   userLevel.value = '';
+  totalInvestmentValue.value = 0; // Reset total investment value
   isInitialFetch.value = true; // Reset flag on disconnect
 };
 
@@ -380,14 +399,14 @@ onUnmounted(() => {
 }
 
 .assets-title {
-    margin-top: 40px;
+    margin-top: 24px;
     /* margin-bottom: 10px !important; */
 }
 
 .assets-title-content {
     font-size: 20px !important;
     color: #fff;
-    margin-bottom: 10px !important;
+    margin-bottom: 0px !important;
     font-weight: bold !important;
 }
 
@@ -397,7 +416,7 @@ onUnmounted(() => {
 
 .level-watermark {
     position: absolute;
-    top: 55%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 160px;
