@@ -73,6 +73,21 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Dividend Rewards Section -->
+                <div v-if="showDividendPointSection" class="node-reward-section">
+                    <div class="node-reward-title">{{ t('claim.dividendRewardTitle') }}</div>
+                    <div class="node-reward-content">
+                        <span class="reward-amount">{{ truncatedDividendRewards }} USDT</span>
+                        <button 
+                            @click="claimDividendReward" 
+                            :disabled="parseFloat(dividend_rewards) <= 0 || isClaimingDividendReward" 
+                            :class="{ 'pseudo-disabled': !isPreacher }"
+                            class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
+                            {{ isClaimingDividendReward ? t('claim.claiming') : t('claim.claim') }}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -114,6 +129,8 @@ import {
     getNodePointRewards,
     claimNodePointRewards,
     checkIsPreacher,
+    getDividendPointRewards,
+    claimDividendPointRewards,
     S5_THRESHOLD,
     S6_THRESHOLD,
     S7_THRESHOLD
@@ -130,7 +147,9 @@ const s5_rewards = ref('0');
 const s6_rewards = ref('0');
 const s7_rewards = ref('0');
 const node_rewards = ref('0');
+const dividend_rewards = ref('0');
 const showNodePointSection = ref(false);
+const showDividendPointSection = ref(false);
 const isPreacher = ref(false);
 const isClaiming = ref({
     5: false,
@@ -138,6 +157,7 @@ const isClaiming = ref({
     7: false
 });
 const isClaimingNodeReward = ref(false);
+const isClaimingDividendReward = ref(false);
 
 const truncatedNodeRewards = computed(() => {
     const num = parseFloat(node_rewards.value);
@@ -147,19 +167,27 @@ const truncatedNodeRewards = computed(() => {
     return truncated.toFixed(4); // Use toFixed to ensure 4 decimal places are shown
 });
 
+const truncatedDividendRewards = computed(() => {
+    const num = parseFloat(dividend_rewards.value);
+    if (isNaN(num)) return '0.0000';
+    const truncated = Math.floor(num * 10000) / 10000;
+    return truncated.toFixed(4);
+});
+
 const fetchRewardData = async () => {
     // This check is now slightly redundant due to the watcher, but good for safety.
     if (!walletState.isAuthenticated || !walletState.contractsInitialized) return;
 
     isLoading.value = true;
     try {
-        const [kpi, s5Rewards, s6Rewards, s7Rewards, nodeRewards, preacherStatus] = await Promise.all([
+        const [kpi, s5Rewards, s6Rewards, s7Rewards, nodeRewards, preacherStatus, dividendRewards] = await Promise.all([
             getTeamKpiBigNumber(),
             getS5PendingRewards(),
             getS6PendingRewards(),
             getS7PendingRewards(),
             getNodePointRewards(),
             checkIsPreacher(),
+            getDividendPointRewards()
         ]);
 
         // --- Exclusive Level Check Logic ---
@@ -176,12 +204,18 @@ const fetchRewardData = async () => {
         s6_rewards.value = s6Rewards;
         s7_rewards.value = s7Rewards;
         node_rewards.value = nodeRewards;
+        dividend_rewards.value = dividendRewards;
         isPreacher.value = preacherStatus;
 
         // --- Conditional Visibility for Node Point Section ---
         const nodeRewardsNum = parseFloat(nodeRewards);
         // The section is shown if the value truncated to 4 decimal places is greater than 0.
         showNodePointSection.value = Math.floor(nodeRewardsNum * 10000) > 0;
+
+        // --- Conditional Visibility for Dividend Point Section ---
+        const dividendRewardsNum = parseFloat(dividendRewards);
+        // Show if rewards > 0
+        showDividendPointSection.value = Math.floor(dividendRewardsNum * 10000) > 0;
 
         console.log(`[成就奖励数据] 获取成功:
           - 用户KPI (原始值): ${kpi.toString()}
@@ -192,6 +226,7 @@ const fetchRewardData = async () => {
           - S6待领奖励: ${s6_rewards.value} ATH
           - S7待领奖励: ${s7_rewards.value} ATH
           - Node Point待领奖励: ${node_rewards.value} ATH
+          - Dividend Point待领奖励: ${dividend_rewards.value} USDT
           - 是否为Preacher: ${isPreacher.value}
         `);
 
@@ -266,6 +301,32 @@ const claimNodeReward = async () => {
     }
 };
 
+const claimDividendReward = async () => {
+    if (!isPreacher.value) {
+        showToast(t('toast.stake200Tokens'));
+        return;
+    }
+
+    if (isClaimingDividendReward.value || parseFloat(dividend_rewards.value) <= 0) return;
+    isClaimingDividendReward.value = true;
+    console.log('[领取操作] 开始为 Dividend Point 领取奖励...');
+
+    try {
+        const success = await claimDividendPointRewards();
+        if (success) {
+            console.log('[领取操作] Dividend Point 奖励领取成功!');
+            // Success toast is handled in contracts.js
+            emit('close');
+        } else {
+            console.log('[领取操作] Dividend Point 奖励领取失败或用户取消。');
+        }
+    } catch (error) {
+        console.error('[领取操作] Dividend Point 领取过程中发生意外错误:', error);
+    } finally {
+        isClaimingDividendReward.value = false;
+    }
+};
+
 // Fetch data when the modal becomes visible and the user is authenticated.
 watch(() => walletState.isAuthenticated, (isAuth) => {
     if (isAuth && walletState.contractsInitialized) {
@@ -280,7 +341,9 @@ watch(() => walletState.isAuthenticated, (isAuth) => {
         s6_rewards.value = '0';
         s7_rewards.value = '0';
         node_rewards.value = '0';
+        dividend_rewards.value = '0';
         showNodePointSection.value = false;
+        showDividendPointSection.value = false;
         isPreacher.value = false;
     }
 }, {
