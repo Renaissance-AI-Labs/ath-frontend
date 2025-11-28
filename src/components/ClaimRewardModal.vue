@@ -96,14 +96,10 @@
             <p>{{ t('claim.connectWallet') }}</p>
         </div>
 
-        <!-- Footer -->
-        <div class="button-group-center">
-            <button class="btn-ip ip-modern text-body-3 btn-confirm" @click="$emit('close')">
-                {{ t('claim.close') }}
-            </button>
-        </div>
-
       </div>
+      <button @click="$emit('close')" class="close-button">
+        <i class="icon icon-close"></i>
+      </button>
     </div>
   </div>
 </template>
@@ -365,6 +361,18 @@ watch(() => walletState.isAuthenticated, (isAuth) => {
   align-items: center;
   z-index: 1000;
   backdrop-filter: blur(5px);
+}
+
+.close-button {
+  position: absolute;
+  top: 30px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  color: var(--white);
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 20; /* Higher z-index to ensure it's clickable */
 }
 
 .modal-content {
