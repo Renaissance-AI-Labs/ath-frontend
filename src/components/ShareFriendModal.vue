@@ -23,13 +23,17 @@
           </a>
           <div class="divider" v-if="teamId"></div>
           <div class="team-id-section" v-if="teamId">
-            <label class="team-id-label">{{ t('share.teamId') }}</label>
-            <p class="team-id-value">{{ teamId }}</p>
+            <div class="referral-label-container">
+              <span class="referral-label-text">{{ t('share.teamId') }}</span>
+              <span class="referral-label-count team-id-value-inline">{{ teamId }}</span>
+            </div>
           </div>
 
           <div class="team-id-section">
-            <label class="team-id-label">{{ t('share.rewardsFromFriends') }}</label>
-            <p class="team-id-value">{{ formattedEstimatedRewards }}</p>
+            <div class="referral-label-container">
+              <span class="referral-label-text">{{ t('share.rewardsFromFriends') }}</span>
+              <span class="referral-label-count team-id-value-inline">{{ formattedEstimatedRewards }}</span>
+            </div>
             <div class="rewards-disclaimer">
               <span class="icon-info">i</span>
               <p>{{ t('share.rewardsDisclaimer') }}</p>
@@ -547,6 +551,13 @@ export default {
   border-radius: 8px;
   letter-spacing: 1px;
   text-align: center;
+}
+
+.team-id-value-inline {
+  color: var(--white);
+  font-size: 14px;
+  font-family: 'monospace', 'BlinkMacSystemFont', sans-serif;
+  font-weight: 500;
 }
 
 .share-hint {
