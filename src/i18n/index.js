@@ -84,6 +84,7 @@ const languagePacks = {
     'claim.connectWallet': '请先连接并授权您的钱包',
     'claim.levelRewardTitle': 'Glory Point',
     'claim.nodeRewardTitle': 'Node Point',
+    'claim.dividendRewardTitle': 'Dividend Point',
     
     // Confirm Referrer Modal
     'referrer.title': '请确认推荐人',
@@ -259,6 +260,7 @@ const languagePacks = {
     'claim.connectWallet': '請先連接並授權您的錢包',
     'claim.levelRewardTitle': 'Glory Point',
     'claim.nodeRewardTitle': 'Node Point',
+    'claim.dividendRewardTitle': 'Dividend Point',
     
     // Confirm Referrer Modal
     'referrer.title': '請確認推薦人',
@@ -433,6 +435,7 @@ const languagePacks = {
     'claim.connectWallet': 'Please connect and authorize your wallet first',
     'claim.levelRewardTitle': 'Glory Point',
     'claim.nodeRewardTitle': 'Node Point',
+    'claim.dividendRewardTitle': 'Dividend Point',
     
     // Confirm Referrer Modal
     'referrer.title': 'Please Confirm Referrer',
@@ -604,6 +607,7 @@ const languagePacks = {
     'claim.connectWallet': 'まずウォレットを接続して承認してください',
     'claim.levelRewardTitle': 'Glory Point',
     'claim.nodeRewardTitle': 'Node Point',
+    'claim.dividendRewardTitle': 'Dividend Point',
     
     // Confirm Referrer Modal
     'referrer.title': '紹介者を確認してください',
@@ -778,6 +782,7 @@ const languagePacks = {
     'claim.connectWallet': '먼저 지갑을 연결하고 승인하세요',
     'claim.levelRewardTitle': 'Glory Point',
     'claim.nodeRewardTitle': 'Node Point',
+    'claim.dividendRewardTitle': 'Dividend Point',
     
     // Confirm Referrer Modal
     'referrer.title': '추천인을 확인하세요',

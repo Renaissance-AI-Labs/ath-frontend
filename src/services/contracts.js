@@ -22,6 +22,7 @@ import s6poolAbi from '../abis/s6pool.json';
 import s7poolAbi from '../abis/s7pool.json';
 import stakeLimitAbi from '../abis/stake_limit.json';
 import nodePoolAbi from '../abis/node_pool.json';
+import nodeDividendPoolAbi from '../abis/node_dividend_pool.json';
 // No need for a separate USDT ABI if it follows ERC20 standard like `ath.json`
 // import usdtAbi from '../abis/usdt.json';
 
@@ -89,6 +90,10 @@ const contractAddresses = {
   nodePool: {
     production: '0xb864DeB03c90e5B8cC79396Bd6F97dC6b6E668F6',
     development: '0x940309DF7136275F4711804bA73566491bCb3eAA',
+  },
+  nodeDividendPool: {
+    production: '0x9f79772Ff1E4Dd61F1039aEc2AEeb415C62c471f',
+    development: '0x3F4E253D329C767293F0B50670882Eb3761a6989',
   }
 };
 
@@ -103,9 +108,10 @@ let s6poolContract;
 let s7poolContract;
 let stakeLimitContract;
 let nodePoolContract;
+let nodeDividendPoolContract;
 
 // We need to export these for other modules to use them.
-export { referralContract, stakingContract, athContract, usdtContract, s5poolContract, s6poolContract, s7poolContract, stakeLimitContract, nodePoolContract };
+export { referralContract, stakingContract, athContract, usdtContract, s5poolContract, s6poolContract, s7poolContract, stakeLimitContract, nodePoolContract, nodeDividendPoolContract };
 
 // --- KPI Thresholds (as per Staking.sol) ---
 const THRESHOLDS = {
@@ -166,6 +172,7 @@ export const initializeContracts = async () => {
   const s7poolAddress = contractAddresses.s7pool[env];
   const stakeLimitAddress = contractAddresses.stakeLimit[env];
   const nodePoolAddress = contractAddresses.nodePool[env];
+  const nodeDividendPoolAddress = contractAddresses.nodeDividendPool[env];
 
   // Create new contract instances using the raw, unwrapped signer
   referralContract = new ethers.Contract(referralAddress, referralAbi, rawSigner);
@@ -178,6 +185,7 @@ export const initializeContracts = async () => {
   s7poolContract = new ethers.Contract(s7poolAddress, s7poolAbi, rawSigner);
   stakeLimitContract = new ethers.Contract(stakeLimitAddress, stakeLimitAbiWithMethod, rawSigner);
   nodePoolContract = new ethers.Contract(nodePoolAddress, nodePoolAbi, rawSigner);
+  nodeDividendPoolContract = new ethers.Contract(nodeDividendPoolAddress, nodeDividendPoolAbi, rawSigner);
 
   console.log("Contracts initialized:", {
     referral: await referralContract.getAddress(),
@@ -190,6 +198,7 @@ export const initializeContracts = async () => {
     s7pool: await s7poolContract.getAddress(),
     stakeLimit: await stakeLimitContract.getAddress(),
     nodePool: await nodePoolContract.getAddress(),
+    nodeDividendPool: await nodeDividendPoolContract.getAddress(),
   });
 
   walletState.contractsInitialized = true;
@@ -211,6 +220,7 @@ export const resetContracts = () => {
   s7poolContract = null;
   stakeLimitContract = null;
   nodePoolContract = null;
+  nodeDividendPoolContract = null;
   console.log("Contract instances have been reset.");
 };
 
@@ -456,6 +466,61 @@ export const claimNodePointRewards = async () => {
             // No toast for user rejection
         } else {
             console.error(`Error claiming node point rewards from ${await nodePoolContract.getAddress()}:`, error);
+            showToast(t('toast.claimFailed', { reason: error.reason || error.message || 'Unknown error' }));
+        }
+        return false;
+    }
+};
+
+/**
+ * Fetches pending rewards from the Node Dividend Pool for the current user (USDT).
+ * @returns {Promise<string>} Formatted Dividend Point pending rewards (USDT).
+ */
+export const getDividendPointRewards = async () => {
+    if (!nodeDividendPoolContract || !walletState.address) {
+        return "0";
+    }
+    try {
+        const env = APP_ENV === 'PROD' ? 'production' : 'development';
+        const usdtAddress = contractAddresses.usdt[env];
+        const rewards = await nodeDividendPoolContract.getTokenRewards(walletState.address, usdtAddress);
+        return ethers.formatUnits(rewards, 18); // USDT has 18 decimals in this project
+    } catch (error) {
+        console.error(`Error fetching pending dividend point rewards from ${await nodeDividendPoolContract.getAddress()}:`, error);
+        return "0";
+    }
+};
+
+/**
+ * Claims rewards from the Node Dividend Pool (USDT).
+ * @returns {Promise<boolean>} True if successful.
+ */
+export const claimDividendPointRewards = async () => {
+    if (!nodeDividendPoolContract || !walletState.address) {
+        showToast(t('toast.poolNotInitialized'));
+        return false;
+    }
+    try {
+        const env = APP_ENV === 'PROD' ? 'production' : 'development';
+        const usdtAddress = contractAddresses.usdt[env];
+        
+        // Pre-check: user must be a preacher
+        const isPreacher = await checkIsPreacher();
+        if (!isPreacher) {
+             showToast(t('toast.stake200Tokens'));
+             return false;
+        }
+
+        const tx = await nodeDividendPoolContract.harvest(usdtAddress);
+        showToast(t('toast.txSent'));
+        await tx.wait();
+        showToast(t('toast.claimSuccess'));
+        return true;
+    } catch (error) {
+        if (error.code === 'ACTION_REJECTED') {
+            console.log("User rejected the dividend point claim transaction.");
+        } else {
+            console.error(`Error claiming dividend point rewards from ${await nodeDividendPoolContract.getAddress()}:`, error);
             showToast(t('toast.claimFailed', { reason: error.reason || error.message || 'Unknown error' }));
         }
         return false;
