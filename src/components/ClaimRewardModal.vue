@@ -433,29 +433,39 @@ watch(() => walletState.isAuthenticated, (isAuth) => {
 }
 
 .node-reward-section {
-    /* border: 1px solid var(--line); */
     border-radius: 15px;
     padding: 12px 20px;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.03)); /* Increased contrast */
-    background-size: 300% 300%;
+    /* Static gradient background, no animation */
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
     margin-top: 20px;
     position: relative;
     overflow: hidden;
-    animation: animated-gradient 8s ease infinite;
+    /* Use a subtle border */
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-@keyframes animated-gradient {
-    0% {
-        background-position: 0% 0%;
-        border-color: rgba(255, 255, 255, 0.4);
+/* Subtle shine effect using a pseudo-element (Hardware Accelerated) */
+.node-reward-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+    transform: translateX(-100%);
+    animation: subtle-shine 6s ease-in-out infinite;
+    pointer-events: none; /* Ensure clicks pass through */
+    will-change: transform;
+    z-index: 1;
+}
+
+@keyframes subtle-shine {
+    0%, 20% {
+        transform: translateX(-100%);
     }
-    50% {
-        background-position: 100% 100%;
-        border-color: rgba(255, 255, 255, 0.9); /* Brighter border at peak */
-    }
-    100% {
-        background-position: 0% 0%;
-        border-color: rgba(255, 255, 255, 0.4);
+    50%, 100% {
+        transform: translateX(200%);
     }
 }
 
