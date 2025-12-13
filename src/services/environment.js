@@ -50,7 +50,7 @@ export const ENABLE_SINGLE_PURCHASE_LIMIT = true;
  * Single purchase limit configuration
  * The maximum amount (in USDT) for a single stake transaction.
  */
-export const SINGLE_PURCHASE_LIMIT = 500;
+export const SINGLE_PURCHASE_LIMIT = 1000;
 
 /**
  * Enable global staking limit based on USDT reserves in the pool.
