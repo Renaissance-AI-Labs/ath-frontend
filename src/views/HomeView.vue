@@ -39,6 +39,19 @@
         @close="closeShareFriendModal"
       />
     </transition>
+
+    <!-- Sidebar Trigger Button -->
+    <div class="btn-sidebar-mb d-lg-none right">
+        <button @click="openSidebar">
+            <img src="/asset/images/section/platform.svg" alt="Menu" width="20" height="20">
+        </button>
+    </div>
+
+    <!-- Right Sidebar -->
+    <HomeRightSidebar 
+      :is-open="isSidebarOpen" 
+      @close="closeSidebar" 
+    />
   </div>
 </template>
 
@@ -56,6 +69,8 @@ import InjectPoolModal from '../components/InjectPoolModal.vue';
 import ConfirmReferrerModal from '../components/ConfirmReferrerModal.vue';
 import ClaimRewardModal from '../components/ClaimRewardModal.vue'; // <-- Import the new modal
 import ShareFriendModal from '../components/ShareFriendModal.vue';
+import HomeRightSidebar from '../components/HomeRightSidebar.vue';
+
 import {
   walletState
 } from '../services/wallet';
@@ -92,9 +107,11 @@ export default {
     CTASection,
     ClaimRewardModal,
     ShareFriendModal,
+    HomeRightSidebar,
   },
   data() {
     return {
+      isSidebarOpen: false,
       isInjectModalVisible: false,
       isConfirmReferrerModalVisible: false,
       isClaimRewardModalVisible: false, // <-- Add state for the new modal
@@ -107,6 +124,12 @@ export default {
     };
   },
   methods: {
+    openSidebar() {
+        this.isSidebarOpen = true;
+    },
+    closeSidebar() {
+        this.isSidebarOpen = false;
+    },
     openInjectModal() {
       this.isInjectModalVisible = true;
     },
@@ -264,3 +287,7 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+/* Scoped styles can be empty if using global classes */
+</style>
