@@ -10,6 +10,7 @@ import PricingView from '../views/PricingView.vue';
 import UseCaseView from '../views/UseCaseView.vue';
 import UseCaseDetailView from '../views/UseCaseDetailView.vue';
 import XBrokersEventView from '../views/XBrokersEventView.vue';
+import CrashView from '../views/CrashView.vue';
 import { walletState, ensureCorrectNetwork } from '../services/wallet';
 
 const routes = [
@@ -17,6 +18,11 @@ const routes = [
     path: '/',
     name: 'Home',
     component: HomeView,
+  },
+  {
+    path: '/crash',
+    name: 'Crash',
+    component: CrashView,
   },
   {
     path: '/xbrokers-event',

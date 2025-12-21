@@ -23,6 +23,7 @@ import s7poolAbi from '../abis/s7pool.json';
 import stakeLimitAbi from '../abis/stake_limit.json';
 import nodePoolAbi from '../abis/node_pool.json';
 import nodeDividendPoolAbi from '../abis/node_dividend_pool.json';
+import crashAbi from '../abis/crash.json';
 // No need for a separate USDT ABI if it follows ERC20 standard like `ath.json`
 // import usdtAbi from '../abis/usdt.json';
 
@@ -46,7 +47,7 @@ const uniswapV2RouterAbi = [
 ];
 
 // --- Contract Addresses ---
-const contractAddresses = {
+export const contractAddresses = {
   referral: {
     production: '0xE8bF70FCcdA199A1CC2F90412e6Ab13779F95B3F', // To be deployed
     development: '0x1Ad59D67a7D413b0F053d33cf4Ec1FC92190C83A',
@@ -94,6 +95,10 @@ const contractAddresses = {
   nodeDividendPool: {
     production: '0x9f79772Ff1E4Dd61F1039aEc2AEeb415C62c471f',
     development: '0x3F4E253D329C767293F0B50670882Eb3761a6989',
+  },
+  crash: {
+    production: '0x4b5137D62D514F6463E17294e9A1c9D043C15859', // Using test address for now as per instructions
+    development: '0x4b5137D62D514F6463E17294e9A1c9D043C15859',
   }
 };
 
@@ -109,9 +114,10 @@ let s7poolContract;
 let stakeLimitContract;
 let nodePoolContract;
 let nodeDividendPoolContract;
+let crashContract;
 
 // We need to export these for other modules to use them.
-export { referralContract, stakingContract, athContract, usdtContract, s5poolContract, s6poolContract, s7poolContract, stakeLimitContract, nodePoolContract, nodeDividendPoolContract };
+export { referralContract, stakingContract, athContract, usdtContract, s5poolContract, s6poolContract, s7poolContract, stakeLimitContract, nodePoolContract, nodeDividendPoolContract, crashContract };
 
 // --- KPI Thresholds (as per Staking.sol) ---
 const THRESHOLDS = {
@@ -173,6 +179,7 @@ export const initializeContracts = async () => {
   const stakeLimitAddress = contractAddresses.stakeLimit[env];
   const nodePoolAddress = contractAddresses.nodePool[env];
   const nodeDividendPoolAddress = contractAddresses.nodeDividendPool[env];
+  const crashAddress = contractAddresses.crash[env];
 
   // Create new contract instances using the raw, unwrapped signer
   referralContract = new ethers.Contract(referralAddress, referralAbi, rawSigner);
@@ -186,6 +193,7 @@ export const initializeContracts = async () => {
   stakeLimitContract = new ethers.Contract(stakeLimitAddress, stakeLimitAbiWithMethod, rawSigner);
   nodePoolContract = new ethers.Contract(nodePoolAddress, nodePoolAbi, rawSigner);
   nodeDividendPoolContract = new ethers.Contract(nodeDividendPoolAddress, nodeDividendPoolAbi, rawSigner);
+  crashContract = new ethers.Contract(crashAddress, crashAbi, rawSigner);
 
   console.log("Contracts initialized:", {
     referral: await referralContract.getAddress(),
@@ -199,6 +207,7 @@ export const initializeContracts = async () => {
     stakeLimit: await stakeLimitContract.getAddress(),
     nodePool: await nodePoolContract.getAddress(),
     nodeDividendPool: await nodeDividendPoolContract.getAddress(),
+    crash: await crashContract.getAddress(),
   });
 
   walletState.contractsInitialized = true;
@@ -221,6 +230,7 @@ export const resetContracts = () => {
   stakeLimitContract = null;
   nodePoolContract = null;
   nodeDividendPoolContract = null;
+  crashContract = null;
   console.log("Contract instances have been reset.");
 };
 
