@@ -69,9 +69,9 @@ export const placeBet = async (amount, prediction) => {
   
   try {
     const amountWei = ethers.parseUnits(amount.toString(), 18);
-    const predictionScaled = Math.floor(prediction * 100);
+    const predictionScaled = Math.round(prediction * 100);
     
-    console.log("Placing bet params:", { amount: amountWei.toString(), prediction: predictionScaled });
+    console.log("Placing bet params:", { amount: amountWei.toString(), prediction: predictionScaled, originalPrediction: prediction });
 
     // Try static call to see revert reason more clearly
     try {
