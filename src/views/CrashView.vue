@@ -380,8 +380,7 @@ export default {
                 if (remainingBlocks > 0) {
                      expirationSeconds.value = estimatedSeconds;
                      startCountdown();
-                     // Also start block checker to sync time/status
-                     startBlockCheck(bet.betBlock);
+                     // No need to start block checker here as we have the state and timer
                 } else {
                      expirationSeconds.value = 0;
                      // Expired
@@ -421,23 +420,17 @@ export default {
             if (current > targetBlock) {
                 gameState.value = 'READY_TO_SETTLE';
                 
-                // Sync remaining time from chain
+                // Sync remaining time from chain ONCE
                 const expiryBlock = targetBlock + 255;
                 const remainingBlocks = Math.max(0, expiryBlock - current);
-                // Update expirationSeconds based on latest block data
                 const estimatedSeconds = Math.floor(remainingBlocks * 0.75); // 0.75s per block
                 
-                // Only update if significantly different to avoid jitter, OR if we just started tracking
-                // But wait, if we are counting down smoothly, we don't want to jump up/down every second.
-                // Let's take the chain data as "truth" but only apply it if our local countdown drifted too much (> 3s)
-                if (Math.abs(expirationSeconds.value - estimatedSeconds) > 3 || expirationSeconds.value === 0) {
-                     expirationSeconds.value = estimatedSeconds;
-                }
-                
-                // Start smooth countdown if not running
-                if (!countdownInterval) {
-                    startCountdown();
-                }
+                expirationSeconds.value = estimatedSeconds;
+                startCountdown();
+
+                // Stop checking blocks, rely on local countdown
+                clearInterval(blockCheckInterval);
+                blockCheckInterval = null;
             } else {
                 // Still waiting
                 gameState.value = 'WAITING_BLOCK';
