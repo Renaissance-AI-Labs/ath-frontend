@@ -7,9 +7,9 @@
             <span class="hafl-plus pst-left_bot wow bounceInScale"></span>
             <span class="hafl-plus pst-right_bot wow bounceInScale"></span>
             <div class="s-name text-caption font-2">
-              <div class="breadcrumbs-list">
-                <router-link to="/" class="text-white link font-2">HOME</router-link>
-                <span>/</span>
+              <div class="breadcrumbs-list" style="font-size: 30px;">
+                <!-- <router-link to="/" class="text-white link font-2">CRASH</router-link>
+                <span> & </span> -->
                 <span class="hacker-text_transform no-delay current-page">CRASH</span>
               </div>
             </div>
@@ -19,7 +19,7 @@
       <span class="br-line"></span>
     </div>
 
-    <section class="flat-spacing-2 crash-container">
+    <section class="flat-spacing-2 crash-container" style="padding-top: 0px !important;">
       <div class="container">
         <div class="row">
           <!-- Game Section -->
@@ -163,13 +163,13 @@
                   <tr v-for="(item, index) in historyData" :key="index">
                     <td>{{ formatTime(item.timestamp) }}</td>
                     <td v-if="activeTab === 'all'">{{ formatAddr(item.player) }}</td>
-                    <td>{{ parseFloat(item.amount).toFixed(2) }}</td>
+                    <td>{{ formatAmount4(item.amount) }}</td>
                     <td>{{ item.prediction.toFixed(2) }}x</td>
                     <td :class="getResultColor(item)">
                         {{ formatCrashPoint(item.crashPoint) }}
                     </td>
                     <td :class="{ 'text-success': item.won }">
-                      {{ parseFloat(item.payout).toFixed(2) }}
+                      {{ formatAmount4(item.payout) }}
                     </td>
                   </tr>
                   <tr v-if="historyData.length === 0">
@@ -255,9 +255,17 @@ export default {
         if (expirationSeconds.value > 0) {
             return `${t('crash.settle')} (${expirationSeconds.value}s)`;
         }
+        // If expired, let user re-bet. The contract will handle voiding the old bet if user calls it, 
+        // but UI should probably prompt to start new.
+        // Wait, "Void" (funds returned) is different from "Expired" (funds lost).
+        // If blockhash expires (256 blocks), user loses bet. 
+        // So showing "Bet Expired" is correct for status, but we want to allow new bet.
+        
+        // Requirement 1: If user refreshed page, and bet is expired, it should still show "Settle" or handle it.
+        // Requirement 2: After successful settle (voided or not), show IDLE/Bet button.
+        
         if (gameState.value === 'READY_TO_SETTLE' && expirationSeconds.value === 0) {
-             // Technically we should check if we ever *had* time, but 0 usually means expired or just started.
-             // If we entered READY_TO_SETTLE, we calc time. If it's 0, it means expired.
+             // technically expired
              return t('crash.betExpired'); 
         }
         return t('crash.settle');
@@ -356,20 +364,43 @@ export default {
             if (!provider) return; // Should be connected
             
             const currentBlock = await provider.getBlockNumber();
-            if (currentBlock > bet.betBlock) {
-                gameState.value = 'READY_TO_SETTLE';
-            } else {
-                gameState.value = 'WAITING_BLOCK';
-                startBlockCheck(bet.betBlock);
-            }
             
             // Restore inputs
             betAmount.value = bet.amount;
             prediction.value = bet.prediction.toFixed(2);
+
+            if (currentBlock > bet.betBlock) {
+                gameState.value = 'READY_TO_SETTLE';
+                
+                // Initialize countdown for existing bet
+                const expiryBlock = bet.betBlock + 255;
+                const remainingBlocks = Math.max(0, expiryBlock - currentBlock);
+                const estimatedSeconds = Math.floor(remainingBlocks * 0.75); // 0.75s per block approx on BSC/similar
+
+                if (remainingBlocks > 0) {
+                     expirationSeconds.value = estimatedSeconds;
+                     startCountdown();
+                     // No need to start block checker here as we have the state and timer
+                } else {
+                     expirationSeconds.value = 0;
+                     // Expired
+                }
+
+            } else {
+                gameState.value = 'WAITING_BLOCK';
+                startBlockCheck(bet.betBlock);
+            }
         } else {
             gameState.value = 'IDLE';
             drawIdleCanvas();
         }
+    };
+
+    const stopBlockCheck = () => {
+        clearInterval(blockCheckInterval);
+        clearInterval(countdownInterval);
+        blockCheckInterval = null;
+        countdownInterval = null;
     };
 
     const startBlockCheck = (targetBlock) => {
@@ -389,23 +420,17 @@ export default {
             if (current > targetBlock) {
                 gameState.value = 'READY_TO_SETTLE';
                 
-                // Sync remaining time from chain
+                // Sync remaining time from chain ONCE
                 const expiryBlock = targetBlock + 255;
                 const remainingBlocks = Math.max(0, expiryBlock - current);
-                // Update expirationSeconds based on latest block data
                 const estimatedSeconds = Math.floor(remainingBlocks * 0.75); // 0.75s per block
                 
-                // Only update if significantly different to avoid jitter, OR if we just started tracking
-                // But wait, if we are counting down smoothly, we don't want to jump up/down every second.
-                // Let's take the chain data as "truth" but only apply it if our local countdown drifted too much (> 3s)
-                if (Math.abs(expirationSeconds.value - estimatedSeconds) > 3 || expirationSeconds.value === 0) {
-                     expirationSeconds.value = estimatedSeconds;
-                }
-                
-                // Start smooth countdown if not running
-                if (!countdownInterval) {
-                    startCountdown();
-                }
+                expirationSeconds.value = estimatedSeconds;
+                startCountdown();
+
+                // Stop checking blocks, rely on local countdown
+                clearInterval(blockCheckInterval);
+                blockCheckInterval = null;
             } else {
                 // Still waiting
                 gameState.value = 'WAITING_BLOCK';
@@ -470,6 +495,7 @@ export default {
     };
 
     const handleSettle = async () => {
+        stopBlockCheck();
         gameState.value = 'SETTLING';
         const result = await settleBet();
         
@@ -479,6 +505,8 @@ export default {
             if (result.voided) {
                 showToast(t('crash.betExpired'));
                 gameState.value = 'IDLE';
+                // Reset to idle canvas
+                drawIdleCanvas();
                 return;
             }
 
@@ -489,8 +517,23 @@ export default {
             // Start Animation
             startAnimation(result.crashPoint);
         } else {
-            // Failed to settle
-            gameState.value = 'READY_TO_SETTLE';
+            // Failed to settle - could be network error OR truly expired/failed
+            // If it failed because it's expired/not found, we should probably reset to IDLE so user can bet again.
+            // For now, keep as is unless we know why it failed.
+            // If the error was "No active bet found", settleBet returns null.
+            
+            // If we are here, it means settleBet returned null.
+            // Check if we still have an active bet?
+            const bet = await getActiveBet();
+            if (!bet) {
+                // No bet found, so we are IDLE
+                gameState.value = 'IDLE';
+                drawIdleCanvas();
+            } else {
+                 // Bet exists but settle failed (maybe network), stay in READY_TO_SETTLE
+                 gameState.value = 'READY_TO_SETTLE';
+                 startBlockCheck(bet.betBlock);
+            }
         }
     };
 
@@ -702,6 +745,14 @@ export default {
         return val.toFixed(2) + 'x';
     };
 
+    const formatAmount4 = (val) => {
+        if (!val) return '0.0000';
+        const num = parseFloat(val);
+        if (isNaN(num)) return '0.0000';
+        // Truncate to 4 decimals
+        return (Math.floor(num * 10000) / 10000).toFixed(4);
+    };
+
     const getResultColor = (item) => {
         if (item.crashPoint === 0) return 'text-danger'; // Timeout
         if (item.crashPoint < 1.01) return 'text-danger'; // Instant crash
@@ -807,6 +858,7 @@ export default {
         formatTime,
         formatAddr,
         formatCrashPoint,
+        formatAmount4,
         getResultColor,
         loadMoreHistory,
         placeholderText,
