@@ -98,16 +98,33 @@
         </div>
       </div>
     </section>
+
+    <!-- Sidebar Trigger Button -->
+    <div class="btn-sidebar-mb d-lg-none right">
+        <button @click="openSidebar" style="background-color: #111111;">
+            <img src="/asset/images/section/platform.svg" alt="Menu" width="50" height="50">
+        </button>
+    </div>
+
+    <!-- Right Sidebar -->
+    <HomeRightSidebar 
+      :is-open="isSidebarOpen" 
+      @close="closeSidebar" 
+    />
   </div>
 </template>
 
 <script>
 import { ref, onMounted, watch, computed } from 'vue';
+import HomeRightSidebar from '../components/HomeRightSidebar.vue';
 import { walletState } from '../services/wallet';
 import { getPersonalCenterData } from '../services/gameLevel';
 
 export default {
   name: 'PersonalCenterView',
+  components: {
+    HomeRightSidebar
+  },
   setup() {
     const userLevel = ref(0);
     const totalWin = ref("0");
@@ -117,6 +134,17 @@ export default {
     // New refs for progress
     const nextLevelTarget = ref("0");
     const isMaxLevel = ref(false);
+
+    // Sidebar State
+    const isSidebarOpen = ref(false);
+    
+    const openSidebar = () => {
+        isSidebarOpen.value = true;
+    };
+    
+    const closeSidebar = () => {
+        isSidebarOpen.value = false;
+    };
 
     const loadData = async () => {
       if (!walletState.isConnected) return;
@@ -213,7 +241,10 @@ export default {
       nextLevelTarget,
       isMaxLevel,
       progressPercent,
-      remainingToNextLevel
+      remainingToNextLevel,
+      isSidebarOpen,
+      openSidebar,
+      closeSidebar
     };
   }
 };

@@ -187,11 +187,25 @@
         </div>
       </div>
     </section>
+
+    <!-- Sidebar Trigger Button -->
+    <div class="btn-sidebar-mb d-lg-none right">
+        <button @click="openSidebar" style="background-color: #111111;">
+            <img src="/asset/images/section/platform.svg" alt="Menu" width="50" height="50">
+        </button>
+    </div>
+
+    <!-- Right Sidebar -->
+    <HomeRightSidebar 
+      :is-open="isSidebarOpen" 
+      @close="closeSidebar" 
+    />
   </div>
 </template>
 
 <script>
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue';
+import HomeRightSidebar from '../components/HomeRightSidebar.vue';
 import { 
   getAthBalance, 
   getAthAllowance, 
@@ -243,6 +257,17 @@ export default {
     const maxPrediction = ref(100);
 
     const expirationSeconds = ref(0); // Seconds until expiration
+    
+    // Sidebar State
+    const isSidebarOpen = ref(false);
+    
+    const openSidebar = () => {
+        isSidebarOpen.value = true;
+    };
+    
+    const closeSidebar = () => {
+        isSidebarOpen.value = false;
+    };
     
     const placeholderText = computed(() => {
         const min = typeof minPrediction.value === 'number' ? minPrediction.value : 1.01;
@@ -869,7 +894,10 @@ export default {
         maxPrediction,
         handleBetAmountBlur,
         handlePredictionBlur,
-        adjustPrediction
+        adjustPrediction,
+        isSidebarOpen,
+        openSidebar,
+        closeSidebar
     };
   }
 };

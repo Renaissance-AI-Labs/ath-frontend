@@ -22,7 +22,7 @@ export const getUserLevel = async () => {
 };
 
 /**
- * Fetches the user's accumulated team total winnings.
+ * Fetches the user's team accumulated total winnings.
  * @returns {Promise<string>} Formatted total winnings.
  */
 export const getUserTotalWin = async () => {

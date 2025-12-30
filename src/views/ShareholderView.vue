@@ -197,11 +197,25 @@
         </div>
       </div>
     </section>
+
+    <!-- Sidebar Trigger Button -->
+    <div class="btn-sidebar-mb d-lg-none right">
+        <button @click="openSidebar" style="background-color: #111111;">
+            <img src="/asset/images/section/platform.svg" alt="Menu" width="50" height="50">
+        </button>
+    </div>
+
+    <!-- Right Sidebar -->
+    <HomeRightSidebar 
+      :is-open="isSidebarOpen" 
+      @close="closeSidebar" 
+    />
   </div>
 </template>
 
 <script>
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import HomeRightSidebar from '../components/HomeRightSidebar.vue';
 import { walletState } from '../services/wallet';
 import { 
     getBankerData, 
@@ -218,6 +232,9 @@ import { t } from '../i18n';
 
 export default {
   name: 'ShareholderView',
+  components: {
+    HomeRightSidebar
+  },
   setup() {
     const loading = ref(false);
     const bankerData = ref({
@@ -236,6 +253,17 @@ export default {
     const withdrawShares = ref('');
     const allowance = ref('0');
     
+    // Sidebar State
+    const isSidebarOpen = ref(false);
+    
+    const openSidebar = () => {
+        isSidebarOpen.value = true;
+    };
+    
+    const closeSidebar = () => {
+        isSidebarOpen.value = false;
+    };
+
     // Countdown logic
     const now = ref(Math.floor(Date.now() / 1000));
     let timer = null;
@@ -386,7 +414,10 @@ export default {
         formatNumber,
         formatDuration,
         activeTab,
-        t
+        t,
+        isSidebarOpen,
+        openSidebar,
+        closeSidebar
     };
   }
 };
