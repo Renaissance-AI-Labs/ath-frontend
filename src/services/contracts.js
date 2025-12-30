@@ -97,8 +97,8 @@ export const contractAddresses = {
     development: '0x3F4E253D329C767293F0B50670882Eb3761a6989',
   },
   crash: {
-    production: '0x4b5137D62D514F6463E17294e9A1c9D043C15859', // Using test address for now as per instructions
-    development: '0x4b5137D62D514F6463E17294e9A1c9D043C15859',
+    production: '',
+    development: '0x58Ad6227c74D9000d0d6014682bD990aAB217eE0',
   }
 };
 
