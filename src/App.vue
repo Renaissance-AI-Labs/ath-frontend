@@ -78,6 +78,9 @@ export default {
     initializeLanguage();
     autoConnectWallet();
 
+    // Listen for custom event to open wallet modal
+    document.addEventListener('open-wallet-modal', this.openModal);
+
     // Check for referral code in URL
     try {
       const urlParams = new URLSearchParams(window.location.search);
@@ -122,6 +125,9 @@ export default {
         });
       });
     });
+  },
+  beforeUnmount() {
+    document.removeEventListener('open-wallet-modal', this.openModal);
   }
 }
 </script>

@@ -33,12 +33,66 @@
 
     <section class="flat-spacing-3">
       <div class="container">
-        <h2 class="s-title only-title ol-tt-2 font-3 text-linear text-center px-16">
-          Personal Center
-        </h2>
         <div class="row">
-          <div class="col-12 text-center text-white">
-            <p>Coming Soon...</p>
+          <div class="col-lg-10 col-xl-8 mx-auto">
+            
+            <!-- User Stats Card -->
+            <div class="box-feature-2 mt-0 mb-30">
+              <div class="d-flex justify-content-between align-items-center flex-wrap gap-20">
+                <div class="d-flex align-items-center gap-20">
+                  <!-- Removed Icon -->
+                  <div>
+                    <h5 class="font-3 text-white mb-1">当前等级</h5>
+                    <div class="h3 font-3 text-linear">Lv {{ userLevel }}</div>
+                  </div>
+                </div>
+                
+                <div class="d-flex align-items-center gap-20">
+                   <!-- Removed Icon -->
+                  <div>
+                    <h5 class="font-3 text-white mb-1">团队累计赢奖</h5>
+                    <div class="h3 font-3 text-linear">{{ formatAmount(totalWin) }} ATH</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Level Up Progress Bar -->
+            <div class="box-feature-2 mt-30">
+               <h4 class="font-3 text-white mb-20 text-center">
+                 {{ isMaxLevel ? '已达到最高等级' : '下一等级进度' }}
+               </h4>
+               
+               <div v-if="!isMaxLevel" class="level-progress-container">
+                 <div class="d-flex justify-content-between text-body-2 text-white mb-2">
+                    <span>当前: {{ formatAmount(totalWin) }} ATH</span>
+                    <span>目标: {{ formatAmount(nextLevelTarget) }} ATH</span>
+                 </div>
+                 
+                 <div class="progress-track">
+                    <div class="progress-fill" :style="{ width: progressPercent + '%' }">
+                      <div class="progress-glow"></div>
+                    </div>
+                 </div>
+                 
+                 <div class="text-center mt-3 text-main-2 font-2">
+                    距离下一等级还需 <span class="text-white">{{ formatAmount(remainingToNextLevel) }} ATH</span>
+                 </div>
+               </div>
+               
+               <div v-else class="text-center">
+                 <p class="text-linear h5">Congratulations! You are at the top!</p>
+               </div>
+            </div>
+
+            <!-- Loading/Connect Hint -->
+            <div v-if="!walletState.isConnected" class="text-center mt-30">
+               <p class="text-white mb-3">请连接钱包查看个人数据</p>
+               <a href="#" @click.prevent="connectWallet" class="tf-btn style-2 text-body-3 animate-btn animate-dark">
+                  连接钱包
+               </a>
+            </div>
+
           </div>
         </div>
       </div>
@@ -47,8 +101,169 @@
 </template>
 
 <script>
+import { ref, onMounted, watch, computed } from 'vue';
+import { walletState } from '../services/wallet';
+import { getPersonalCenterData } from '../services/gameLevel';
+
 export default {
   name: 'PersonalCenterView',
+  setup() {
+    const userLevel = ref(0);
+    const totalWin = ref("0");
+    const levelConfigs = ref([]);
+    const isLoading = ref(false);
+    
+    // New refs for progress
+    const nextLevelTarget = ref("0");
+    const isMaxLevel = ref(false);
+
+    const loadData = async () => {
+      if (!walletState.isConnected) return;
+      
+      isLoading.value = true;
+      try {
+        const data = await getPersonalCenterData();
+        userLevel.value = data.level;
+        totalWin.value = data.totalWin;
+        levelConfigs.value = data.configs;
+        
+        // Calculate progress
+        const sortedConfigs = data.configs.sort((a, b) => a.level - b.level);
+        const nextConfig = sortedConfigs.find(c => c.level > userLevel.value);
+        
+        if (nextConfig) {
+             nextLevelTarget.value = nextConfig.minWinAmount;
+             isMaxLevel.value = false;
+        } else {
+             // If no next config, user is at max level or logic is different
+             // Check if userLevel is indeed the highest in configs
+             if (sortedConfigs.length > 0 && userLevel.value >= sortedConfigs[sortedConfigs.length - 1].level) {
+                 isMaxLevel.value = true;
+             } else if (sortedConfigs.length === 0) {
+                 // No configs loaded
+                 isMaxLevel.value = false; 
+             } else {
+                 // Fallback
+                 isMaxLevel.value = true;
+             }
+        }
+
+      } catch (e) {
+        console.error("Failed to load personal center data", e);
+      } finally {
+        isLoading.value = false;
+      }
+    };
+    
+    const progressPercent = computed(() => {
+        if (isMaxLevel.value) return 100;
+        const current = parseFloat(totalWin.value);
+        const target = parseFloat(nextLevelTarget.value);
+        if (target <= 0) return 0;
+        const p = (current / target) * 100;
+        return Math.min(Math.max(p, 0), 100);
+    });
+    
+    const remainingToNextLevel = computed(() => {
+        if (isMaxLevel.value) return "0";
+        const current = parseFloat(totalWin.value);
+        const target = parseFloat(nextLevelTarget.value);
+        const diff = target - current;
+        return diff > 0 ? diff.toString() : "0";
+    });
+
+    onMounted(() => {
+      if (walletState.isConnected) {
+        loadData();
+      }
+    });
+
+    watch(() => walletState.isConnected, (newVal) => {
+      if (newVal) {
+        loadData();
+      } else {
+        userLevel.value = 0;
+        totalWin.value = "0";
+        isMaxLevel.value = false;
+      }
+    });
+
+    // Helper to format large numbers
+    const formatAmount = (amount) => {
+      if (!amount) return '0';
+      const num = parseFloat(amount);
+      if (num === 0) return '0';
+      // Format with commas and 2 decimal places
+      return num.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+    };
+
+    const connectWallet = () => {
+        document.dispatchEvent(new CustomEvent('open-wallet-modal'));
+    }
+
+    return {
+      walletState,
+      userLevel,
+      totalWin,
+      levelConfigs,
+      isLoading,
+      formatAmount,
+      connectWallet,
+      nextLevelTarget,
+      isMaxLevel,
+      progressPercent,
+      remainingToNextLevel
+    };
+  }
 };
 </script>
 
+<style scoped>
+.box-feature-2 {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+/* Progress Bar Styles */
+.level-progress-container {
+    width: 100%;
+}
+
+.progress-track {
+    width: 100%;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00C8FF, #0080FF, #8A2BE2);
+    background-size: 200% 100%;
+    border-radius: 6px;
+    transition: width 0.6s ease-out;
+    position: relative;
+    animation: gradientMove 3s linear infinite;
+}
+
+.progress-glow {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 10px;
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    filter: blur(2px);
+}
+
+@keyframes gradientMove {
+    0% { background-position: 100% 0; }
+    100% { background-position: 0 0; }
+}
+</style>

@@ -25,6 +25,7 @@ import nodePoolAbi from '../abis/node_pool.json';
 import nodeDividendPoolAbi from '../abis/node_dividend_pool.json';
 import crashAbi from '../abis/crash.json';
 import bankerPoolAbi from '../abis/bankerpool.json';
+import gameLevelAbi from '../abis/game_level.json';
 // No need for a separate USDT ABI if it follows ERC20 standard like `ath.json`
 // import usdtAbi from '../abis/usdt.json';
 
@@ -104,6 +105,10 @@ export const contractAddresses = {
   bankerPool: {
     production: '',
     development: '0x1a6Ce0091075a3C81bcad078cDc59A55668F12a4',
+  },
+  gameLevel: {
+    production: '',
+    development: '0xdBB653bA08987a6Ec630909fCb62d938cdF3cE9B',
   }
 };
 
@@ -121,9 +126,10 @@ let nodePoolContract;
 let nodeDividendPoolContract;
 let crashContract;
 let bankerPoolContract;
+let gameLevelContract;
 
 // We need to export these for other modules to use them.
-export { referralContract, stakingContract, athContract, usdtContract, s5poolContract, s6poolContract, s7poolContract, stakeLimitContract, nodePoolContract, nodeDividendPoolContract, crashContract, bankerPoolContract };
+export { referralContract, stakingContract, athContract, usdtContract, s5poolContract, s6poolContract, s7poolContract, stakeLimitContract, nodePoolContract, nodeDividendPoolContract, crashContract, bankerPoolContract, gameLevelContract };
 
 // --- KPI Thresholds (as per Staking.sol) ---
 const THRESHOLDS = {
@@ -187,6 +193,7 @@ export const initializeContracts = async () => {
   const nodeDividendPoolAddress = contractAddresses.nodeDividendPool[env];
   const crashAddress = contractAddresses.crash[env];
   const bankerPoolAddress = contractAddresses.bankerPool[env];
+  const gameLevelAddress = contractAddresses.gameLevel[env];
 
   // Create new contract instances using the raw, unwrapped signer
   referralContract = new ethers.Contract(referralAddress, referralAbi, rawSigner);
@@ -202,6 +209,7 @@ export const initializeContracts = async () => {
   nodeDividendPoolContract = new ethers.Contract(nodeDividendPoolAddress, nodeDividendPoolAbi, rawSigner);
   crashContract = new ethers.Contract(crashAddress, crashAbi, rawSigner);
   bankerPoolContract = new ethers.Contract(bankerPoolAddress, bankerPoolAbi, rawSigner);
+  gameLevelContract = new ethers.Contract(gameLevelAddress, gameLevelAbi, rawSigner);
 
   console.log("Contracts initialized:", {
     referral: await referralContract.getAddress(),
@@ -217,6 +225,7 @@ export const initializeContracts = async () => {
     nodeDividendPool: await nodeDividendPoolContract.getAddress(),
     crash: await crashContract.getAddress(),
     bankerPool: await bankerPoolContract.getAddress(),
+    gameLevel: await gameLevelContract.getAddress(),
   });
 
   walletState.contractsInitialized = true;
@@ -241,6 +250,7 @@ export const resetContracts = () => {
   nodeDividendPoolContract = null;
   crashContract = null;
   bankerPoolContract = null;
+  gameLevelContract = null;
   console.log("Contract instances have been reset.");
 };
 
