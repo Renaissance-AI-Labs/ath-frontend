@@ -28,30 +28,27 @@
     </div>
     <!-- /Page Title -->
     
-    <section class="flat-spacing-3">
+    <section class="flat-spacing-3" style="padding-top: 10px; padding-bottom: 10px;">
       <div class="container" style="padding: 0 30px;">
         <!-- 3.1 Core Data Display -->
-        <h2 class="s-title only-title ol-tt-2 font-3 text-linear text-center px-16 mb-5">
-          {{ t('banker.dashboard') }}
-        </h2>
         
-        <div class="row mb-5">
+        <div class="row mb-3">
             <!-- Total Liquidity -->
-            <div class="col-6 mb-4">
+            <div class="col-md-3 col-6 mb-3">
                 <div class="stat-card">
                     <h5 class="text-white-50 font-2 mb-2 fs-small">{{ t('banker.tvl') }}</h5>
                     <h3 class="text-white font-3 fs-medium">{{ formatNumber(bankerData.tvl) }} ATH</h3>
                 </div>
             </div>
              <!-- My Principal -->
-            <div class="col-6 mb-4">
+            <div class="col-md-3 col-6 mb-3">
                 <div class="stat-card">
                     <h5 class="text-white-50 font-2 mb-2 fs-small">{{ t('banker.myPrincipal') }}</h5>
                     <h3 class="text-white font-3 fs-medium">{{ formatNumber(bankerData.invested) }} ATH</h3>
                 </div>
             </div>
             <!-- Current Position Value -->
-            <div class="col-6 mb-4">
+            <div class="col-md-3 col-6 mb-3">
                 <div class="stat-card">
                     <h5 class="text-white-50 font-2 mb-2 fs-small">{{ t('banker.currentValue') }}</h5>
                     <h3 class="text-white font-3 fs-medium">{{ formatNumber(bankerData.value) }} ATH</h3>
@@ -61,17 +58,17 @@
                 </div>
             </div>
              <!-- Current Net Value -->
-            <div class="col-6 mb-4">
+            <div class="col-md-3 col-6 mb-3">
                 <div class="stat-card">
                     <h5 class="text-white-50 font-2 mb-2 fs-small">{{ t('banker.sharePrice') }}</h5>
-                    <h3 class="text-white font-3 fs-medium">1 Share = {{ formatNumber(bankerData.sharePrice) }} ATH</h3>
+                    <h3 class="text-white font-3 fs-medium">{{ formatNumber(bankerData.sharePrice) }} ATH</h3>
                     <div class="small mt-1 fs-extra-small text-white-50">
                         {{ t('banker.myShares') }}: {{ formatNumber(bankerData.shares) }}
                     </div>
                 </div>
             </div>
             <!-- Pending Reward -->
-            <div class="col-12 mb-4">
+            <div class="col-12 mb-3">
                 <div class="stat-card d-flex align-items-center justify-content-between flex-wrap gap-3">
                     <div>
                         <h5 class="text-white-50 font-2 mb-1 fs-small">{{ t('banker.pendingDividend') }}</h5>
@@ -399,8 +396,8 @@ export default {
 .stat-card {
     background: transparent;
     border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 24px;
+    border-radius: 12px;
+    padding: 15px;
     height: 100%;
 }
 
