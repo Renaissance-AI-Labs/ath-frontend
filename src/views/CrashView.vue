@@ -899,6 +899,9 @@ export default {
         openSidebar,
         closeSidebar
     };
+  },
+  components: {
+    HomeRightSidebar
   }
 };
 </script>
