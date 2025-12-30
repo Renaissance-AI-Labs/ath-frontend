@@ -31,64 +31,65 @@
     </div>
     <!-- /Page Title -->
 
-    <section class="flat-spacing-3">
+    <section class="flat-spacing-3 pt-5">
       <div class="container">
         <div class="row">
           <div class="col-lg-10 col-xl-8 mx-auto">
             
-            <!-- User Stats Card -->
-            <div class="box-feature-2 mt-0 mb-30">
-              <div class="d-flex justify-content-between align-items-center flex-wrap gap-20">
-                <div class="d-flex align-items-center gap-20">
-                  <!-- Removed Icon -->
-                  <div>
-                    <h5 class="font-3 text-white mb-1">当前等级</h5>
-                    <div class="h3 font-3 text-linear">Lv {{ userLevel }}</div>
+            <!-- User Stats Section -->
+            <div class="stats-grid mb-5">
+              <div class="row align-items-center">
+                <div class="col-6 border-end border-white-10">
+                  <div class="stat-item text-center">
+                    <h5 class="font-2 text-white opacity-75 mb-2 text-uppercase spacing-1">当前等级</h5>
+                    <div class="stat-value">
+                      <span class="font-3 text-white h1 fw-bold">Lv {{ userLevel }}</span>
+                    </div>
                   </div>
                 </div>
                 
-                <div class="d-flex align-items-center gap-20">
-                   <!-- Removed Icon -->
-                  <div>
-                    <h5 class="font-3 text-white mb-1">团队累计赢奖</h5>
-                    <div class="h3 font-3 text-linear">{{ formatAmount(totalWin) }} ATH</div>
+                <div class="col-6">
+                  <div class="stat-item text-center">
+                    <h5 class="font-2 text-white opacity-75 mb-2 text-uppercase spacing-1">团队累计赢奖</h5>
+                    <div class="stat-value">
+                      <span class="font-3 text-linear h2 fw-bold">{{ formatAmount(totalWin) }}</span>
+                      <span class="font-2 text-white opacity-75 ms-2">ATH</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Level Up Progress Bar -->
-            <div class="box-feature-2 mt-30">
-               <h4 class="font-3 text-white mb-20 text-center">
-                 {{ isMaxLevel ? '已达到最高等级' : '下一等级进度' }}
-               </h4>
+            <div class="progress-section px-3 px-md-5">
+               <div class="d-flex justify-content-between align-items-end mb-3">
+                 <h4 class="font-3 text-white mb-0 h5">
+                   {{ isMaxLevel ? '已达到最高等级' : '下一等级进度' }}
+                 </h4>
+               </div>
                
                <div v-if="!isMaxLevel" class="level-progress-container">
-                 <div class="d-flex justify-content-between text-body-2 text-white mb-2">
-                    <span>当前: {{ formatAmount(totalWin) }} ATH</span>
-                    <span>目标: {{ formatAmount(nextLevelTarget) }} ATH</span>
-                 </div>
-                 
                  <div class="progress-track">
                     <div class="progress-fill" :style="{ width: progressPercent + '%' }">
                       <div class="progress-glow"></div>
                     </div>
                  </div>
                  
-                 <div class="text-center mt-3 text-main-2 font-2">
-                    距离下一等级还需 <span class="text-white">{{ formatAmount(remainingToNextLevel) }} ATH</span>
+                 <div class="d-flex justify-content-between text-caption text-white opacity-50 mt-2 font-2">
+                    <span>当前: {{ formatAmount(totalWin) }}</span>
+                    <span>目标: {{ formatAmount(nextLevelTarget) }} (还需 {{ formatAmount(remainingToNextLevel) }} ATH)</span>
                  </div>
                </div>
                
-               <div v-else class="text-center">
-                 <p class="text-linear h5">Congratulations! You are at the top!</p>
+               <div v-else class="text-center py-4">
+                 <p class="text-linear h4 font-3">Congratulations! You are at the top!</p>
                </div>
             </div>
 
             <!-- Loading/Connect Hint -->
-            <div v-if="!walletState.isConnected" class="text-center mt-30">
-               <p class="text-white mb-3">请连接钱包查看个人数据</p>
-               <a href="#" @click.prevent="connectWallet" class="tf-btn style-2 text-body-3 animate-btn animate-dark">
+            <div v-if="!walletState.isConnected" class="text-center mt-5">
+               <p class="text-white mb-4 opacity-75">请连接钱包查看个人数据</p>
+               <a href="#" @click.prevent="connectWallet" class="tf-btn style-2 text-body-3 animate-btn animate-dark px-5">
                   连接钱包
                </a>
             </div>
@@ -219,11 +220,16 @@ export default {
 </script>
 
 <style scoped>
-.box-feature-2 {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 24px;
+.stats-grid {
+    padding: 20px 0;
+}
+
+.border-white-10 {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.spacing-1 {
+    letter-spacing: 1px;
 }
 
 /* Progress Bar Styles */
@@ -233,22 +239,22 @@ export default {
 
 .progress-track {
     width: 100%;
-    height: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
+    height: 8px; /* Thinner track for cleaner look */
+    background: rgba(255, 255, 255, 0.08); /* More subtle track */
+    border-radius: 4px;
     overflow: hidden;
     position: relative;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, #00C8FF, #0080FF, #8A2BE2);
     background-size: 200% 100%;
-    border-radius: 6px;
+    border-radius: 4px;
     transition: width 0.6s ease-out;
     position: relative;
     animation: gradientMove 3s linear infinite;
+    box-shadow: 0 0 15px rgba(0, 200, 255, 0.4); /* Add glow to the bar itself */
 }
 
 .progress-glow {
@@ -256,10 +262,11 @@ export default {
     top: 0;
     right: 0;
     bottom: 0;
-    width: 10px;
-    background: rgba(255, 255, 255, 0.6);
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-    filter: blur(2px);
+    width: 20px; /* Wider glow */
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 1);
+    filter: blur(4px);
+    opacity: 0.5;
 }
 
 @keyframes gradientMove {

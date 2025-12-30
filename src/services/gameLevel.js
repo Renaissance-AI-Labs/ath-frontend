@@ -22,7 +22,7 @@ export const getUserLevel = async () => {
 };
 
 /**
- * Fetches the user's accumulated total winnings.
+ * Fetches the user's accumulated team total winnings.
  * @returns {Promise<string>} Formatted total winnings.
  */
 export const getUserTotalWin = async () => {
@@ -30,11 +30,11 @@ export const getUserTotalWin = async () => {
     return "0";
   }
   try {
-    const totalWin = await gameLevelContract.userTotalWin(walletState.address);
+    const totalWin = await gameLevelContract.getTeamTotalWin(walletState.address);
     // Assuming ATH token has 18 decimals, same as others in this project
     return ethers.formatUnits(totalWin, 18);
   } catch (error) {
-    console.error("Error fetching user total win:", error);
+    console.error("Error fetching team total win:", error);
     return "0";
   }
 };
