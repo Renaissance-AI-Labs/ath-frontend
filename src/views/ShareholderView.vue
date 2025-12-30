@@ -12,10 +12,7 @@
                 <span class="bar_center"></span>
               </span>
               <div class="breadcrumbs-list">
-                <router-link to="/" class="text-white link font-2">
-                  HOME
-                </router-link>
-                <span>/</span>
+                <span></span>
                 <span class="hacker-text_transform no-delay current-page">
                   SHAREHOLDER
                 </span>
@@ -32,7 +29,7 @@
     <!-- /Page Title -->
     
     <section class="flat-spacing-3">
-      <div class="container">
+      <div class="container" style="padding: 0 30px;">
         <!-- 3.1 Core Data Display -->
         <h2 class="s-title only-title ol-tt-2 font-3 text-linear text-center px-16 mb-5">
           {{ t('banker.dashboard') }}
@@ -40,104 +37,127 @@
         
         <div class="row mb-5">
             <!-- Total Liquidity -->
-            <div class="col-lg-4 col-md-6 mb-4">
+            <div class="col-6 mb-4">
                 <div class="stat-card">
-                    <h5 class="text-white-50 font-2 mb-2">{{ t('banker.tvl') }}</h5>
-                    <h3 class="text-white font-3">{{ formatNumber(bankerData.tvl) }} ATH</h3>
+                    <h5 class="text-white-50 font-2 mb-2 fs-small">{{ t('banker.tvl') }}</h5>
+                    <h3 class="text-white font-3 fs-medium">{{ formatNumber(bankerData.tvl) }} ATH</h3>
                 </div>
             </div>
              <!-- My Principal -->
-            <div class="col-lg-4 col-md-6 mb-4">
+            <div class="col-6 mb-4">
                 <div class="stat-card">
-                    <h5 class="text-white-50 font-2 mb-2">{{ t('banker.myPrincipal') }}</h5>
-                    <h3 class="text-white font-3">{{ formatNumber(bankerData.invested) }} ATH</h3>
+                    <h5 class="text-white-50 font-2 mb-2 fs-small">{{ t('banker.myPrincipal') }}</h5>
+                    <h3 class="text-white font-3 fs-medium">{{ formatNumber(bankerData.invested) }} ATH</h3>
                 </div>
             </div>
             <!-- Current Position Value -->
-            <div class="col-lg-4 col-md-6 mb-4">
+            <div class="col-6 mb-4">
                 <div class="stat-card">
-                    <h5 class="text-white-50 font-2 mb-2">{{ t('banker.currentValue') }}</h5>
-                    <h3 class="text-white font-3">{{ formatNumber(bankerData.value) }} ATH</h3>
-                    <div class="small mt-1" :class="bankerData.pnl >= 0 ? 'text-success' : 'text-danger'">
+                    <h5 class="text-white-50 font-2 mb-2 fs-small">{{ t('banker.currentValue') }}</h5>
+                    <h3 class="text-white font-3 fs-medium">{{ formatNumber(bankerData.value) }} ATH</h3>
+                    <div class="small mt-1 fs-extra-small" :class="bankerData.pnl >= 0 ? 'text-success' : 'text-danger'">
                          PnL: {{ bankerData.pnl >= 0 ? '+' : '' }}{{ formatNumber(bankerData.pnl) }} ATH
                     </div>
                 </div>
             </div>
              <!-- Current Net Value -->
-            <div class="col-lg-4 col-md-6 mb-4">
+            <div class="col-6 mb-4">
                 <div class="stat-card">
-                    <h5 class="text-white-50 font-2 mb-2">{{ t('banker.sharePrice') }}</h5>
-                    <h3 class="text-white font-3">1 Share = {{ formatNumber(bankerData.sharePrice) }} ATH</h3>
+                    <h5 class="text-white-50 font-2 mb-2 fs-small">{{ t('banker.sharePrice') }}</h5>
+                    <h3 class="text-white font-3 fs-medium">1 Share = {{ formatNumber(bankerData.sharePrice) }} ATH</h3>
+                    <div class="small mt-1 fs-extra-small text-white-50">
+                        {{ t('banker.myShares') }}: {{ formatNumber(bankerData.shares) }}
+                    </div>
                 </div>
             </div>
             <!-- Pending Reward -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="stat-card">
-                    <h5 class="text-white-50 font-2 mb-2">{{ t('banker.pendingDividend') }}</h5>
-                    <h3 class="text-highlight font-3">{{ formatNumber(bankerData.pending) }} ATH</h3>
-                    <button class="btn-action btn-sm mt-2" @click="handleHarvest" :disabled="loading || bankerData.pending <= 0">
-                        {{ loading ? t('banker.processing') : t('banker.harvest') }}
-                    </button>
+            <div class="col-12 mb-4">
+                <div class="stat-card d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div>
+                        <h5 class="text-white-50 font-2 mb-1 fs-small">{{ t('banker.pendingDividend') }}</h5>
+                        <h3 class="text-white font-3 fs-medium mb-0">{{ formatNumber(bankerData.pending) }} ATH</h3>
+                    </div>
+                    <div style="min-width: 120px;">
+                        <button class="tf-btn w-100 py-2 px-3 fs-small" @click="handleHarvest" :disabled="loading || bankerData.pending <= 0">
+                            {{ loading ? t('banker.processing') : t('banker.harvest') }}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- 3.2 Interactions -->
-        <div class="row">
-            <!-- Deposit -->
-            <div class="col-lg-6 mb-4">
+        <!-- 3.2 Interactions (Tabs) -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
                 <div class="action-card">
-                    <h4 class="text-white font-3 mb-4">{{ t('banker.depositTitle') }}</h4>
-                    <p class="text-white-50 mb-4">
-                        {{ t('banker.depositDesc') }}
-                        <br>
-                        <small class="text-warning">{{ t('banker.lockWarning', { duration: formatDuration(bankerData.lockPeriod) }) }}</small>
-                    </p>
-                    
-                    <div class="form-group mb-3">
-                        <label class="text-white mb-2">{{ t('banker.amountLabel') }}</label>
-                        <div class="input-group">
-                            <input type="number" v-model="depositAmount" class="form-control" placeholder="0.0">
-                            <button class="btn-outline-secondary" type="button" @click="setMaxDeposit">Max</button>
-                        </div>
-                        <small class="text-white-50">{{ t('banker.balanceLabel', { amount: formatNumber(athBalance) }) }}</small>
-                    </div>
-
-                    <div class="d-flex gap-3">
-                        <button v-if="!isApproved" class="btn-action w-100" @click="handleApprove" :disabled="loading">
-                            {{ loading ? t('banker.approving') : t('banker.approve') }}
+                    <!-- Tabs Header -->
+                    <div class="d-flex border-bottom border-secondary mb-4">
+                        <button 
+                            class="tab-btn flex-fill pb-3 font-2 fs-medium" 
+                            :class="{ active: activeTab === 'deposit' }"
+                            @click="activeTab = 'deposit'"
+                        >
+                            {{ t('banker.depositTitle') }}
                         </button>
-                        <button v-else class="btn-action w-100" @click="handleDeposit" :disabled="loading || !depositAmount">
-                            {{ loading ? t('banker.depositing') : t('banker.deposit') }}
+                        <button 
+                            class="tab-btn flex-fill pb-3 font-2 fs-medium" 
+                            :class="{ active: activeTab === 'withdraw' }"
+                            @click="activeTab = 'withdraw'"
+                        >
+                            {{ t('banker.withdrawTitle') }}
                         </button>
                     </div>
-                </div>
-            </div>
 
-            <!-- Withdraw -->
-            <div class="col-lg-6 mb-4">
-                <div class="action-card">
-                    <h4 class="text-white font-3 mb-4">{{ t('banker.withdrawTitle') }}</h4>
-                    <p class="text-white-50 mb-4">
-                        {{ t('banker.withdrawDesc') }}
-                    </p>
-                    
-                     <div v-if="isLocked" class="alert alert-warning mb-3">
-                        <i class="icon icon-Lock"></i> {{ t('banker.lockedStatus', { time: lockCountdown }) }}
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label class="text-white mb-2">{{ t('banker.withdrawSharesLabel') }}</label>
-                        <div class="input-group">
-                            <input type="number" v-model="withdrawShares" class="form-control" placeholder="0.0">
-                            <button class="btn-outline-secondary" type="button" @click="setMaxWithdraw">Max</button>
+                    <!-- Deposit Content -->
+                    <div v-if="activeTab === 'deposit'">
+                        <p class="text-white-50 mb-4 fs-small text-center">
+                            {{ t('banker.depositDesc') }}
+                            <br>
+                            <small class="text-warning d-block mt-2">{{ t('banker.lockWarning', { duration: formatDuration(bankerData.lockPeriod) }) }}</small>
+                        </p>
+                        
+                        <div class="form-group mb-4">
+                            <label class="text-white mb-2 fs-small">{{ t('banker.amountLabel') }}</label>
+                            <div class="input-container d-flex align-items-center">
+                                <input type="number" v-model="depositAmount" class="form-control custom-input" placeholder="0.0">
+                                <button class="max-btn" type="button" @click="setMaxDeposit">MAX</button>
+                            </div>
+                            <small class="text-white-50 fs-extra-small mt-1 d-block">{{ t('banker.balanceLabel', { amount: formatNumber(athBalance) }) }}</small>
                         </div>
-                        <small class="text-white-50">{{ t('banker.availableShares', { amount: formatNumber(bankerData.shares) }) }}</small>
+
+                        <div class="d-flex gap-3">
+                            <button v-if="!isApproved" class="tf-btn w-100" @click="handleApprove" :disabled="loading">
+                                {{ loading ? t('banker.approving') : t('banker.approve') }}
+                            </button>
+                            <button v-else class="tf-btn w-100" @click="handleDeposit" :disabled="loading || !depositAmount">
+                                {{ loading ? t('banker.depositing') : t('banker.deposit') }}
+                            </button>
+                        </div>
                     </div>
 
-                    <button class="btn-action w-100" @click="handleWithdraw" :disabled="loading || isLocked || !withdrawShares">
-                        {{ loading ? t('banker.withdrawing') : t('banker.withdraw') }}
-                    </button>
+                    <!-- Withdraw Content -->
+                    <div v-if="activeTab === 'withdraw'">
+                        <p class="text-white-50 mb-4 fs-small text-center">
+                            {{ t('banker.withdrawDesc') }}
+                        </p>
+                        
+                        <div v-if="isLocked" class="alert alert-warning mb-3 fs-small">
+                            <i class="icon icon-Lock"></i> {{ t('banker.lockedStatus', { time: lockCountdown }) }}
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label class="text-white mb-2 fs-small">{{ t('banker.withdrawSharesLabel') }}</label>
+                            <div class="input-container d-flex align-items-center">
+                                <input type="number" v-model="withdrawShares" class="form-control custom-input" placeholder="0.0">
+                                <button class="max-btn" type="button" @click="setMaxWithdraw">MAX</button>
+                            </div>
+                            <small class="text-white-50 fs-extra-small mt-1 d-block">{{ t('banker.availableShares', { amount: formatNumber(bankerData.shares) }) }}</small>
+                        </div>
+
+                        <button class="tf-btn w-100" @click="handleWithdraw" :disabled="loading || isLocked || !withdrawShares">
+                            {{ loading ? t('banker.withdrawing') : t('banker.withdraw') }}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -243,6 +263,8 @@ export default {
         if (!depositAmount.value) return parseFloat(allowance.value) > 0;
         return parseFloat(allowance.value) >= parseFloat(depositAmount.value);
     });
+
+    const activeTab = ref('deposit');
 
     const loadData = async () => {
         console.log('[ShareholderView] loadData called. isConnected:', walletState.isConnected);
@@ -366,6 +388,7 @@ export default {
         setMaxWithdraw,
         formatNumber,
         formatDuration,
+        activeTab,
         t
     };
   }
@@ -374,17 +397,17 @@ export default {
 
 <style scoped>
 .stat-card {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 16px;
     padding: 24px;
     height: 100%;
 }
 
 .action-card {
-    background: #111;
-    border: 1px solid #333;
-    border-radius: 12px;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 16px;
     padding: 30px;
     height: 100%;
 }
@@ -395,18 +418,19 @@ export default {
 }
 
 .btn-action {
-    background: #333;
-    color: #fff;
-    border: 1px solid #444;
-    padding: 10px 20px;
-    border-radius: 6px;
+    background: transparent;
+    color: var(--white);
+    border: 1px solid var(--line);
+    padding: 8px 20px;
+    border-radius: 4px;
     font-weight: 600;
     transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .btn-action:hover:not(:disabled) {
-    background: #444;
-    border-color: #666;
+    background: var(--line);
+    border-color: var(--line);
 }
 
 .btn-action:disabled {
@@ -414,21 +438,152 @@ export default {
     cursor: not-allowed;
 }
 
+.tf-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px 32px;
+    background: var(--white);
+    color: var(--black);
+    border-radius: 4px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-family: 'DepartureMono', sans-serif;
+}
+
+.tf-btn:hover:not(:disabled) {
+    background: var(--line);
+    color: var(--white);
+}
+
+.tf-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .input-group .form-control {
-    background: #222;
-    border-color: #444;
-    color: #fff;
+    background: transparent;
+    border-color: var(--line);
+    color: var(--white);
+    border-right: none;
+    border-radius: 4px 0 0 4px;
+}
+
+.input-group .form-control:focus {
+    box-shadow: none;
+    border-color: var(--line);
 }
 
 .input-group .btn-outline-secondary {
-    border-color: #444;
-    color: #aaa;
+    border-color: var(--line);
+    color: var(--text-2);
+    border-left: none;
+    border-radius: 0 4px 4px 0;
 }
+
 .input-group .btn-outline-secondary:hover {
-    background: #333;
-    color: #fff;
+    background: transparent;
+    color: var(--white);
+    border-color: var(--line);
 }
 
 .text-success { color: #22c55e !important; }
 .text-danger { color: #ef4444 !important; }
+
+/* Input Container Styling */
+.input-container {
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 0 12px;
+    transition: border-color 0.3s ease;
+}
+
+.input-container:focus-within {
+    border-color: var(--white);
+}
+
+.custom-input {
+    background: transparent !important;
+    border: none !important;
+    color: var(--white) !important;
+    padding: 12px 0;
+    box-shadow: none !important;
+    width: 100%;
+}
+
+.custom-input::placeholder {
+    color: var(--text-2);
+}
+
+.max-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--white);
+    border: none;
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: 8px;
+    font-family: 'DepartureMono', sans-serif;
+}
+
+.max-btn:hover {
+    background: var(--white);
+    color: var(--black);
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.tab-btn:hover {
+    color: var(--white);
+}
+
+.tab-btn.active {
+    color: var(--white);
+    border-bottom-color: var(--white);
+}
+
+/* Remove old input-group styles that are no longer needed or might conflict */
+.input-group .form-control,
+.input-group .btn-outline-secondary {
+    display: none; 
+}
+
+/* Font size adjustments for mobile/responsive */
+.fs-small {
+    font-size: 14px;
+}
+
+.fs-medium {
+    font-size: 20px;
+}
+
+.fs-extra-small {
+    font-size: 12px;
+}
+
+/* Specific overrides for very small screens if needed */
+@media (max-width: 576px) {
+    .fs-small {
+        font-size: 12px;
+    }
+    .fs-medium {
+        font-size: 16px;
+    }
+    .stat-card {
+        padding: 16px; /* Reduce padding on mobile */
+    }
+}
 </style>
