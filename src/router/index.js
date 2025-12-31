@@ -11,6 +11,8 @@ import UseCaseView from '../views/UseCaseView.vue';
 import UseCaseDetailView from '../views/UseCaseDetailView.vue';
 import XBrokersEventView from '../views/XBrokersEventView.vue';
 import CrashView from '../views/CrashView.vue';
+import ShareholderView from '../views/ShareholderView.vue';
+import PersonalCenterView from '../views/PersonalCenterView.vue';
 import { walletState, ensureCorrectNetwork } from '../services/wallet';
 
 const routes = [
@@ -20,9 +22,19 @@ const routes = [
     component: HomeView,
   },
   {
+    path: '/personal-center',
+    name: 'PersonalCenter',
+    component: PersonalCenterView,
+  },
+  {
     path: '/crash',
     name: 'Crash',
     component: CrashView,
+  },
+  {
+    path: '/shareholder',
+    name: 'Shareholder',
+    component: ShareholderView,
   },
   {
     path: '/xbrokers-event',

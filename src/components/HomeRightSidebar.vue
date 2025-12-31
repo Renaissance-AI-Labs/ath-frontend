@@ -65,6 +65,25 @@
               </ul>
             </div>
 
+            <div class="sidebar-item">
+              <h5 class="sb-title font-3 text-linear">信息中心</h5>
+              <div class="br-line has-dot"></div>
+              <ul class="sb-category">
+                <li>
+                  <router-link to="/personal-center" class="text-body-1" @click="$emit('close')">
+                    个人中心
+                    <i class="icon icon-ArrowUpRight"></i>
+                  </router-link>
+                </li>
+                <li>
+                  <router-link to="/shareholder" class="text-body-1" @click="$emit('close')">
+                    成为股东
+                    <i class="icon icon-ArrowUpRight"></i>
+                  </router-link>
+                </li>
+              </ul>
+            </div>
+
             <!-- Recent posts -->
             <!-- 
             <div class="sidebar-item">

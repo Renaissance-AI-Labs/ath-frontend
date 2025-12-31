@@ -6,11 +6,11 @@
           <div class="sect-tagline_inner">
             <span class="hafl-plus pst-left_bot wow bounceInScale"></span>
             <span class="hafl-plus pst-right_bot wow bounceInScale"></span>
-            <div class="s-name text-caption font-2">
-              <div class="breadcrumbs-list" style="font-size: 30px;">
-                <!-- <router-link to="/" class="text-white link font-2">CRASH</router-link>
+            <div class="s-name text-caption ">
+              <div class="breadcrumbs-list" style="font-size: 30px; margin-top: 10px; margin-bottom: 0px;">
+                <!-- <router-link to="/" class="text-white link ">CRASH</router-link>
                 <span> & </span> -->
-                <span class="hacker-text_transform no-delay current-page">CRASH</span>
+                <span class="crash-title no-delay">CRASH</span>
               </div>
             </div>
           </div>
@@ -29,60 +29,60 @@
               <!-- Left: Controls -->
               <div class="crash-controls">
                 <div class="control-group">
-                  <label class="font-2">{{ t('crash.betAmount') }}</label>
+                  <label class="">{{ t('crash.betAmount') }}</label>
                   <div class="input-group">
                     <input 
                       type="number" 
                       v-model="betAmount" 
                       @blur="handleBetAmountBlur"
-                      :disabled="gameState !== 'IDLE'"
+                      :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'"
                       :placeholder="`${minBet} - ${maxBet}`" 
                       :min="minBet"
                       :max="maxBet"
-                      class="form-control font-2"
+                      class="form-control "
                     />
                     <div class="input-group-append">
-                      <button class="font-2 append-btn" @click="setAmountPercent(0.5)" :disabled="gameState !== 'IDLE'">1/2</button>
-                      <button class="font-2 append-btn" @click="setAmountPercent(2)" :disabled="gameState !== 'IDLE'">2x</button>
-                      <button class="font-2 append-btn" @click="setMaxAmount" :disabled="gameState !== 'IDLE'">Max</button>
+                      <button class=" append-btn" @click="setAmountPercent(0.5)" :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'">1/2</button>
+                      <button class=" append-btn" @click="setAmountPercent(2)" :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'">2x</button>
+                      <button class=" append-btn" @click="setMaxAmount" :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'">Max</button>
                     </div>
                   </div>
-                  <div class="balance-text font-2">
+                  <div class="balance-text ">
                     {{ t('crash.balance', { amount: parseFloat(athBalance).toFixed(4) }) }}
                   </div>
                 </div>
 
-                <div class="control-group mt-3">
-                  <label class="font-2">{{ t('crash.prediction') }}</label>
+                <div class="control-group mt-2">
+                  <label class="">{{ t('crash.prediction') }}</label>
                   <div class="input-group">
                     <input 
                       type="number" 
                       v-model="prediction" 
                       @blur="handlePredictionBlur"
-                      :disabled="gameState !== 'IDLE'"
+                      :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'"
                       :placeholder="placeholderText" 
                       step="0.01"
                       :min="minPrediction"
                       :max="maxPrediction"
-                      class="form-control font-2"
+                      class="form-control "
                     />
                     <div class="input-group-append">
                       <div class="prediction-arrows">
-                        <button class="arrow-btn left" @click="adjustPrediction(-1)" :disabled="gameState !== 'IDLE'">
+                        <button class="arrow-btn left" @click="adjustPrediction(-1)" :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'">
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
                         </button>
-                        <button class="arrow-btn right" @click="adjustPrediction(1)" :disabled="gameState !== 'IDLE'">
+                        <button class="arrow-btn right" @click="adjustPrediction(1)" :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'">
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
                         </button>
                       </div>
                     </div>
                   </div>
-                  <!-- <div class="win-chance font-2">
+                  <!-- <div class="win-chance ">
                     {{ t('crash.winChance', { chance: winChance }) }}
                   </div> -->
                 </div>
 
-                <div class="action-btn-wrapper mt-4">
+                <div class="action-btn-wrapper mt-3">
                   <!-- Connect Wallet -->
                   <button v-if="!walletState.isConnected" class="tf-button style-1 w-100" @click="connectWallet">
                     {{ t('crash.connectWallet') }}
@@ -94,7 +94,7 @@
                   </button>
                   
                   <!-- Bet -->
-                  <button v-else-if="gameState === 'IDLE'" class="tf-button style-1 w-100 btn-bet" @click="handleBet" :disabled="isBetting">
+                  <button v-else-if="gameState === 'IDLE' || gameState === 'RESULT'" class="tf-button style-1 w-100 btn-bet" @click="handleBet" :disabled="isBetting">
                     {{ isBetting ? t('crash.betting') : t('crash.bet') }}
                   </button>
 
@@ -104,19 +104,36 @@
                   </button>
                   
                   <!-- Settle -->
-                  <button v-else-if="gameState === 'READY_TO_SETTLE'" class="tf-button style-1 w-100 btn-settle" @click="handleSettle">
-                    {{ settleButtonText }}
-                  </button>
+                  <div v-else-if="gameState === 'READY_TO_SETTLE'" class="w-100">
+                    <button class="tf-button style-1 w-100 btn-settle" @click="handleSettle" :class="{ 'btn-expired': expirationSeconds === 0 }">
+                        <span v-if="expirationSeconds > 0">即刻开奖</span>
+                        <span v-else>已过开奖时间，点击开启下一局</span>
+                        <span v-if="expirationSeconds > 0" class="countdown-timer text-warning" style="margin-left: 8px;">
+                            {{ expirationSeconds }}s
+                        </span>
+                    </button>
+                    <div class="settle-tip mt-2 text-warning" style="font-size: 11px; line-height: 1.4;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px; display: inline-block; vertical-align: middle;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                        <span v-if="expirationSeconds > 0">请在倒计时结束前点击开奖，倒计时结束后开奖将无法获得奖金。</span>
+                        <span v-else>倒计时结束后未开奖，需再次点击按钮与合约交互开启下一局。</span>
+                    </div>
+                  </div>
 
                    <!-- Settling -->
                   <button v-else-if="gameState === 'SETTLING'" class="tf-button style-1 w-100 disabled" disabled>
-                    {{ t('crash.settling') }}
+                    <span v-if="isExpiredSettle">正在准备下一轮</span>
+                    <span v-else>{{ t('crash.settling') }}</span>
                   </button>
                   
                   <!-- Animating -->
-                  <button v-else-if="gameState === 'ANIMATING' || gameState === 'RESULT'" class="tf-button style-1 w-100 disabled" disabled>
+                  <button v-else-if="gameState === 'ANIMATING'" class="tf-button style-1 w-100 disabled" disabled>
                     {{ t('crash.launching') }}
                   </button>
+                  
+                  <!-- <div class="debug-buttons mt-2" style="display: flex; gap: 10px;">
+                    <button class="tf-button style-1 w-50" @click="testCrashAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Crash</button>
+                    <button class="tf-button style-1 w-50" @click="testWinAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Win</button>
+                  </div> -->
                 </div>
               </div>
 
@@ -126,15 +143,37 @@
                 
                 <!-- Overlay Info -->
                 <div class="canvas-overlay">
-                  <div class="multiplier-display font-2" :class="multiplierClass">
-                    {{ currentMultiplier.toFixed(2) }}x
+                  <!-- Loading / Waiting -->
+                  <div v-if="gameState === 'WAITING_BLOCK'" class="status-overlay">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <div class="mt-2 ">{{ t('crash.waitingBlockOverlay') }}</div>
                   </div>
-                  <div v-if="gameState === 'RESULT'" class="result-message font-2" :class="{ 'text-success': lastGameWon, 'text-danger': !lastGameWon }">
-                    {{ lastGameWon ? t('crash.youWon', { amount: lastPayout }) : t('crash.crashed') }}
+
+                  <!-- Multiplier Display (Always visible during game, and result) -->
+                  <div v-if="gameState === 'ANIMATING' || gameState === 'RESULT'" class="multiplier-display-wrapper">
+                      <div class="multiplier-display " :class="[multiplierClass, { 'crashed-anim': gameState === 'RESULT' && !lastGameWon, 'won-anim': gameState === 'RESULT' && lastGameWon }]">
+                        {{ currentMultiplier.toFixed(2) }}x
+                      </div>
+                      
+                      <!-- Current Payout (Animating) -->
+                      <div v-if="gameState === 'ANIMATING'" class="current-payout text-highlight-gold" style="font-size: 1.5rem; font-weight: bold; margin-top: 5px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">
+                          +{{ (parseFloat(betAmount || 0) * currentMultiplier).toFixed(4) }} ATH
+                      </div>
+
+                      <!-- Result Status Text -->
+                      <div v-if="gameState === 'RESULT'" class="result-status " :class="lastGameWon ? 'text-success' : 'text-danger'">
+                        {{ lastGameWon ? 'YOU WON' : 'CRASHED' }}
+                      </div>
+                      
+                      <div v-if="gameState === 'RESULT' && lastGameWon" class="result-payout  text-success">
+                        +{{ lastPayout }} ATH
+                      </div>
                   </div>
-                  <div v-if="gameState === 'WAITING_BLOCK'" class="status-message font-2">
-                    {{ t('crash.waitingBlockOverlay') }}
-                  </div>
+                </div>
+                
+                <!-- Time Label (Right of X-Axis) -->
+                <div v-if="gameState === 'ANIMATING' || gameState === 'RESULT'" class="time-display-wrapper" style="position: absolute; right: 25px; bottom: 40px; color: #ffffff; font-family: 'Geist', sans-serif; font-weight: bold;">
+                    {{ currentTimeLabel }}s
                 </div>
               </div>
             </div>
@@ -143,12 +182,12 @@
           <!-- History Section -->
           <div class="col-lg-12">
             <div class="history-tabs">
-              <button class="tab-btn font-2" :class="{ active: activeTab === 'my' }" @click="activeTab = 'my'">{{ t('crash.myBets') }}</button>
-              <button class="tab-btn font-2" :class="{ active: activeTab === 'all' }" @click="activeTab = 'all'">{{ t('crash.allBets') }}</button>
+              <button class="tab-btn " :class="{ active: activeTab === 'my' }" @click="activeTab = 'my'">{{ t('crash.myBets') }}</button>
+              <button class="tab-btn " :class="{ active: activeTab === 'all' }" @click="activeTab = 'all'">{{ t('crash.allBets') }}</button>
             </div>
             
             <div class="history-table-wrapper">
-              <table class="table font-2 text-white">
+              <table class="table  text-white">
                 <thead>
                   <tr>
                     <th>{{ t('crash.time') }}</th>
@@ -187,11 +226,25 @@
         </div>
       </div>
     </section>
+
+    <!-- Sidebar Trigger Button -->
+    <div class="btn-sidebar-mb d-lg-none right">
+        <button @click="openSidebar" style="background-color: #111111;">
+            <img src="/asset/images/section/platform.svg" alt="Menu" width="50" height="50">
+        </button>
+    </div>
+
+    <!-- Right Sidebar -->
+    <HomeRightSidebar 
+      :is-open="isSidebarOpen" 
+      @close="closeSidebar" 
+    />
   </div>
 </template>
 
 <script>
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue';
+import HomeRightSidebar from '../components/HomeRightSidebar.vue';
 import { 
   getAthBalance, 
   getAthAllowance, 
@@ -243,6 +296,19 @@ export default {
     const maxPrediction = ref(100);
 
     const expirationSeconds = ref(0); // Seconds until expiration
+    const isExpiredSettle = ref(false); // Flag to track if we are settling an expired bet
+    const currentTimeLabel = ref(0); // Current elapsed time in seconds for display
+
+    // Sidebar State
+    const isSidebarOpen = ref(false);
+    
+    const openSidebar = () => {
+        isSidebarOpen.value = true;
+    };
+    
+    const closeSidebar = () => {
+        isSidebarOpen.value = false;
+    };
     
     const placeholderText = computed(() => {
         const min = typeof minPrediction.value === 'number' ? minPrediction.value : 1.01;
@@ -357,7 +423,11 @@ export default {
 
     const checkActiveBet = async () => {
         const bet = await getActiveBet();
-        if (bet) {
+        
+        // Always draw idle canvas to show axes
+        drawIdleCanvas();
+
+        if (bet && bet.betBlock > 0) {
             console.log("Found active bet:", bet);
             // Check if we need to wait for block or can settle
             const provider = walletState.signer?.provider;
@@ -370,22 +440,17 @@ export default {
             prediction.value = bet.prediction.toFixed(2);
 
             if (currentBlock > bet.betBlock) {
-                gameState.value = 'READY_TO_SETTLE';
-                
                 // Initialize countdown for existing bet
                 const expiryBlock = bet.betBlock + 255;
                 const remainingBlocks = Math.max(0, expiryBlock - currentBlock);
-                const estimatedSeconds = Math.floor(remainingBlocks * 0.75); // 0.75s per block approx on BSC/similar
+                const estimatedSeconds = Math.ceil(remainingBlocks * 0.75); // 0.75s per block approx on BSC/similar
 
+                expirationSeconds.value = estimatedSeconds;
                 if (remainingBlocks > 0) {
-                     expirationSeconds.value = estimatedSeconds;
                      startCountdown();
-                     // No need to start block checker here as we have the state and timer
-                } else {
-                     expirationSeconds.value = 0;
-                     // Expired
                 }
-
+                
+                gameState.value = 'READY_TO_SETTLE';
             } else {
                 gameState.value = 'WAITING_BLOCK';
                 startBlockCheck(bet.betBlock);
@@ -418,15 +483,15 @@ export default {
             console.log(`Checking block: ${current} > ${targetBlock}`);
             
             if (current > targetBlock) {
-                gameState.value = 'READY_TO_SETTLE';
-                
                 // Sync remaining time from chain ONCE
                 const expiryBlock = targetBlock + 255;
                 const remainingBlocks = Math.max(0, expiryBlock - current);
-                const estimatedSeconds = Math.floor(remainingBlocks * 0.75); // 0.75s per block
+                const estimatedSeconds = Math.ceil(remainingBlocks * 0.75); // 0.75s per block
                 
                 expirationSeconds.value = estimatedSeconds;
-                startCountdown();
+                if (estimatedSeconds > 0) startCountdown();
+
+                gameState.value = 'READY_TO_SETTLE';
 
                 // Stop checking blocks, rely on local countdown
                 clearInterval(blockCheckInterval);
@@ -469,8 +534,18 @@ export default {
     };
 
     const handleBet = async () => {
-        if (!betAmount.value || !prediction.value) return;
+        if (!betAmount.value || !prediction.value) {
+            showToast(t('crash.inputError'));
+            return;
+        }
         
+        // Reset visual state if we are coming from RESULT
+        if (gameState.value === 'RESULT') {
+             gameState.value = 'IDLE'; // Optional transition
+        }
+        
+        drawIdleCanvas(); // Ensure clean grid
+
         console.log("handleBet parameters:", { betAmount: betAmount.value, prediction: parseFloat(prediction.value) });
         isBetting.value = true;
         const success = await placeBet(betAmount.value, parseFloat(prediction.value));
@@ -487,7 +562,7 @@ export default {
             // We need block.number > betBlock.
             // We can call getActiveBet to get the exact betBlock.
             const bet = await getActiveBet();
-            if (bet) {
+            if (bet && bet.betBlock > 0) {
                 startBlockCheck(bet.betBlock);
             }
         }
@@ -495,45 +570,67 @@ export default {
     };
 
     const handleSettle = async () => {
-        stopBlockCheck();
-        gameState.value = 'SETTLING';
-        const result = await settleBet();
+        // Record if we are settling an expired bet before stopping checks
+        isExpiredSettle.value = expirationSeconds.value <= 0;
         
-        if (result) {
-            console.log("Settle result:", result);
+        // Stop checks temporarily
+        stopBlockCheck();
+        
+        // Optimistically set settling state
+        gameState.value = 'SETTLING';
+        
+        try {
+            const result = await settleBet();
             
-            if (result.voided) {
-                showToast(t('crash.betExpired'));
-                gameState.value = 'IDLE';
-                // Reset to idle canvas
-                drawIdleCanvas();
-                return;
-            }
-
-            crashPoint.value = result.crashPoint;
-            lastGameWon.value = result.won;
-            lastPayout.value = result.payout;
-            
-            // Start Animation
-            startAnimation(result.crashPoint);
-        } else {
-            // Failed to settle - could be network error OR truly expired/failed
-            // If it failed because it's expired/not found, we should probably reset to IDLE so user can bet again.
-            // For now, keep as is unless we know why it failed.
-            // If the error was "No active bet found", settleBet returns null.
-            
-            // If we are here, it means settleBet returned null.
-            // Check if we still have an active bet?
-            const bet = await getActiveBet();
-            if (!bet) {
-                // No bet found, so we are IDLE
-                gameState.value = 'IDLE';
-                drawIdleCanvas();
+            if (result) {
+                console.log("Settle result:", result);
+                
+                if (result.voided) {
+                    showToast(t('crash.betExpired'));
+                    gameState.value = 'IDLE';
+                    // Reset to idle canvas
+                    drawIdleCanvas();
+                    return;
+                }
+    
+                crashPoint.value = result.crashPoint;
+                lastGameWon.value = result.won;
+                lastPayout.value = result.payout;
+                
+                // Start Animation
+                startAnimation(result.crashPoint);
             } else {
-                 // Bet exists but settle failed (maybe network), stay in READY_TO_SETTLE
-                 gameState.value = 'READY_TO_SETTLE';
-                 startBlockCheck(bet.betBlock);
+                 // Failed to settle (e.g. user rejected)
+                 // Restore state to allow retry
+                 console.log("Settle returned null, restoring state");
+                 
+                 // Check if we still have an active bet to be safe
+                 const bet = await getActiveBet();
+                 if (bet) {
+                     // Restore state
+                     gameState.value = 'READY_TO_SETTLE';
+                     
+                     // Restore timer based on current block
+                     const provider = walletState.signer?.provider;
+                     if (provider) {
+                         const current = await provider.getBlockNumber();
+                         const expiryBlock = bet.betBlock + 255;
+                         const remainingBlocks = Math.max(0, expiryBlock - current);
+                         // Recalculate time
+                         expirationSeconds.value = Math.ceil(remainingBlocks * 0.75);
+                         if (remainingBlocks > 0) startCountdown();
+                     }
+                 } else {
+                     gameState.value = 'IDLE';
+                     drawIdleCanvas();
+                 }
             }
+        } catch (e) {
+             console.error("Handle settle error:", e);
+             // Restore state on error
+             gameState.value = 'READY_TO_SETTLE';
+             // Resume countdown if needed (simple resume)
+             if (expirationSeconds.value > 0) startCountdown();
         }
     };
 
@@ -543,7 +640,10 @@ export default {
         if (canvas) {
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = canvas.parentElement.clientHeight;
-            if (gameState.value === 'IDLE') drawIdleCanvas();
+            // Draw idle canvas for static states to ensure axes are visible
+            if (['IDLE', 'WAITING_BLOCK', 'READY_TO_SETTLE', 'SETTLING', 'RESULT'].includes(gameState.value)) {
+                 drawIdleCanvas();
+            }
         }
     };
 
@@ -553,25 +653,109 @@ export default {
         const ctx = canvas.getContext('2d');
         const w = canvas.width;
         const h = canvas.height;
+        
+        // Define padding for axes
+        const paddingTop = 20; // Added top padding
+        const paddingBottom = 40; 
+        const paddingRight = 15;
+        const paddingLeft = 10; 
+        
+        const drawH = h - paddingBottom - paddingTop;
+        const drawW = w - paddingRight - paddingLeft;
 
         ctx.clearRect(0, 0, w, h);
         
-        // Draw grid
-        ctx.strokeStyle = '#333';
+        // Draw Faint Grid (Vertical)
+        ctx.strokeStyle = 'rgba(51, 51, 51, 0.5)';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        // Simple grid
-        for (let x = 0; x < w; x += 50) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
-        for (let y = 0; y < h; y += 50) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+        // Vertical lines
+        for (let i = 1; i <= 4; i++) {
+            const x = paddingLeft + (drawW / 4) * i;
+            ctx.moveTo(x, paddingTop);
+            ctx.lineTo(x, paddingTop + drawH);
+        }
+
+        // Horizontal lines (5 intervals)
+        for (let i = 0; i <= 5; i++) {
+            const y = paddingTop + drawH - (drawH / 5) * i;
+            ctx.moveTo(paddingLeft, y);
+            ctx.lineTo(w - paddingRight, y);
+        }
+        ctx.stroke();
+
+        // Draw Axes
+        ctx.beginPath();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#555'; 
+        // X Axis
+        ctx.moveTo(paddingLeft, paddingTop + drawH);
+        ctx.lineTo(w - paddingRight, paddingTop + drawH);
+        // Y Axis
+        ctx.moveTo(paddingLeft, paddingTop);
+        ctx.lineTo(paddingLeft, paddingTop + drawH);
         ctx.stroke();
 
         // Draw static curve preview
-        ctx.strokeStyle = '#666';
-        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.setLineDash([5, 5]); 
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(0, h);
-        ctx.quadraticCurveTo(w/2, h, w, h*0.2);
+        ctx.moveTo(paddingLeft, paddingTop + drawH);
+        ctx.quadraticCurveTo(paddingLeft + drawW/2, paddingTop + drawH, paddingLeft + drawW, paddingTop + drawH*0.2);
         ctx.stroke();
+        ctx.setLineDash([]); 
+
+        // Draw "Ready" text
+        // ctx.font = '20px "Geist", sans-serif';
+        // ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        // ctx.textAlign = 'center';
+        // ctx.fillText(t('crash.waitingForNextRound'), paddingLeft + drawW/2, paddingTop + drawH/2);
+
+        // Draw X-Axis Labels
+        ctx.save();
+        ctx.font = 'bold 12px "Geist", sans-serif'; 
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.textAlign = 'center';
+        
+        const labels = [2, 4, 6, 8];
+        const positions = [0.25, 0.50, 0.75, 1.0];
+        
+        labels.forEach((sec, index) => {
+             const xPos = paddingLeft + positions[index] * drawW;
+             const yPos = h - 15; 
+             
+             if (index === 3) {
+                 ctx.textAlign = 'right';
+                 ctx.fillText(sec + 's', xPos, yPos); 
+             } else {
+                 ctx.textAlign = 'center';
+                 ctx.fillText(sec + 's', xPos, yPos); 
+             }
+        });
+        ctx.restore();
+
+        // Draw Y-Axis Labels (Last to be on top)
+        ctx.save();
+        ctx.font = 'bold 12px "Geist", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        
+        const idleMaxMult = 2.0;
+        for (let i = 0; i <= 5; i++) {
+            const y = paddingTop + drawH - (drawH / 5) * i;
+            const val = 1.0 + (idleMaxMult - 1.0) * (i / 5);
+            const text = val.toFixed(1) + 'x';
+            
+            // Draw background for compactness
+            const textWidth = ctx.measureText(text).width;
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+            ctx.fillRect(paddingLeft + 2, y - 8, textWidth + 6, 16);
+            
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.fillText(text, paddingLeft + 5, y);
+        }
+        ctx.restore();
     };
 
     const startAnimation = (targetPoint) => {
@@ -602,10 +786,9 @@ export default {
             const now = Date.now();
             const elapsed = now - startTime; // ms
             
-            // Formula: M = e^(0.00015 * t)
-            // t in ms. e^(0.00015 * 10000) = e^1.5 = 4.48x in 10s.
-            // e^(0.00015 * 20000) = e^3 = 20x in 20s.
-            let nextM = Math.exp(0.00015 * elapsed);
+            // Formula: M = e^(k * t)
+            // k=0.00006. e^(0.00006 * 10000) = e^0.6 = 1.82x in 10s.
+            let nextM = Math.exp(k * elapsed);
             
             if (nextM >= targetPoint) {
                 nextM = targetPoint;
@@ -626,57 +809,179 @@ export default {
     const drawFrame = (ctx, w, h, multiplier, elapsed) => {
         ctx.clearRect(0, 0, w, h);
         
-        // Draw Grid (Same as idle)
-        ctx.strokeStyle = '#333';
+        const k = 0.00006;
+
+        // --- Calculate Viewport ---
+        const maxTime = Math.max(8000, elapsed * 1.0); // Minimum 8s viewport
+        const maxMult = Math.max(2, multiplier * 1.2);
+
+        // Define padding for axes
+        const paddingTop = 20; // Added top padding
+        const paddingBottom = 40; 
+        const paddingLeft = 10;   // Reduced from 60 to 10
+        const paddingRight = 15; 
+        
+        // Effective drawing area
+        const drawH = h - paddingBottom - paddingTop;
+        const drawW = w - paddingRight - paddingLeft;
+
+        // Update time label display
+        currentTimeLabel.value = (elapsed / 1000).toFixed(1);
+
+        // Draw Grid
+        ctx.strokeStyle = 'rgba(51, 51, 51, 0.5)';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        for (let x = 0; x < w; x += 50) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
-        for (let y = 0; y < h; y += 50) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
-        ctx.stroke();
         
-        // Draw Curve
-        // Map time (x) and multiplier (y) to canvas coords.
-        // We need the curve to stay within view, so we scale the view based on current M.
-        
-        ctx.strokeStyle = multiplier >= parseFloat(prediction.value) ? '#00ff00' : '#ffffff';
-        ctx.lineWidth = 4;
-        ctx.lineCap = 'round';
-        
-        ctx.beginPath();
-        ctx.moveTo(0, h); // Start bottom left
-        
-        // Plot points up to current time
-        // We iterate pixels on X axis to map to time
-        // Or better: iterate time steps
-        
-        // Viewport Logic: 
-        // X axis: 0 to max(10s, current_time * 1.2)
-        // Y axis: 1 to max(2x, current_M * 1.2)
-        
-        const maxTime = Math.max(10000, elapsed * 1.2);
-        const maxMult = Math.max(2, multiplier * 1.2);
-        
-        for (let t = 0; t <= elapsed; t += 50) { // Step 50ms
-            const m = Math.exp(0.00015 * t);
-            
-            const x = (t / maxTime) * w;
-            const y = h - ((m - 1) / (maxMult - 1)) * h; // Map 1..maxMult to h..0
-            
-            ctx.lineTo(x, y);
+        // Vertical Lines (4 intervals for X)
+        for (let i = 1; i <= 4; i++) {
+            const x = paddingLeft + (drawW / 4) * i;
+            ctx.moveTo(x, paddingTop); 
+            ctx.lineTo(x, paddingTop + drawH); 
+        }
+
+        // Horizontal Lines (5 intervals for Y)
+        for (let i = 0; i <= 5; i++) {
+             const y = paddingTop + drawH - (drawH / 5) * i;
+             ctx.moveTo(paddingLeft, y);
+             ctx.lineTo(w - paddingRight, y);
         }
         
-        // Line to current point
-        const curX = (elapsed / maxTime) * w;
-        const curY = h - ((multiplier - 1) / (maxMult - 1)) * h;
-        ctx.lineTo(curX, curY);
-        
         ctx.stroke();
-        
-        // Draw Rocket/Dot at tip
-        ctx.fillStyle = '#ff0000';
+
+        // Draw Axes
         ctx.beginPath();
-        ctx.arc(curX, curY, 6, 0, Math.PI * 2);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#555';
+        // X Axis
+        ctx.moveTo(paddingLeft, paddingTop + drawH);
+        ctx.lineTo(w - paddingRight, paddingTop + drawH);
+        // Y Axis
+        ctx.moveTo(paddingLeft, paddingTop);
+        ctx.lineTo(paddingLeft, paddingTop + drawH);
+        ctx.stroke();
+
+        // --- Draw X-Axis Labels (Below the graph area) ---
+        ctx.save();
+        ctx.font = 'bold 12px "Geist", sans-serif'; 
+        ctx.fillStyle = '#ffffff'; 
+        ctx.textAlign = 'center';
+        
+        // Dynamic labels logic
+        let labels = [];
+        const maxSeconds = Math.ceil(maxTime / 1000);
+        
+        if (maxSeconds <= 8) {
+            labels = [2, 4, 6, 8];
+        } else {
+            labels = [maxSeconds - 6, maxSeconds - 4, maxSeconds - 2, maxSeconds];
+        }
+
+        const positions = [0.25, 0.50, 0.75, 1.0];
+        
+        labels.forEach((sec, index) => {
+             const xPos = paddingLeft + positions[index] * drawW;
+             const yPos = h - 15; 
+             
+             if (index === 3) {
+                 ctx.textAlign = 'right';
+                 ctx.fillText(sec + 's', xPos, yPos); 
+             } else {
+                 ctx.textAlign = 'center';
+                 ctx.fillText(sec + 's', xPos, yPos); 
+             }
+        });
+        ctx.restore();
+
+        // Pre-calculate points to avoid multiple loops
+        const points = [];
+        const step = 50; // ms
+        for (let t = 0; t <= elapsed; t += step) {
+            const m = Math.exp(k * t);
+            const x = paddingLeft + (t / maxTime) * drawW;
+            const y = paddingTop + drawH - ((m - 1) / (maxMult - 1)) * drawH; 
+            points.push({ x, y });
+        }
+        
+        // Current Point
+        const curX = paddingLeft + (elapsed / maxTime) * drawW;
+        const curY = paddingTop + drawH - ((multiplier - 1) / (maxMult - 1)) * drawH;
+        points.push({ x: curX, y: curY });
+
+        if (points.length < 2) return;
+
+        // --- 1. Draw Blue Area Under Curve ---
+        // Solid fill #ff9d02
+        ctx.fillStyle = '#ff9d02'; 
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, paddingTop + drawH); // Start bottom-left at drawH
+        ctx.lineTo(points[0].x, points[0].y);
+        
+        for (let i = 1; i < points.length; i++) {
+             ctx.lineTo(points[i].x, points[i].y);
+        }
+        
+        ctx.lineTo(points[points.length-1].x, paddingTop + drawH); // Drop to bottom-right at drawH
+        ctx.closePath();
         ctx.fill();
+
+        // --- 2. Draw The Line Curve (Clean White) ---
+        ctx.save();
+        // Glow effect
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = '#ff9d02'; // Orange glow to match fill
+        
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 5; // Thicker line
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+            ctx.lineTo(points[i].x, points[i].y);
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        // --- 3. Draw End Dot (Curve color circle) ---
+        ctx.save();
+        ctx.translate(curX, curY);
+        
+        // Draw Dot
+        ctx.beginPath();
+        ctx.arc(0, 0, 6, 0, Math.PI * 2); // 6px radius
+        ctx.fillStyle = '#ffffff'; // Curve color (white)
+        ctx.fill();
+        
+        // Optional: Add a glow or ring? "曲线同色" -> White.
+        // Maybe an outer glow ring?
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#ff9d02';
+        ctx.fill();
+
+        ctx.restore();
+
+        // --- Draw Y-Axis Labels (MOVED TO END) ---
+        ctx.save();
+        ctx.font = 'bold 12px "Geist", sans-serif'; 
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        
+        for (let i = 0; i <= 5; i++) {
+             const y = paddingTop + drawH - (drawH / 5) * i;
+             const val = 1.0 + (maxMult - 1.0) * (i / 5);
+             const text = val.toFixed(1) + 'x';
+
+             // Draw background for compactness
+             const textWidth = ctx.measureText(text).width;
+             ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+             ctx.fillRect(paddingLeft + 2, y - 8, textWidth + 6, 16);
+
+             ctx.fillStyle = '#ffffff'; 
+             ctx.fillText(text, paddingLeft + 5, y);
+        }
+        ctx.restore();
     };
 
     const endGame = () => {
@@ -684,14 +989,8 @@ export default {
         refreshBalance();
         loadHistory();
         
-        // Reset to IDLE after 5 seconds
-        setTimeout(() => {
-            if (gameState.value === 'RESULT') {
-                gameState.value = 'IDLE';
-                betAmount.value = ''; // Optional: clear bet
-                drawIdleCanvas();
-            }
-        }, 5000);
+        // Removed auto-reset. User must click Bet to start next round.
+        // Result stays on screen.
     };
 
     // --- Helper UI Methods ---
@@ -731,12 +1030,19 @@ export default {
     };
 
     const formatTime = (ts) => {
-        return new Date(ts * 1000).toLocaleTimeString();
+        const date = new Date(ts * 1000);
+        const Y = date.getFullYear();
+        const M = (date.getMonth() + 1).toString().padStart(2, '0');
+        const D = date.getDate().toString().padStart(2, '0');
+        const h = date.getHours().toString().padStart(2, '0');
+        const m = date.getMinutes().toString().padStart(2, '0');
+        const s = date.getSeconds().toString().padStart(2, '0');
+        return `${Y}-${M}-${D} ${h}:${m}:${s}`;
     };
     
     const formatAddr = (addr) => {
         if (!addr) return '???';
-        return addr.substring(0, 6) + '...';
+        return addr.substring(0, 6) + '...' + addr.substring(addr.length - 4);
     };
 
     const formatCrashPoint = (val) => {
@@ -757,23 +1063,21 @@ export default {
         if (item.crashPoint === 0) return 'text-danger'; // Timeout
         if (item.crashPoint < 1.01) return 'text-danger'; // Instant crash
         // For history
-        if (item.crashPoint >= 10) return 'text-highlight-gold';
-        if (item.crashPoint >= 2) return 'text-highlight-green';
-        if (item.crashPoint >= 1.01 && item.crashPoint < 2) return 'text-purple'; // 1.01x - 1.99x Purple
+        if (item.crashPoint >= 1.01) return 'text-success'; // Unified Green for all winning/active states
         return 'text-white'; 
     };
 
     const loadHistory = async () => {
         if (activeTab.value === 'my') {
             const length = await getUserHistoryLength();
-            const start = Math.max(0, length - 20);
-            const raw = await getUserHistory(start, 20);
+            const start = Math.max(0, length - 50);
+            const raw = await getUserHistory(start, 50);
             historyData.value = raw.reverse(); // Newest first
         } else {
             // For global history
             const length = await getGlobalHistoryLength();
-            const start = Math.max(0, length - 20);
-            const raw = await getGlobalHistory(start, 20);
+            const start = Math.max(0, length - 50);
+            const raw = await getGlobalHistory(start, 50);
             historyData.value = raw.reverse(); // Newest first
         }
         hasMoreHistory.value = false; // Disable pagination for MVP
@@ -812,7 +1116,7 @@ export default {
     };
 
     const adjustPrediction = (delta) => {
-        if (gameState.value !== 'IDLE') return;
+        if (gameState.value !== 'IDLE' && gameState.value !== 'RESULT') return;
         
         let current = parseFloat(prediction.value);
         if (isNaN(current)) current = minPrediction.value; // Default to min if empty
@@ -826,6 +1130,17 @@ export default {
         if (newVal > maxPrediction.value) newVal = maxPrediction.value;
         
         prediction.value = newVal.toFixed(2);
+    };
+
+    const testCrashAnim = () => {
+        lastGameWon.value = false;
+        startAnimation(1.20); // Crashes at 1.20x
+    };
+    
+    const testWinAnim = () => {
+        lastGameWon.value = true;
+        lastPayout.value = '100'; // Fake payout
+        startAnimation(5.00); // Crashes at 5.00x but we won
     };
 
     return {
@@ -867,37 +1182,126 @@ export default {
         maxBet,
         minPrediction,
         maxPrediction,
+        isExpiredSettle,
         handleBetAmountBlur,
         handlePredictionBlur,
-        adjustPrediction
+        adjustPrediction,
+        isSidebarOpen,
+        openSidebar,
+        closeSidebar,
+        testCrashAnim,
+        testWinAnim,
+        currentTimeLabel,
+        expirationSeconds
     };
+  },
+  components: {
+    HomeRightSidebar
   }
 };
 </script>
 
 <style scoped>
+.crash-title {
+  font-family: 'Geist', sans-serif;
+  font-size: 60px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #e0e0e0;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  animation: breathing 3s ease-in-out infinite alternate;
+  letter-spacing: 2px;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  padding: 0 10px; /* Add padding to prevent clipping */
+  line-height: 1.2; /* Ensure enough height */
+}
+
+.crash-title::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.8) 50%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  animation: shine 4s infinite;
+  pointer-events: none;
+}
+
+@keyframes shine {
+  0%, 80% {
+    left: -100%;
+    opacity: 0;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    left: 200%;
+    opacity: 0;
+  }
+}
+
+@keyframes breathing {
+  0% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  100% {
+    text-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 0 0 10px rgba(224, 224, 224, 0.6);
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
 .crash-container {
   padding-bottom: 80px;
 }
+/* Card Style consistent with Home/Modal */
+.crash-game-wrapper {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  backdrop-filter: blur(16px);
+  padding: 30px 10px;
+  margin-bottom: 30px;
+}
+
+.history-table-wrapper {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  backdrop-filter: blur(16px);
+  padding: 10px;
+  margin-bottom: 30px;
+}
+
 .crash-game-wrapper {
   display: flex;
-  gap: 20px;
-  background: #111;
-  border: 1px solid #333;
-  border-radius: 12px;
-  padding: 20px;
+  gap: 30px;
   min-height: 500px;
 }
+
 .crash-controls {
-  width: 300px;
+  width: 320px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
 }
 .crash-canvas-container {
   flex-grow: 1;
-  background: #000;
-  border-radius: 8px;
+  background: #101011;
+  /* border-radius: 0; Removed round corners */
+  /* border: 1px solid #333; Restored border */
   position: relative;
   overflow: hidden;
 }
@@ -914,15 +1318,81 @@ canvas {
   transform: translate(-50%, -50%);
   text-align: center;
   pointer-events: none;
+  z-index: 10;
+  width: 100%; /* Ensure centering works well */
 }
 .multiplier-display {
-  font-size: 4rem;
-  font-weight: bold;
+  font-size: 2.5rem;
+  font-weight: 800;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  font-family: 'Geist', sans-serif;
+  line-height: 1;
+  transition: transform 0.1s;
 }
-.result-message {
-  font-size: 1.5rem;
-  margin-top: 10px;
+
+.result-status {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-top: 10px;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+
+.result-payout {
+    font-size: 1.5rem;
+    margin-top: 5px;
+    animation: slideUpFade 0.5s ease-out 0.2s backwards;
+}
+
+/* Animations */
+.crashed-anim {
+    color: #ef4444 !important;
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    text-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+}
+
+.won-anim {
+    color: #22c55e !important;
+    text-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+@keyframes pulse-green {
+    0% { transform: scale(1); text-shadow: 0 0 20px rgba(34, 197, 94, 0.6); }
+    50% { transform: scale(1.1); text-shadow: 0 0 40px rgba(34, 197, 94, 0.9); }
+    100% { transform: scale(1); text-shadow: 0 0 20px rgba(34, 197, 94, 0.6); }
+}
+
+@keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounceIn {
+  0% { opacity: 0; transform: scale(0.3); }
+  50% { opacity: 1; transform: scale(1.05); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+.status-overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.6);
+    padding: 20px;
+    border-radius: 16px;
+    backdrop-filter: blur(4px);
+}
+
 .status-message {
   font-size: 1rem;
   color: #aaa;
@@ -930,34 +1400,67 @@ canvas {
 }
 
 .control-group label {
-  color: #888;
-  margin-bottom: 5px;
+  color: var(--text-2);
+  margin-bottom: 4px; /* Reduced from 8px */
   display: block;
+  font-size: 14px;
 }
 .balance-text {
   font-size: 0.8rem;
-  color: #666;
+  color: var(--text-2);
+  opacity: 0.7;
   text-align: right;
-  margin-top: 4px;
+  margin-top: 4px; /* Reduced from 6px */
 }
 .win-chance {
   font-size: 0.8rem;
   color: #666;
-  margin-top: 4px;
+  margin-top: 2px; /* Reduced from 4px */
 }
 
-/* Ensure input group append items stay inline */
+/* Input Styling */
+.input-group {
+    background-color: #0c0c0e;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    transition: border-color 0.3s;
+}
+.input-group:focus-within {
+    border-color: var(--primary);
+}
+
+.input-group .form-control {
+    border: none !important;
+    background: transparent !important;
+    padding: 10px 15px !important;
+    color: var(--white) !important;
+    height: auto !important;
+    box-shadow: none !important;
+    font-size: 16px;
+}
+
+.input-group .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-weight: 500;
+}
+
+/* Append Buttons */
 .input-group-append {
   display: flex;
+  gap: 6px;
+  padding-right: 6px;
 }
 
-/* Fix for invisible text in buttons */
 .append-btn {
-  background: #333;
-  color: #fff;
-  border: 1px solid #444;
-  width: 42px; /* Fixed width for consistency */
-  height: 46px; /* Match input height if standard is ~45-46px */
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-2);
+  border: 1px solid var(--line);
+  width: 42px; 
+  height: 38px; 
+  border-radius: 10px;
   padding: 0;
   font-weight: 600;
   cursor: pointer;
@@ -965,31 +1468,30 @@ canvas {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  font-size: 12px;
 }
 .append-btn:hover {
-  background: #444;
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
 }
 
-/* Ensure input height matches */
-.input-group .form-control {
-    height: 46px;
-}
-
+/* Prediction Arrows */
 .prediction-arrows {
   display: flex;
-  flex-direction: row;
-  height: 46px;
-  border: 1px solid #444;
-  border-left: none;
-  background: #333;
-  width: 126px; /* Match top buttons (42*3) */
+  height: 38px;
+  width: 90px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .arrow-btn {
-  flex: 1; /* Distribute space evenly */
+  flex: 1;
   background: transparent;
   border: none;
-  color: #888;
+  color: var(--text-2);
   padding: 0;
   cursor: pointer;
   display: flex;
@@ -999,7 +1501,7 @@ canvas {
 }
 
 .arrow-btn:hover:not(:disabled) {
-  background: #444;
+  background: var(--primary);
   color: #fff;
 }
 
@@ -1009,60 +1511,57 @@ canvas {
 }
 
 .arrow-btn.left {
-  border-right: 1px solid #444;
+  border-right: 1px solid var(--line);
 }
 
-/* Fix for action buttons container */
+/* Action Buttons */
 .action-btn-wrapper .tf-button {
-  color: #fff !important; /* Force white text */
+  width: 100%;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  background: linear-gradient(0deg, rgba(20, 20, 21, 0.82), rgba(20, 20, 21, 0.82)),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 100%);
+  border: 1px solid var(--line);
+  box-shadow: 0px 1px 1px 0px #FFFFFF2E inset, 0px 0px 4px 0px #FFFFFF0F inset;
+  color: var(--text-2) !important;
+  font-size: 16px;
+  font-weight: 600;
+  height: 56px !important;
+  border-radius: 999px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
+
+.action-btn-wrapper .tf-button:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary) !important;
+}
+
 .action-btn-wrapper .tf-button.disabled {
-  background: #333 !important;
-  color: #888 !important;
-  border-color: #444 !important;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.btn-bet {
-    font-size: 1.3rem !important;
-    font-weight: 800 !important;
-    height: 56px !important;
-    background: #333 !important;
+/* Primary Action Buttons (Bet, Settle) */
+.btn-bet, .btn-settle {
+    background: var(--primary) !important;
     color: #fff !important;
-    border: 1px solid #444 !important;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-    margin-top: 10px;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
+    border-color: var(--primary) !important;
+    box-shadow: none !important;
 }
 
-.btn-bet:hover:not(:disabled) {
-    background: #444 !important;
+.btn-bet:hover:not(:disabled), .btn-settle:hover {
+    filter: brightness(1.1);
     transform: translateY(-2px);
-}
-
-.btn-settle {
-    font-size: 1.3rem !important;
-    font-weight: 800 !important;
-    height: 56px !important;
-    background: #333 !important;
     color: #fff !important;
-    border: 1px solid #444 !important;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-    margin-top: 10px;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
 }
 
-.btn-settle:hover {
-    background: #444 !important;
-    transform: translateY(-2px);
+.btn-expired {
+    background: #555 !important;
+    border-color: #555 !important;
+    opacity: 0.8;
 }
 
 .history-tabs {
@@ -1071,42 +1570,57 @@ canvas {
 .tab-btn {
   background: transparent;
   border: none;
-  color: #666;
+  color: var(--text-2);
   padding: 8px 16px;
   font-size: 1rem;
   cursor: pointer;
   border-bottom: 2px solid transparent;
+  opacity: 0.6;
+  transition: all 0.3s;
+}
+.tab-btn:hover {
+    opacity: 1;
 }
 .tab-btn.active {
   color: #fff;
-  border-bottom-color: #fff;
+  opacity: 1;
+  border-bottom-color: var(--primary);
 }
+
 .history-table-wrapper {
-  background: #111;
-  border-radius: 8px;
-  padding: 15px;
   overflow-x: auto;
+  max-height: 500px;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
 .history-table-wrapper table {
   white-space: nowrap;
   margin-bottom: 0;
-  color: #fff !important;
+  color: var(--text-2) !important;
   background-color: transparent !important;
+  width: 100%;
 }
 
 .history-table-wrapper table th,
 .history-table-wrapper table td {
   background-color: transparent !important;
-  border-color: #333 !important;
-  color: #fff !important;
+  border-color: var(--line) !important;
+  color: var(--text-2) !important;
+  padding: 8px 6px; /* Reduced padding for compact view */
+  font-size: 13px;  /* Slightly smaller font */
 }
 
 .history-table-wrapper table thead th {
-    border-bottom: 2px solid #444 !important;
-    color: #888 !important;
+    border-bottom: 1px solid var(--line) !important;
+    color: var(--text-2) !important;
     font-weight: 600;
+    position: sticky;
+    top: 0;
+    background-color: #141415 !important; 
+    z-index: 1;
+    opacity: 1;
+    padding: 10px 6px; /* Header slightly taller but still compact */
 }
 
 .text-purple {

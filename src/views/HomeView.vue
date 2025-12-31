@@ -42,8 +42,8 @@
 
     <!-- Sidebar Trigger Button -->
     <div class="btn-sidebar-mb d-lg-none right">
-        <button @click="openSidebar">
-            <img src="/asset/images/section/platform.svg" alt="Menu" width="20" height="20">
+        <button @click="openSidebar" style="background-color: #111111;">
+            <img src="/asset/images/section/platform.svg" alt="Menu" width="50" height="50">
         </button>
     </div>
 
