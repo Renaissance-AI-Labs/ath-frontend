@@ -114,13 +114,15 @@
                     </button>
                     <div class="settle-tip mt-2 text-warning" style="font-size: 11px; line-height: 1.4;">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px; display: inline-block; vertical-align: middle;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                        请在倒计时结束前点击开奖，倒计时结束后开奖将无法获得奖金。倒计时结束后未开奖，需再次点击按钮与合约交互开启下一局。
+                        <span v-if="expirationSeconds > 0">请在倒计时结束前点击开奖，倒计时结束后开奖将无法获得奖金。</span>
+                        <span v-else>倒计时结束后未开奖，需再次点击按钮与合约交互开启下一局。</span>
                     </div>
                   </div>
 
                    <!-- Settling -->
                   <button v-else-if="gameState === 'SETTLING'" class="tf-button style-1 w-100 disabled" disabled>
-                    {{ t('crash.settling') }}
+                    <span v-if="isExpiredSettle">正在准备下一轮</span>
+                    <span v-else>{{ t('crash.settling') }}</span>
                   </button>
                   
                   <!-- Animating -->
@@ -294,6 +296,7 @@ export default {
     const maxPrediction = ref(100);
 
     const expirationSeconds = ref(0); // Seconds until expiration
+    const isExpiredSettle = ref(false); // Flag to track if we are settling an expired bet
     const currentTimeLabel = ref(0); // Current elapsed time in seconds for display
 
     // Sidebar State
@@ -420,7 +423,11 @@ export default {
 
     const checkActiveBet = async () => {
         const bet = await getActiveBet();
-        if (bet) {
+        
+        // Always draw idle canvas to show axes
+        drawIdleCanvas();
+
+        if (bet && bet.betBlock > 0) {
             console.log("Found active bet:", bet);
             // Check if we need to wait for block or can settle
             const provider = walletState.signer?.provider;
@@ -433,22 +440,17 @@ export default {
             prediction.value = bet.prediction.toFixed(2);
 
             if (currentBlock > bet.betBlock) {
-                gameState.value = 'READY_TO_SETTLE';
-                
                 // Initialize countdown for existing bet
                 const expiryBlock = bet.betBlock + 255;
                 const remainingBlocks = Math.max(0, expiryBlock - currentBlock);
-                const estimatedSeconds = Math.floor(remainingBlocks * 0.75); // 0.75s per block approx on BSC/similar
+                const estimatedSeconds = Math.ceil(remainingBlocks * 0.75); // 0.75s per block approx on BSC/similar
 
+                expirationSeconds.value = estimatedSeconds;
                 if (remainingBlocks > 0) {
-                     expirationSeconds.value = estimatedSeconds;
                      startCountdown();
-                     // No need to start block checker here as we have the state and timer
-                } else {
-                     expirationSeconds.value = 0;
-                     // Expired
                 }
-
+                
+                gameState.value = 'READY_TO_SETTLE';
             } else {
                 gameState.value = 'WAITING_BLOCK';
                 startBlockCheck(bet.betBlock);
@@ -481,15 +483,15 @@ export default {
             console.log(`Checking block: ${current} > ${targetBlock}`);
             
             if (current > targetBlock) {
-                gameState.value = 'READY_TO_SETTLE';
-                
                 // Sync remaining time from chain ONCE
                 const expiryBlock = targetBlock + 255;
                 const remainingBlocks = Math.max(0, expiryBlock - current);
-                const estimatedSeconds = Math.floor(remainingBlocks * 0.75); // 0.75s per block
+                const estimatedSeconds = Math.ceil(remainingBlocks * 0.75); // 0.75s per block
                 
                 expirationSeconds.value = estimatedSeconds;
-                startCountdown();
+                if (estimatedSeconds > 0) startCountdown();
+
+                gameState.value = 'READY_TO_SETTLE';
 
                 // Stop checking blocks, rely on local countdown
                 clearInterval(blockCheckInterval);
@@ -540,8 +542,9 @@ export default {
         // Reset visual state if we are coming from RESULT
         if (gameState.value === 'RESULT') {
              gameState.value = 'IDLE'; // Optional transition
-             // Clear canvas? Maybe not needed as it will switch to waiting block soon
         }
+        
+        drawIdleCanvas(); // Ensure clean grid
 
         console.log("handleBet parameters:", { betAmount: betAmount.value, prediction: parseFloat(prediction.value) });
         isBetting.value = true;
@@ -559,7 +562,7 @@ export default {
             // We need block.number > betBlock.
             // We can call getActiveBet to get the exact betBlock.
             const bet = await getActiveBet();
-            if (bet) {
+            if (bet && bet.betBlock > 0) {
                 startBlockCheck(bet.betBlock);
             }
         }
@@ -567,45 +570,67 @@ export default {
     };
 
     const handleSettle = async () => {
-        stopBlockCheck();
-        gameState.value = 'SETTLING';
-        const result = await settleBet();
+        // Record if we are settling an expired bet before stopping checks
+        isExpiredSettle.value = expirationSeconds.value <= 0;
         
-        if (result) {
-            console.log("Settle result:", result);
+        // Stop checks temporarily
+        stopBlockCheck();
+        
+        // Optimistically set settling state
+        gameState.value = 'SETTLING';
+        
+        try {
+            const result = await settleBet();
             
-            if (result.voided) {
-                showToast(t('crash.betExpired'));
-                gameState.value = 'IDLE';
-                // Reset to idle canvas
-                drawIdleCanvas();
-                return;
-            }
-
-            crashPoint.value = result.crashPoint;
-            lastGameWon.value = result.won;
-            lastPayout.value = result.payout;
-            
-            // Start Animation
-            startAnimation(result.crashPoint);
-        } else {
-            // Failed to settle - could be network error OR truly expired/failed
-            // If it failed because it's expired/not found, we should probably reset to IDLE so user can bet again.
-            // For now, keep as is unless we know why it failed.
-            // If the error was "No active bet found", settleBet returns null.
-            
-            // If we are here, it means settleBet returned null.
-            // Check if we still have an active bet?
-            const bet = await getActiveBet();
-            if (!bet) {
-                // No bet found, so we are IDLE
-                gameState.value = 'IDLE';
-                drawIdleCanvas();
+            if (result) {
+                console.log("Settle result:", result);
+                
+                if (result.voided) {
+                    showToast(t('crash.betExpired'));
+                    gameState.value = 'IDLE';
+                    // Reset to idle canvas
+                    drawIdleCanvas();
+                    return;
+                }
+    
+                crashPoint.value = result.crashPoint;
+                lastGameWon.value = result.won;
+                lastPayout.value = result.payout;
+                
+                // Start Animation
+                startAnimation(result.crashPoint);
             } else {
-                 // Bet exists but settle failed (maybe network), stay in READY_TO_SETTLE
-                 gameState.value = 'READY_TO_SETTLE';
-                 startBlockCheck(bet.betBlock);
+                 // Failed to settle (e.g. user rejected)
+                 // Restore state to allow retry
+                 console.log("Settle returned null, restoring state");
+                 
+                 // Check if we still have an active bet to be safe
+                 const bet = await getActiveBet();
+                 if (bet) {
+                     // Restore state
+                     gameState.value = 'READY_TO_SETTLE';
+                     
+                     // Restore timer based on current block
+                     const provider = walletState.signer?.provider;
+                     if (provider) {
+                         const current = await provider.getBlockNumber();
+                         const expiryBlock = bet.betBlock + 255;
+                         const remainingBlocks = Math.max(0, expiryBlock - current);
+                         // Recalculate time
+                         expirationSeconds.value = Math.ceil(remainingBlocks * 0.75);
+                         if (remainingBlocks > 0) startCountdown();
+                     }
+                 } else {
+                     gameState.value = 'IDLE';
+                     drawIdleCanvas();
+                 }
             }
+        } catch (e) {
+             console.error("Handle settle error:", e);
+             // Restore state on error
+             gameState.value = 'READY_TO_SETTLE';
+             // Resume countdown if needed (simple resume)
+             if (expirationSeconds.value > 0) startCountdown();
         }
     };
 
@@ -615,7 +640,10 @@ export default {
         if (canvas) {
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = canvas.parentElement.clientHeight;
-            if (gameState.value === 'IDLE') drawIdleCanvas();
+            // Draw idle canvas for static states to ensure axes are visible
+            if (['IDLE', 'WAITING_BLOCK', 'READY_TO_SETTLE', 'SETTLING', 'RESULT'].includes(gameState.value)) {
+                 drawIdleCanvas();
+            }
         }
     };
 
@@ -642,8 +670,8 @@ export default {
         ctx.lineWidth = 1;
         ctx.beginPath();
         // Vertical lines
-        for (let i = 0; i <= 5; i++) {
-            const x = paddingLeft + (drawW / 5) * i;
+        for (let i = 1; i <= 4; i++) {
+            const x = paddingLeft + (drawW / 4) * i;
             ctx.moveTo(x, paddingTop);
             ctx.lineTo(x, paddingTop + drawH);
         }
@@ -683,6 +711,29 @@ export default {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
         ctx.textAlign = 'center';
         ctx.fillText(t('crash.waitingForNextRound'), paddingLeft + drawW/2, paddingTop + drawH/2);
+
+        // Draw X-Axis Labels
+        ctx.save();
+        ctx.font = 'bold 12px "Geist", sans-serif'; 
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.textAlign = 'center';
+        
+        const labels = [2, 4, 6, 8];
+        const positions = [0.25, 0.50, 0.75, 1.0];
+        
+        labels.forEach((sec, index) => {
+             const xPos = paddingLeft + positions[index] * drawW;
+             const yPos = h - 15; 
+             
+             if (index === 3) {
+                 ctx.textAlign = 'right';
+                 ctx.fillText(sec + 's', xPos, yPos); 
+             } else {
+                 ctx.textAlign = 'center';
+                 ctx.fillText(sec + 's', xPos, yPos); 
+             }
+        });
+        ctx.restore();
 
         // Draw Y-Axis Labels (Last to be on top)
         ctx.save();
@@ -1131,6 +1182,7 @@ export default {
         maxBet,
         minPrediction,
         maxPrediction,
+        isExpiredSettle,
         handleBetAmountBlur,
         handlePredictionBlur,
         adjustPrediction,
@@ -1139,7 +1191,8 @@ export default {
         closeSidebar,
         testCrashAnim,
         testWinAnim,
-        currentTimeLabel
+        currentTimeLabel,
+        expirationSeconds
     };
   },
   components: {

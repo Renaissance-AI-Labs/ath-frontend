@@ -202,7 +202,7 @@ const languagePacks = {
     'crash.waitingBlock': '等待区块...',
     'crash.waitingBlockOverlay': '等待下一个区块...',
     'crash.settle': '结算开奖',
-    'crash.settling': '正在准备下一轮',
+    'crash.settling': '开奖中...',
     'crash.launching': '发射中...',
     'crash.youWon': '你赢了 {amount} ATH!',
     'crash.crashed': '爆了!',
