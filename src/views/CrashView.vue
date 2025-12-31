@@ -130,10 +130,10 @@
                     {{ t('crash.launching') }}
                   </button>
                   
-                  <div class="debug-buttons mt-2" style="display: flex; gap: 10px;">
+                  <!-- <div class="debug-buttons mt-2" style="display: flex; gap: 10px;">
                     <button class="tf-button style-1 w-50" @click="testCrashAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Crash</button>
                     <button class="tf-button style-1 w-50" @click="testWinAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Win</button>
-                  </div>
+                  </div> -->
                 </div>
               </div>
 
@@ -707,10 +707,10 @@ export default {
         ctx.setLineDash([]); 
 
         // Draw "Ready" text
-        ctx.font = '20px "Geist", sans-serif';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.textAlign = 'center';
-        ctx.fillText(t('crash.waitingForNextRound'), paddingLeft + drawW/2, paddingTop + drawH/2);
+        // ctx.font = '20px "Geist", sans-serif';
+        // ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        // ctx.textAlign = 'center';
+        // ctx.fillText(t('crash.waitingForNextRound'), paddingLeft + drawW/2, paddingTop + drawH/2);
 
         // Draw X-Axis Labels
         ctx.save();
