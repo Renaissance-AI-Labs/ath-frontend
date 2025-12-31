@@ -196,12 +196,13 @@ const languagePacks = {
     'crash.connectWallet': '连接钱包',
     'crash.approve': '授权 ATH',
     'crash.approving': '授权中...',
-    'crash.bet': '投注',
+    'crash.bet': '马上投注',
     'crash.betting': '投注中...',
+    'crash.inputError': '请输入投注金额与预测倍数',
     'crash.waitingBlock': '等待区块...',
     'crash.waitingBlockOverlay': '等待下一个区块...',
     'crash.settle': '结算开奖',
-    'crash.settling': '结算中...',
+    'crash.settling': '正在准备下一轮',
     'crash.launching': '发射中...',
     'crash.youWon': '你赢了 {amount} ATH!',
     'crash.crashed': '爆了!',
@@ -209,7 +210,7 @@ const languagePacks = {
     'crash.allBets': '全网投注',
     'crash.time': '时间',
     'crash.player': '玩家',
-    'crash.betCol': '投注',
+    'crash.betCol': '马上投注',
     'crash.predictionCol': '预测',
     'crash.result': '结果',
     'crash.payout': '奖金',
@@ -217,7 +218,7 @@ const languagePacks = {
     'crash.loadMore': '加载更多',
     'crash.betExpired': '投注已超时 (资金不退)',
     'crash.comingSoon': 'Crash 游戏即将推出',
-    'crash.waitingForNextRound': '等待下一轮开始',
+    'crash.waitingForNextRound': '等待下一轮开始...',
     
     // Common
     'common.loading': 'Loading...',
@@ -458,7 +459,7 @@ const languagePacks = {
     'crash.loadMore': '加載更多',
     'crash.betExpired': '投注已超時 (資金不退)',
     'crash.comingSoon': 'Crash 遊戲即將推出',
-    'crash.waitingForNextRound': '等待下一輪開始',
+    'crash.waitingForNextRound': '等待下一輪開始...',
     
     // Common
     'common.loading': 'Loading...',
@@ -697,7 +698,7 @@ const languagePacks = {
     'crash.loadMore': 'Load More',
     'crash.betExpired': 'Bet Expired (Timeout). Funds not returned.',
     'crash.comingSoon': 'Crash Game Coming Soon',
-    'crash.waitingForNextRound': 'Waiting for next round',
+    'crash.waitingForNextRound': 'Waiting for next round...',
     
     // Common
     'common.loading': 'Loading...',
@@ -937,7 +938,7 @@ const languagePacks = {
     'crash.loadMore': 'もっと読み込む',
     'crash.betExpired': 'ベット期限切れ（タイムアウト）。資金は返還されません。',
     'crash.comingSoon': 'クラッシュゲーム近日公開',
-    'crash.waitingForNextRound': '次のラウンドを待機中',
+    'crash.waitingForNextRound': '次のラウンドを待機中...',
     
     // Common
     'common.loading': 'Loading...',

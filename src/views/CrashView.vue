@@ -104,9 +104,19 @@
                   </button>
                   
                   <!-- Settle -->
-                  <button v-else-if="gameState === 'READY_TO_SETTLE'" class="tf-button style-1 w-100 btn-settle" @click="handleSettle">
-                    {{ settleButtonText }}
-                  </button>
+                  <div v-else-if="gameState === 'READY_TO_SETTLE'" class="w-100">
+                    <button class="tf-button style-1 w-100 btn-settle" @click="handleSettle" :class="{ 'btn-expired': expirationSeconds === 0 }">
+                        <span v-if="expirationSeconds > 0">即刻开奖</span>
+                        <span v-else>已过开奖时间，点击开启下一局</span>
+                        <span v-if="expirationSeconds > 0" class="countdown-timer text-warning" style="margin-left: 8px;">
+                            {{ expirationSeconds }}s
+                        </span>
+                    </button>
+                    <div class="settle-tip mt-2 text-warning" style="font-size: 11px; line-height: 1.4;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px; display: inline-block; vertical-align: middle;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                        请在倒计时结束前点击开奖，倒计时结束后开奖将无法获得奖金。倒计时结束后未开奖，需再次点击按钮与合约交互开启下一局。
+                    </div>
+                  </div>
 
                    <!-- Settling -->
                   <button v-else-if="gameState === 'SETTLING'" class="tf-button style-1 w-100 disabled" disabled>
@@ -143,6 +153,11 @@
                         {{ currentMultiplier.toFixed(2) }}x
                       </div>
                       
+                      <!-- Current Payout (Animating) -->
+                      <div v-if="gameState === 'ANIMATING'" class="current-payout text-highlight-gold" style="font-size: 1.5rem; font-weight: bold; margin-top: 5px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">
+                          +{{ (parseFloat(betAmount || 0) * currentMultiplier).toFixed(4) }} ATH
+                      </div>
+
                       <!-- Result Status Text -->
                       <div v-if="gameState === 'RESULT'" class="result-status " :class="lastGameWon ? 'text-success' : 'text-danger'">
                         {{ lastGameWon ? 'YOU WON' : 'CRASHED' }}
@@ -517,7 +532,10 @@ export default {
     };
 
     const handleBet = async () => {
-        if (!betAmount.value || !prediction.value) return;
+        if (!betAmount.value || !prediction.value) {
+            showToast(t('crash.inputError'));
+            return;
+        }
         
         // Reset visual state if we are coming from RESULT
         if (gameState.value === 'RESULT') {
@@ -609,41 +627,84 @@ export default {
         const h = canvas.height;
         
         // Define padding for axes
+        const paddingTop = 20; // Added top padding
         const paddingBottom = 40; 
-        const paddingRight = 15; // NEW
+        const paddingRight = 15;
+        const paddingLeft = 10; 
         
-        const drawH = h - paddingBottom;
-        const drawW = w - paddingRight; // UPDATED
+        const drawH = h - paddingBottom - paddingTop;
+        const drawW = w - paddingRight - paddingLeft;
 
         ctx.clearRect(0, 0, w, h);
         
-        // Draw Faint Grid
+        // Draw Faint Grid (Vertical)
         ctx.strokeStyle = 'rgba(51, 51, 51, 0.5)';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        for (let x = 0; x <= drawW; x += 50) { ctx.moveTo(x, 0); ctx.lineTo(x, drawH); }
-        for (let y = 0; y < drawH; y += 50) { ctx.moveTo(0, y); ctx.lineTo(drawW, y); }
-        
-        // Axis line
-        ctx.moveTo(0, drawH);
-        ctx.lineTo(drawW, drawH);
+        // Vertical lines
+        for (let i = 0; i <= 5; i++) {
+            const x = paddingLeft + (drawW / 5) * i;
+            ctx.moveTo(x, paddingTop);
+            ctx.lineTo(x, paddingTop + drawH);
+        }
+
+        // Horizontal lines (5 intervals)
+        for (let i = 0; i <= 5; i++) {
+            const y = paddingTop + drawH - (drawH / 5) * i;
+            ctx.moveTo(paddingLeft, y);
+            ctx.lineTo(w - paddingRight, y);
+        }
         ctx.stroke();
 
-        // Draw static curve preview (dashed or faint)
+        // Draw Axes
+        ctx.beginPath();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#555'; 
+        // X Axis
+        ctx.moveTo(paddingLeft, paddingTop + drawH);
+        ctx.lineTo(w - paddingRight, paddingTop + drawH);
+        // Y Axis
+        ctx.moveTo(paddingLeft, paddingTop);
+        ctx.lineTo(paddingLeft, paddingTop + drawH);
+        ctx.stroke();
+
+        // Draw static curve preview
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-        ctx.setLineDash([5, 5]); // Dashed line for preview
+        ctx.setLineDash([5, 5]); 
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(0, drawH);
-        ctx.quadraticCurveTo(drawW/2, drawH, drawW, drawH*0.2);
+        ctx.moveTo(paddingLeft, paddingTop + drawH);
+        ctx.quadraticCurveTo(paddingLeft + drawW/2, paddingTop + drawH, paddingLeft + drawW, paddingTop + drawH*0.2);
         ctx.stroke();
-        ctx.setLineDash([]); // Reset dash
+        ctx.setLineDash([]); 
 
-        // Draw "Ready" text or waiting pulse
+        // Draw "Ready" text
         ctx.font = '20px "Geist", sans-serif';
         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
         ctx.textAlign = 'center';
-        ctx.fillText(t('crash.waitingForNextRound'), drawW/2, drawH/2);
+        ctx.fillText(t('crash.waitingForNextRound'), paddingLeft + drawW/2, paddingTop + drawH/2);
+
+        // Draw Y-Axis Labels (Last to be on top)
+        ctx.save();
+        ctx.font = 'bold 12px "Geist", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        
+        const idleMaxMult = 2.0;
+        for (let i = 0; i <= 5; i++) {
+            const y = paddingTop + drawH - (drawH / 5) * i;
+            const val = 1.0 + (idleMaxMult - 1.0) * (i / 5);
+            const text = val.toFixed(1) + 'x';
+            
+            // Draw background for compactness
+            const textWidth = ctx.measureText(text).width;
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+            ctx.fillRect(paddingLeft + 2, y - 8, textWidth + 6, 16);
+            
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.fillText(text, paddingLeft + 5, y);
+        }
+        ctx.restore();
     };
 
     const startAnimation = (targetPoint) => {
@@ -704,13 +765,14 @@ export default {
         const maxMult = Math.max(2, multiplier * 1.2);
 
         // Define padding for axes
-        const paddingBottom = 40; // Increased to make room for labels
-        const paddingLeft = 0;   // No left axis labels yet
-        const paddingRight = 15; // Right padding for dot visibility
+        const paddingTop = 20; // Added top padding
+        const paddingBottom = 40; 
+        const paddingLeft = 10;   // Reduced from 60 to 10
+        const paddingRight = 15; 
         
         // Effective drawing area
-        const drawH = h - paddingBottom;
-        const drawW = w - paddingRight; // Full width minus padding
+        const drawH = h - paddingBottom - paddingTop;
+        const drawW = w - paddingRight - paddingLeft;
 
         // Update time label display
         currentTimeLabel.value = (elapsed / 1000).toFixed(1);
@@ -719,19 +781,39 @@ export default {
         ctx.strokeStyle = 'rgba(51, 51, 51, 0.5)';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        for (let x = 0; x <= drawW; x += 50) { ctx.moveTo(x, 0); ctx.lineTo(x, drawH); } // Vertical lines stop at drawH
-        for (let y = 0; y < drawH; y += 50) { ctx.moveTo(0, y); ctx.lineTo(drawW, y); } // Horizontal lines
         
-        // Draw bottom axis line
-        ctx.moveTo(0, drawH);
-        ctx.lineTo(drawW, drawH);
+        // Vertical Lines (4 intervals for X)
+        for (let i = 1; i <= 4; i++) {
+            const x = paddingLeft + (drawW / 4) * i;
+            ctx.moveTo(x, paddingTop); 
+            ctx.lineTo(x, paddingTop + drawH); 
+        }
+
+        // Horizontal Lines (5 intervals for Y)
+        for (let i = 0; i <= 5; i++) {
+             const y = paddingTop + drawH - (drawH / 5) * i;
+             ctx.moveTo(paddingLeft, y);
+             ctx.lineTo(w - paddingRight, y);
+        }
         
+        ctx.stroke();
+
+        // Draw Axes
+        ctx.beginPath();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#555';
+        // X Axis
+        ctx.moveTo(paddingLeft, paddingTop + drawH);
+        ctx.lineTo(w - paddingRight, paddingTop + drawH);
+        // Y Axis
+        ctx.moveTo(paddingLeft, paddingTop);
+        ctx.lineTo(paddingLeft, paddingTop + drawH);
         ctx.stroke();
 
         // --- Draw X-Axis Labels (Below the graph area) ---
         ctx.save();
-        ctx.font = 'bold 12px "Geist", sans-serif'; // Bold font
-        ctx.fillStyle = '#ffffff'; // White color
+        ctx.font = 'bold 12px "Geist", sans-serif'; 
+        ctx.fillStyle = '#ffffff'; 
         ctx.textAlign = 'center';
         
         // Dynamic labels logic
@@ -747,12 +829,12 @@ export default {
         const positions = [0.25, 0.50, 0.75, 1.0];
         
         labels.forEach((sec, index) => {
-             const xPos = positions[index] * drawW;
-             const yPos = h - 15; // Position below the drawing area
+             const xPos = paddingLeft + positions[index] * drawW;
+             const yPos = h - 15; 
              
              if (index === 3) {
                  ctx.textAlign = 'right';
-                 ctx.fillText(sec + 's', xPos - 10, yPos); 
+                 ctx.fillText(sec + 's', xPos, yPos); 
              } else {
                  ctx.textAlign = 'center';
                  ctx.fillText(sec + 's', xPos, yPos); 
@@ -765,14 +847,14 @@ export default {
         const step = 50; // ms
         for (let t = 0; t <= elapsed; t += step) {
             const m = Math.exp(k * t);
-            const x = (t / maxTime) * drawW;
-            const y = drawH - ((m - 1) / (maxMult - 1)) * drawH; // Scale to drawH
+            const x = paddingLeft + (t / maxTime) * drawW;
+            const y = paddingTop + drawH - ((m - 1) / (maxMult - 1)) * drawH; 
             points.push({ x, y });
         }
         
         // Current Point
-        const curX = (elapsed / maxTime) * drawW;
-        const curY = drawH - ((multiplier - 1) / (maxMult - 1)) * drawH;
+        const curX = paddingLeft + (elapsed / maxTime) * drawW;
+        const curY = paddingTop + drawH - ((multiplier - 1) / (maxMult - 1)) * drawH;
         points.push({ x: curX, y: curY });
 
         if (points.length < 2) return;
@@ -781,14 +863,14 @@ export default {
         // Solid fill #ff9d02
         ctx.fillStyle = '#ff9d02'; 
         ctx.beginPath();
-        ctx.moveTo(points[0].x, drawH); // Start bottom-left at drawH
+        ctx.moveTo(points[0].x, paddingTop + drawH); // Start bottom-left at drawH
         ctx.lineTo(points[0].x, points[0].y);
         
         for (let i = 1; i < points.length; i++) {
              ctx.lineTo(points[i].x, points[i].y);
         }
         
-        ctx.lineTo(points[points.length-1].x, drawH); // Drop to bottom-right at drawH
+        ctx.lineTo(points[points.length-1].x, paddingTop + drawH); // Drop to bottom-right at drawH
         ctx.closePath();
         ctx.fill();
 
@@ -812,7 +894,6 @@ export default {
         ctx.restore();
 
         // --- 3. Draw End Dot (Curve color circle) ---
-        // Request: "尽头的箭头改成一个曲线同色圆点"
         ctx.save();
         ctx.translate(curX, curY);
         
@@ -828,6 +909,27 @@ export default {
         ctx.shadowColor = '#ff9d02';
         ctx.fill();
 
+        ctx.restore();
+
+        // --- Draw Y-Axis Labels (MOVED TO END) ---
+        ctx.save();
+        ctx.font = 'bold 12px "Geist", sans-serif'; 
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        
+        for (let i = 0; i <= 5; i++) {
+             const y = paddingTop + drawH - (drawH / 5) * i;
+             const val = 1.0 + (maxMult - 1.0) * (i / 5);
+             const text = val.toFixed(1) + 'x';
+
+             // Draw background for compactness
+             const textWidth = ctx.measureText(text).width;
+             ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+             ctx.fillRect(paddingLeft + 2, y - 8, textWidth + 6, 16);
+
+             ctx.fillStyle = '#ffffff'; 
+             ctx.fillText(text, paddingLeft + 5, y);
+        }
         ctx.restore();
     };
 
@@ -1117,7 +1219,7 @@ export default {
   border: 1px solid var(--line);
   border-radius: 28px;
   backdrop-filter: blur(16px);
-  padding: 30px;
+  padding: 30px 10px;
   margin-bottom: 30px;
 }
 
@@ -1144,7 +1246,7 @@ export default {
 }
 .crash-canvas-container {
   flex-grow: 1;
-  background: #000;
+  background: #101011;
   /* border-radius: 0; Removed round corners */
   /* border: 1px solid #333; Restored border */
   position: relative;
@@ -1167,7 +1269,7 @@ canvas {
   width: 100%; /* Ensure centering works well */
 }
 .multiplier-display {
-  font-size: 5rem;
+  font-size: 2.5rem;
   font-weight: 800;
   text-shadow: 0 4px 20px rgba(0,0,0,0.5);
   font-family: 'Geist', sans-serif;
@@ -1287,6 +1389,11 @@ canvas {
     font-size: 16px;
 }
 
+.input-group .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-weight: 500;
+}
+
 /* Append Buttons */
 .input-group-append {
   display: flex;
@@ -1396,6 +1503,12 @@ canvas {
     filter: brightness(1.1);
     transform: translateY(-2px);
     color: #fff !important;
+}
+
+.btn-expired {
+    background: #555 !important;
+    border-color: #555 !important;
+    opacity: 0.8;
 }
 
 .history-tabs {
