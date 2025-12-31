@@ -117,6 +117,11 @@
                   <button v-else-if="gameState === 'ANIMATING'" class="tf-button style-1 w-100 disabled" disabled>
                     {{ t('crash.launching') }}
                   </button>
+                  
+                  <div class="debug-buttons mt-2" style="display: flex; gap: 10px;">
+                    <button class="tf-button style-1 w-50" @click="testCrashAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Crash</button>
+                    <button class="tf-button style-1 w-50" @click="testWinAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Win</button>
+                  </div>
                 </div>
               </div>
 
@@ -143,10 +148,15 @@
                         {{ lastGameWon ? 'YOU WON' : 'CRASHED' }}
                       </div>
                       
-                      <div v-if="gameState === 'RESULT' && lastGameWon" class="result-payout  text-highlight-gold">
+                      <div v-if="gameState === 'RESULT' && lastGameWon" class="result-payout  text-success">
                         +{{ lastPayout }} ATH
                       </div>
                   </div>
+                </div>
+                
+                <!-- Time Label (Right of X-Axis) -->
+                <div v-if="gameState === 'ANIMATING' || gameState === 'RESULT'" class="time-display-wrapper" style="position: absolute; right: 25px; bottom: 40px; color: #ffffff; font-family: 'Geist', sans-serif; font-weight: bold;">
+                    {{ currentTimeLabel }}s
                 </div>
               </div>
             </div>
@@ -269,7 +279,8 @@ export default {
     const maxPrediction = ref(100);
 
     const expirationSeconds = ref(0); // Seconds until expiration
-    
+    const currentTimeLabel = ref(0); // Current elapsed time in seconds for display
+
     // Sidebar State
     const isSidebarOpen = ref(false);
     
@@ -596,6 +607,13 @@ export default {
         const ctx = canvas.getContext('2d');
         const w = canvas.width;
         const h = canvas.height;
+        
+        // Define padding for axes
+        const paddingBottom = 40; 
+        const paddingRight = 15; // NEW
+        
+        const drawH = h - paddingBottom;
+        const drawW = w - paddingRight; // UPDATED
 
         ctx.clearRect(0, 0, w, h);
         
@@ -603,8 +621,12 @@ export default {
         ctx.strokeStyle = 'rgba(51, 51, 51, 0.5)';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        for (let x = 0; x < w; x += 50) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
-        for (let y = 0; y < h; y += 50) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+        for (let x = 0; x <= drawW; x += 50) { ctx.moveTo(x, 0); ctx.lineTo(x, drawH); }
+        for (let y = 0; y < drawH; y += 50) { ctx.moveTo(0, y); ctx.lineTo(drawW, y); }
+        
+        // Axis line
+        ctx.moveTo(0, drawH);
+        ctx.lineTo(drawW, drawH);
         ctx.stroke();
 
         // Draw static curve preview (dashed or faint)
@@ -612,8 +634,8 @@ export default {
         ctx.setLineDash([5, 5]); // Dashed line for preview
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(0, h);
-        ctx.quadraticCurveTo(w/2, h, w, h*0.2);
+        ctx.moveTo(0, drawH);
+        ctx.quadraticCurveTo(drawW/2, drawH, drawW, drawH*0.2);
         ctx.stroke();
         ctx.setLineDash([]); // Reset dash
 
@@ -621,7 +643,7 @@ export default {
         ctx.font = '20px "Geist", sans-serif';
         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
         ctx.textAlign = 'center';
-        ctx.fillText(t('crash.waitingForNextRound'), w/2, h/2);
+        ctx.fillText(t('crash.waitingForNextRound'), drawW/2, drawH/2);
     };
 
     const startAnimation = (targetPoint) => {
@@ -652,10 +674,9 @@ export default {
             const now = Date.now();
             const elapsed = now - startTime; // ms
             
-            // Formula: M = e^(0.00015 * t)
-            // t in ms. e^(0.00015 * 10000) = e^1.5 = 4.48x in 10s.
-            // e^(0.00015 * 20000) = e^3 = 20x in 20s.
-            let nextM = Math.exp(0.00015 * elapsed);
+            // Formula: M = e^(k * t)
+            // k=0.00006. e^(0.00006 * 10000) = e^0.6 = 1.82x in 10s.
+            let nextM = Math.exp(k * elapsed);
             
             if (nextM >= targetPoint) {
                 nextM = targetPoint;
@@ -676,51 +697,98 @@ export default {
     const drawFrame = (ctx, w, h, multiplier, elapsed) => {
         ctx.clearRect(0, 0, w, h);
         
-        // Draw Grid (Same as idle but maybe fainter)
+        const k = 0.00006;
+
+        // --- Calculate Viewport ---
+        const maxTime = Math.max(8000, elapsed * 1.0); // Minimum 8s viewport
+        const maxMult = Math.max(2, multiplier * 1.2);
+
+        // Define padding for axes
+        const paddingBottom = 40; // Increased to make room for labels
+        const paddingLeft = 0;   // No left axis labels yet
+        const paddingRight = 15; // Right padding for dot visibility
+        
+        // Effective drawing area
+        const drawH = h - paddingBottom;
+        const drawW = w - paddingRight; // Full width minus padding
+
+        // Update time label display
+        currentTimeLabel.value = (elapsed / 1000).toFixed(1);
+
+        // Draw Grid
         ctx.strokeStyle = 'rgba(51, 51, 51, 0.5)';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        for (let x = 0; x < w; x += 50) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
-        for (let y = 0; y < h; y += 50) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
-        ctx.stroke();
+        for (let x = 0; x <= drawW; x += 50) { ctx.moveTo(x, 0); ctx.lineTo(x, drawH); } // Vertical lines stop at drawH
+        for (let y = 0; y < drawH; y += 50) { ctx.moveTo(0, y); ctx.lineTo(drawW, y); } // Horizontal lines
         
-        // --- Calculate Viewport ---
-        const maxTime = Math.max(10000, elapsed * 1.2);
-        const maxMult = Math.max(2, multiplier * 1.2);
+        // Draw bottom axis line
+        ctx.moveTo(0, drawH);
+        ctx.lineTo(drawW, drawH);
+        
+        ctx.stroke();
+
+        // --- Draw X-Axis Labels (Below the graph area) ---
+        ctx.save();
+        ctx.font = 'bold 12px "Geist", sans-serif'; // Bold font
+        ctx.fillStyle = '#ffffff'; // White color
+        ctx.textAlign = 'center';
+        
+        // Dynamic labels logic
+        let labels = [];
+        const maxSeconds = Math.ceil(maxTime / 1000);
+        
+        if (maxSeconds <= 8) {
+            labels = [2, 4, 6, 8];
+        } else {
+            labels = [maxSeconds - 6, maxSeconds - 4, maxSeconds - 2, maxSeconds];
+        }
+
+        const positions = [0.25, 0.50, 0.75, 1.0];
+        
+        labels.forEach((sec, index) => {
+             const xPos = positions[index] * drawW;
+             const yPos = h - 15; // Position below the drawing area
+             
+             if (index === 3) {
+                 ctx.textAlign = 'right';
+                 ctx.fillText(sec + 's', xPos - 10, yPos); 
+             } else {
+                 ctx.textAlign = 'center';
+                 ctx.fillText(sec + 's', xPos, yPos); 
+             }
+        });
+        ctx.restore();
 
         // Pre-calculate points to avoid multiple loops
         const points = [];
         const step = 50; // ms
         for (let t = 0; t <= elapsed; t += step) {
-            const m = Math.exp(0.00015 * t);
-            const x = (t / maxTime) * w;
-            const y = h - ((m - 1) / (maxMult - 1)) * h;
+            const m = Math.exp(k * t);
+            const x = (t / maxTime) * drawW;
+            const y = drawH - ((m - 1) / (maxMult - 1)) * drawH; // Scale to drawH
             points.push({ x, y });
         }
         
         // Current Point
-        const curX = (elapsed / maxTime) * w;
-        const curY = h - ((multiplier - 1) / (maxMult - 1)) * h;
+        const curX = (elapsed / maxTime) * drawW;
+        const curY = drawH - ((multiplier - 1) / (maxMult - 1)) * drawH;
         points.push({ x: curX, y: curY });
 
         if (points.length < 2) return;
 
         // --- 1. Draw Blue Area Under Curve ---
-        // Create Gradient
-        const gradientFill = ctx.createLinearGradient(0, 0, 0, h);
-        gradientFill.addColorStop(0, 'rgba(36, 134, 255, 0.4)'); // Blue top (#2486ff)
-        gradientFill.addColorStop(1, 'rgba(36, 134, 255, 0.0)'); // Transparent bottom
-
-        ctx.fillStyle = gradientFill;
+        // Solid fill #ff9d02
+        ctx.fillStyle = '#ff9d02'; 
         ctx.beginPath();
-        ctx.moveTo(points[0].x, h); // Start bottom-left
+        ctx.moveTo(points[0].x, drawH); // Start bottom-left at drawH
         ctx.lineTo(points[0].x, points[0].y);
         
         for (let i = 1; i < points.length; i++) {
              ctx.lineTo(points[i].x, points[i].y);
         }
         
-        ctx.lineTo(points[points.length-1].x, h); // Drop to bottom-right
+        ctx.lineTo(points[points.length-1].x, drawH); // Drop to bottom-right at drawH
         ctx.closePath();
         ctx.fill();
 
@@ -728,10 +796,10 @@ export default {
         ctx.save();
         // Glow effect
         ctx.shadowBlur = 15;
-        ctx.shadowColor = '#2486ff'; // Blue glow
+        ctx.shadowColor = '#ff9d02'; // Orange glow to match fill
         
         ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 5; // Thicker line
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         
@@ -743,45 +811,22 @@ export default {
         ctx.stroke();
         ctx.restore();
 
-        // --- 3. Draw Rocket/Spaceship (Blue/White) ---
+        // --- 3. Draw End Dot (Curve color circle) ---
+        // Request: "尽头的箭头改成一个曲线同色圆点"
         ctx.save();
         ctx.translate(curX, curY);
         
-        // Calculate angle based on previous point to orient rocket
-        let angle = -Math.PI / 4; // Default 45 deg up
-        if (points.length > 2) {
-            const prev = points[points.length - 2];
-            const dx = curX - prev.x;
-            const dy = curY - prev.y;
-            angle = Math.atan2(dy, dx);
-        }
-        ctx.rotate(angle);
-
-        // Draw Rocket Body (Simple Triangle/Shape)
-        ctx.fillStyle = '#ffffff';
+        // Draw Dot
         ctx.beginPath();
-        // Nose
-        ctx.moveTo(10, 0);
-        // Bottom Right
-        ctx.lineTo(-6, 6);
-        // Center indentation
-        ctx.lineTo(-4, 0);
-        // Bottom Left
-        ctx.lineTo(-6, -6);
-        ctx.closePath();
+        ctx.arc(0, 0, 6, 0, Math.PI * 2); // 6px radius
+        ctx.fillStyle = '#ffffff'; // Curve color (white)
         ctx.fill();
-
-        // Draw Thrust (Flickering Blue)
-        if (gameState.value === 'ANIMATING') {
-            const flicker = Math.random() * 5 + 5; // Length variation
-            ctx.fillStyle = '#2486ff'; // Blue Thrust
-            ctx.beginPath();
-            ctx.moveTo(-6, 3);
-            ctx.lineTo(-6 - flicker, 0);
-            ctx.lineTo(-6, -3);
-            ctx.closePath();
-            ctx.fill();
-        }
+        
+        // Optional: Add a glow or ring? "曲线同色" -> White.
+        // Maybe an outer glow ring?
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#ff9d02';
+        ctx.fill();
 
         ctx.restore();
     };
@@ -865,9 +910,7 @@ export default {
         if (item.crashPoint === 0) return 'text-danger'; // Timeout
         if (item.crashPoint < 1.01) return 'text-danger'; // Instant crash
         // For history
-        if (item.crashPoint >= 10) return 'text-highlight-gold';
-        if (item.crashPoint >= 2) return 'text-highlight-green';
-        if (item.crashPoint >= 1.01 && item.crashPoint < 2) return 'text-purple'; // 1.01x - 1.99x Purple
+        if (item.crashPoint >= 1.01) return 'text-success'; // Unified Green for all winning/active states
         return 'text-white'; 
     };
 
@@ -936,6 +979,17 @@ export default {
         prediction.value = newVal.toFixed(2);
     };
 
+    const testCrashAnim = () => {
+        lastGameWon.value = false;
+        startAnimation(1.20); // Crashes at 1.20x
+    };
+    
+    const testWinAnim = () => {
+        lastGameWon.value = true;
+        lastPayout.value = '100'; // Fake payout
+        startAnimation(5.00); // Crashes at 5.00x but we won
+    };
+
     return {
         t,
         gameState,
@@ -980,7 +1034,10 @@ export default {
         adjustPrediction,
         isSidebarOpen,
         openSidebar,
-        closeSidebar
+        closeSidebar,
+        testCrashAnim,
+        testWinAnim,
+        currentTimeLabel
     };
   },
   components: {
@@ -1088,8 +1145,8 @@ export default {
 .crash-canvas-container {
   flex-grow: 1;
   background: #000;
-  border-radius: 20px;
-  border: 1px solid #333;
+  /* border-radius: 0; Removed round corners */
+  /* border: 1px solid #333; Restored border */
   position: relative;
   overflow: hidden;
 }
@@ -1142,7 +1199,6 @@ canvas {
 
 .won-anim {
     color: #22c55e !important;
-    animation: pulse-green 1s infinite;
     text-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
 }
 
