@@ -217,6 +217,7 @@ const languagePacks = {
     'crash.loadMore': '加载更多',
     'crash.betExpired': '投注已超时 (资金不退)',
     'crash.comingSoon': 'Crash 游戏即将推出',
+    'crash.waitingForNextRound': '等待下一轮开始',
     
     // Common
     'common.loading': 'Loading...',
@@ -457,6 +458,7 @@ const languagePacks = {
     'crash.loadMore': '加載更多',
     'crash.betExpired': '投注已超時 (資金不退)',
     'crash.comingSoon': 'Crash 遊戲即將推出',
+    'crash.waitingForNextRound': '等待下一輪開始',
     
     // Common
     'common.loading': 'Loading...',
@@ -695,6 +697,7 @@ const languagePacks = {
     'crash.loadMore': 'Load More',
     'crash.betExpired': 'Bet Expired (Timeout). Funds not returned.',
     'crash.comingSoon': 'Crash Game Coming Soon',
+    'crash.waitingForNextRound': 'Waiting for next round',
     
     // Common
     'common.loading': 'Loading...',
@@ -934,6 +937,7 @@ const languagePacks = {
     'crash.loadMore': 'もっと読み込む',
     'crash.betExpired': 'ベット期限切れ（タイムアウト）。資金は返還されません。',
     'crash.comingSoon': 'クラッシュゲーム近日公開',
+    'crash.waitingForNextRound': '次のラウンドを待機中',
     
     // Common
     'common.loading': 'Loading...',
@@ -1174,6 +1178,7 @@ const languagePacks = {
     'crash.loadMore': '더 불러오기',
     'crash.betExpired': '베팅 만료 (시간 초과). 자금은 반환되지 않습니다.',
     'crash.comingSoon': '크래시 게임 곧 출시',
+    'crash.waitingForNextRound': '다음 라운드 대기 중',
     
     // Common
     'common.loading': 'Loading...',

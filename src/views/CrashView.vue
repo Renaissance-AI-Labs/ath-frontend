@@ -6,11 +6,11 @@
           <div class="sect-tagline_inner">
             <span class="hafl-plus pst-left_bot wow bounceInScale"></span>
             <span class="hafl-plus pst-right_bot wow bounceInScale"></span>
-            <div class="s-name text-caption font-2">
-              <div class="breadcrumbs-list" style="font-size: 30px;">
-                <!-- <router-link to="/" class="text-white link font-2">CRASH</router-link>
+            <div class="s-name text-caption ">
+              <div class="breadcrumbs-list" style="font-size: 30px; margin-top: 10px; margin-bottom: 0px;">
+                <!-- <router-link to="/" class="text-white link ">CRASH</router-link>
                 <span> & </span> -->
-                <span class="hacker-text_transform no-delay current-page">CRASH</span>
+                <span class="crash-title no-delay">CRASH</span>
               </div>
             </div>
           </div>
@@ -29,60 +29,60 @@
               <!-- Left: Controls -->
               <div class="crash-controls">
                 <div class="control-group">
-                  <label class="font-2">{{ t('crash.betAmount') }}</label>
+                  <label class="">{{ t('crash.betAmount') }}</label>
                   <div class="input-group">
                     <input 
                       type="number" 
                       v-model="betAmount" 
                       @blur="handleBetAmountBlur"
-                      :disabled="gameState !== 'IDLE'"
+                      :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'"
                       :placeholder="`${minBet} - ${maxBet}`" 
                       :min="minBet"
                       :max="maxBet"
-                      class="form-control font-2"
+                      class="form-control "
                     />
                     <div class="input-group-append">
-                      <button class="font-2 append-btn" @click="setAmountPercent(0.5)" :disabled="gameState !== 'IDLE'">1/2</button>
-                      <button class="font-2 append-btn" @click="setAmountPercent(2)" :disabled="gameState !== 'IDLE'">2x</button>
-                      <button class="font-2 append-btn" @click="setMaxAmount" :disabled="gameState !== 'IDLE'">Max</button>
+                      <button class=" append-btn" @click="setAmountPercent(0.5)" :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'">1/2</button>
+                      <button class=" append-btn" @click="setAmountPercent(2)" :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'">2x</button>
+                      <button class=" append-btn" @click="setMaxAmount" :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'">Max</button>
                     </div>
                   </div>
-                  <div class="balance-text font-2">
+                  <div class="balance-text ">
                     {{ t('crash.balance', { amount: parseFloat(athBalance).toFixed(4) }) }}
                   </div>
                 </div>
 
-                <div class="control-group mt-3">
-                  <label class="font-2">{{ t('crash.prediction') }}</label>
+                <div class="control-group mt-2">
+                  <label class="">{{ t('crash.prediction') }}</label>
                   <div class="input-group">
                     <input 
                       type="number" 
                       v-model="prediction" 
                       @blur="handlePredictionBlur"
-                      :disabled="gameState !== 'IDLE'"
+                      :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'"
                       :placeholder="placeholderText" 
                       step="0.01"
                       :min="minPrediction"
                       :max="maxPrediction"
-                      class="form-control font-2"
+                      class="form-control "
                     />
                     <div class="input-group-append">
                       <div class="prediction-arrows">
-                        <button class="arrow-btn left" @click="adjustPrediction(-1)" :disabled="gameState !== 'IDLE'">
+                        <button class="arrow-btn left" @click="adjustPrediction(-1)" :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'">
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
                         </button>
-                        <button class="arrow-btn right" @click="adjustPrediction(1)" :disabled="gameState !== 'IDLE'">
+                        <button class="arrow-btn right" @click="adjustPrediction(1)" :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'">
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
                         </button>
                       </div>
                     </div>
                   </div>
-                  <!-- <div class="win-chance font-2">
+                  <!-- <div class="win-chance ">
                     {{ t('crash.winChance', { chance: winChance }) }}
                   </div> -->
                 </div>
 
-                <div class="action-btn-wrapper mt-4">
+                <div class="action-btn-wrapper mt-3">
                   <!-- Connect Wallet -->
                   <button v-if="!walletState.isConnected" class="tf-button style-1 w-100" @click="connectWallet">
                     {{ t('crash.connectWallet') }}
@@ -94,7 +94,7 @@
                   </button>
                   
                   <!-- Bet -->
-                  <button v-else-if="gameState === 'IDLE'" class="tf-button style-1 w-100 btn-bet" @click="handleBet" :disabled="isBetting">
+                  <button v-else-if="gameState === 'IDLE' || gameState === 'RESULT'" class="tf-button style-1 w-100 btn-bet" @click="handleBet" :disabled="isBetting">
                     {{ isBetting ? t('crash.betting') : t('crash.bet') }}
                   </button>
 
@@ -114,7 +114,7 @@
                   </button>
                   
                   <!-- Animating -->
-                  <button v-else-if="gameState === 'ANIMATING' || gameState === 'RESULT'" class="tf-button style-1 w-100 disabled" disabled>
+                  <button v-else-if="gameState === 'ANIMATING'" class="tf-button style-1 w-100 disabled" disabled>
                     {{ t('crash.launching') }}
                   </button>
                 </div>
@@ -126,14 +126,26 @@
                 
                 <!-- Overlay Info -->
                 <div class="canvas-overlay">
-                  <div class="multiplier-display font-2" :class="multiplierClass">
-                    {{ currentMultiplier.toFixed(2) }}x
+                  <!-- Loading / Waiting -->
+                  <div v-if="gameState === 'WAITING_BLOCK'" class="status-overlay">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <div class="mt-2 ">{{ t('crash.waitingBlockOverlay') }}</div>
                   </div>
-                  <div v-if="gameState === 'RESULT'" class="result-message font-2" :class="{ 'text-success': lastGameWon, 'text-danger': !lastGameWon }">
-                    {{ lastGameWon ? t('crash.youWon', { amount: lastPayout }) : t('crash.crashed') }}
-                  </div>
-                  <div v-if="gameState === 'WAITING_BLOCK'" class="status-message font-2">
-                    {{ t('crash.waitingBlockOverlay') }}
+
+                  <!-- Multiplier Display (Always visible during game, and result) -->
+                  <div v-if="gameState === 'ANIMATING' || gameState === 'RESULT'" class="multiplier-display-wrapper">
+                      <div class="multiplier-display " :class="[multiplierClass, { 'crashed-anim': gameState === 'RESULT' && !lastGameWon, 'won-anim': gameState === 'RESULT' && lastGameWon }]">
+                        {{ currentMultiplier.toFixed(2) }}x
+                      </div>
+                      
+                      <!-- Result Status Text -->
+                      <div v-if="gameState === 'RESULT'" class="result-status " :class="lastGameWon ? 'text-success' : 'text-danger'">
+                        {{ lastGameWon ? 'YOU WON' : 'CRASHED' }}
+                      </div>
+                      
+                      <div v-if="gameState === 'RESULT' && lastGameWon" class="result-payout  text-highlight-gold">
+                        +{{ lastPayout }} ATH
+                      </div>
                   </div>
                 </div>
               </div>
@@ -143,12 +155,12 @@
           <!-- History Section -->
           <div class="col-lg-12">
             <div class="history-tabs">
-              <button class="tab-btn font-2" :class="{ active: activeTab === 'my' }" @click="activeTab = 'my'">{{ t('crash.myBets') }}</button>
-              <button class="tab-btn font-2" :class="{ active: activeTab === 'all' }" @click="activeTab = 'all'">{{ t('crash.allBets') }}</button>
+              <button class="tab-btn " :class="{ active: activeTab === 'my' }" @click="activeTab = 'my'">{{ t('crash.myBets') }}</button>
+              <button class="tab-btn " :class="{ active: activeTab === 'all' }" @click="activeTab = 'all'">{{ t('crash.allBets') }}</button>
             </div>
             
             <div class="history-table-wrapper">
-              <table class="table font-2 text-white">
+              <table class="table  text-white">
                 <thead>
                   <tr>
                     <th>{{ t('crash.time') }}</th>
@@ -496,6 +508,12 @@ export default {
     const handleBet = async () => {
         if (!betAmount.value || !prediction.value) return;
         
+        // Reset visual state if we are coming from RESULT
+        if (gameState.value === 'RESULT') {
+             gameState.value = 'IDLE'; // Optional transition
+             // Clear canvas? Maybe not needed as it will switch to waiting block soon
+        }
+
         console.log("handleBet parameters:", { betAmount: betAmount.value, prediction: parseFloat(prediction.value) });
         isBetting.value = true;
         const success = await placeBet(betAmount.value, parseFloat(prediction.value));
@@ -581,22 +599,29 @@ export default {
 
         ctx.clearRect(0, 0, w, h);
         
-        // Draw grid
-        ctx.strokeStyle = '#333';
+        // Draw Faint Grid
+        ctx.strokeStyle = 'rgba(51, 51, 51, 0.5)';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        // Simple grid
         for (let x = 0; x < w; x += 50) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
         for (let y = 0; y < h; y += 50) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
         ctx.stroke();
 
-        // Draw static curve preview
-        ctx.strokeStyle = '#666';
-        ctx.lineWidth = 3;
+        // Draw static curve preview (dashed or faint)
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.setLineDash([5, 5]); // Dashed line for preview
+        ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(0, h);
         ctx.quadraticCurveTo(w/2, h, w, h*0.2);
         ctx.stroke();
+        ctx.setLineDash([]); // Reset dash
+
+        // Draw "Ready" text or waiting pulse
+        ctx.font = '20px "Geist", sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.textAlign = 'center';
+        ctx.fillText(t('crash.waitingForNextRound'), w/2, h/2);
     };
 
     const startAnimation = (targetPoint) => {
@@ -651,57 +676,114 @@ export default {
     const drawFrame = (ctx, w, h, multiplier, elapsed) => {
         ctx.clearRect(0, 0, w, h);
         
-        // Draw Grid (Same as idle)
-        ctx.strokeStyle = '#333';
+        // Draw Grid (Same as idle but maybe fainter)
+        ctx.strokeStyle = 'rgba(51, 51, 51, 0.5)';
         ctx.lineWidth = 1;
         ctx.beginPath();
         for (let x = 0; x < w; x += 50) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
         for (let y = 0; y < h; y += 50) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
         ctx.stroke();
         
-        // Draw Curve
-        // Map time (x) and multiplier (y) to canvas coords.
-        // We need the curve to stay within view, so we scale the view based on current M.
-        
-        ctx.strokeStyle = multiplier >= parseFloat(prediction.value) ? '#00ff00' : '#ffffff';
-        ctx.lineWidth = 4;
-        ctx.lineCap = 'round';
-        
-        ctx.beginPath();
-        ctx.moveTo(0, h); // Start bottom left
-        
-        // Plot points up to current time
-        // We iterate pixels on X axis to map to time
-        // Or better: iterate time steps
-        
-        // Viewport Logic: 
-        // X axis: 0 to max(10s, current_time * 1.2)
-        // Y axis: 1 to max(2x, current_M * 1.2)
-        
+        // --- Calculate Viewport ---
         const maxTime = Math.max(10000, elapsed * 1.2);
         const maxMult = Math.max(2, multiplier * 1.2);
-        
-        for (let t = 0; t <= elapsed; t += 50) { // Step 50ms
+
+        // Pre-calculate points to avoid multiple loops
+        const points = [];
+        const step = 50; // ms
+        for (let t = 0; t <= elapsed; t += step) {
             const m = Math.exp(0.00015 * t);
-            
             const x = (t / maxTime) * w;
-            const y = h - ((m - 1) / (maxMult - 1)) * h; // Map 1..maxMult to h..0
-            
-            ctx.lineTo(x, y);
+            const y = h - ((m - 1) / (maxMult - 1)) * h;
+            points.push({ x, y });
         }
         
-        // Line to current point
+        // Current Point
         const curX = (elapsed / maxTime) * w;
         const curY = h - ((multiplier - 1) / (maxMult - 1)) * h;
-        ctx.lineTo(curX, curY);
-        
-        ctx.stroke();
-        
-        // Draw Rocket/Dot at tip
-        ctx.fillStyle = '#ff0000';
+        points.push({ x: curX, y: curY });
+
+        if (points.length < 2) return;
+
+        // --- 1. Draw Blue Area Under Curve ---
+        // Create Gradient
+        const gradientFill = ctx.createLinearGradient(0, 0, 0, h);
+        gradientFill.addColorStop(0, 'rgba(36, 134, 255, 0.4)'); // Blue top (#2486ff)
+        gradientFill.addColorStop(1, 'rgba(36, 134, 255, 0.0)'); // Transparent bottom
+
+        ctx.fillStyle = gradientFill;
         ctx.beginPath();
-        ctx.arc(curX, curY, 6, 0, Math.PI * 2);
+        ctx.moveTo(points[0].x, h); // Start bottom-left
+        ctx.lineTo(points[0].x, points[0].y);
+        
+        for (let i = 1; i < points.length; i++) {
+             ctx.lineTo(points[i].x, points[i].y);
+        }
+        
+        ctx.lineTo(points[points.length-1].x, h); // Drop to bottom-right
+        ctx.closePath();
         ctx.fill();
+
+        // --- 2. Draw The Line Curve (Clean White) ---
+        ctx.save();
+        // Glow effect
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = '#2486ff'; // Blue glow
+        
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+            ctx.lineTo(points[i].x, points[i].y);
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        // --- 3. Draw Rocket/Spaceship (Blue/White) ---
+        ctx.save();
+        ctx.translate(curX, curY);
+        
+        // Calculate angle based on previous point to orient rocket
+        let angle = -Math.PI / 4; // Default 45 deg up
+        if (points.length > 2) {
+            const prev = points[points.length - 2];
+            const dx = curX - prev.x;
+            const dy = curY - prev.y;
+            angle = Math.atan2(dy, dx);
+        }
+        ctx.rotate(angle);
+
+        // Draw Rocket Body (Simple Triangle/Shape)
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        // Nose
+        ctx.moveTo(10, 0);
+        // Bottom Right
+        ctx.lineTo(-6, 6);
+        // Center indentation
+        ctx.lineTo(-4, 0);
+        // Bottom Left
+        ctx.lineTo(-6, -6);
+        ctx.closePath();
+        ctx.fill();
+
+        // Draw Thrust (Flickering Blue)
+        if (gameState.value === 'ANIMATING') {
+            const flicker = Math.random() * 5 + 5; // Length variation
+            ctx.fillStyle = '#2486ff'; // Blue Thrust
+            ctx.beginPath();
+            ctx.moveTo(-6, 3);
+            ctx.lineTo(-6 - flicker, 0);
+            ctx.lineTo(-6, -3);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        ctx.restore();
     };
 
     const endGame = () => {
@@ -709,14 +791,8 @@ export default {
         refreshBalance();
         loadHistory();
         
-        // Reset to IDLE after 5 seconds
-        setTimeout(() => {
-            if (gameState.value === 'RESULT') {
-                gameState.value = 'IDLE';
-                betAmount.value = ''; // Optional: clear bet
-                drawIdleCanvas();
-            }
-        }, 5000);
+        // Removed auto-reset. User must click Bet to start next round.
+        // Result stays on screen.
     };
 
     // --- Helper UI Methods ---
@@ -756,12 +832,19 @@ export default {
     };
 
     const formatTime = (ts) => {
-        return new Date(ts * 1000).toLocaleTimeString();
+        const date = new Date(ts * 1000);
+        const Y = date.getFullYear();
+        const M = (date.getMonth() + 1).toString().padStart(2, '0');
+        const D = date.getDate().toString().padStart(2, '0');
+        const h = date.getHours().toString().padStart(2, '0');
+        const m = date.getMinutes().toString().padStart(2, '0');
+        const s = date.getSeconds().toString().padStart(2, '0');
+        return `${Y}-${M}-${D} ${h}:${m}:${s}`;
     };
     
     const formatAddr = (addr) => {
         if (!addr) return '???';
-        return addr.substring(0, 6) + '...';
+        return addr.substring(0, 6) + '...' + addr.substring(addr.length - 4);
     };
 
     const formatCrashPoint = (val) => {
@@ -791,14 +874,14 @@ export default {
     const loadHistory = async () => {
         if (activeTab.value === 'my') {
             const length = await getUserHistoryLength();
-            const start = Math.max(0, length - 20);
-            const raw = await getUserHistory(start, 20);
+            const start = Math.max(0, length - 50);
+            const raw = await getUserHistory(start, 50);
             historyData.value = raw.reverse(); // Newest first
         } else {
             // For global history
             const length = await getGlobalHistoryLength();
-            const start = Math.max(0, length - 20);
-            const raw = await getGlobalHistory(start, 20);
+            const start = Math.max(0, length - 50);
+            const raw = await getGlobalHistory(start, 50);
             historyData.value = raw.reverse(); // Newest first
         }
         hasMoreHistory.value = false; // Disable pagination for MVP
@@ -837,7 +920,7 @@ export default {
     };
 
     const adjustPrediction = (delta) => {
-        if (gameState.value !== 'IDLE') return;
+        if (gameState.value !== 'IDLE' && gameState.value !== 'RESULT') return;
         
         let current = parseFloat(prediction.value);
         if (isNaN(current)) current = minPrediction.value; // Default to min if empty
@@ -907,20 +990,97 @@ export default {
 </script>
 
 <style scoped>
+.crash-title {
+  font-family: 'Geist', sans-serif;
+  font-size: 60px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #e0e0e0;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  animation: breathing 3s ease-in-out infinite alternate;
+  letter-spacing: 2px;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  padding: 0 10px; /* Add padding to prevent clipping */
+  line-height: 1.2; /* Ensure enough height */
+}
+
+.crash-title::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.8) 50%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  animation: shine 4s infinite;
+  pointer-events: none;
+}
+
+@keyframes shine {
+  0%, 80% {
+    left: -100%;
+    opacity: 0;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    left: 200%;
+    opacity: 0;
+  }
+}
+
+@keyframes breathing {
+  0% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  100% {
+    text-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 0 0 10px rgba(224, 224, 224, 0.6);
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
 .crash-container {
   padding-bottom: 80px;
 }
+/* Card Style consistent with Home/Modal */
+.crash-game-wrapper {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  backdrop-filter: blur(16px);
+  padding: 30px;
+  margin-bottom: 30px;
+}
+
+.history-table-wrapper {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  backdrop-filter: blur(16px);
+  padding: 10px;
+  margin-bottom: 30px;
+}
+
 .crash-game-wrapper {
   display: flex;
-  gap: 20px;
-  background: #111;
-  border: 1px solid #333;
-  border-radius: 12px;
-  padding: 20px;
+  gap: 30px;
   min-height: 500px;
 }
+
 .crash-controls {
-  width: 300px;
+  width: 320px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -928,7 +1088,8 @@ export default {
 .crash-canvas-container {
   flex-grow: 1;
   background: #000;
-  border-radius: 8px;
+  border-radius: 20px;
+  border: 1px solid #333;
   position: relative;
   overflow: hidden;
 }
@@ -945,15 +1106,82 @@ canvas {
   transform: translate(-50%, -50%);
   text-align: center;
   pointer-events: none;
+  z-index: 10;
+  width: 100%; /* Ensure centering works well */
 }
 .multiplier-display {
-  font-size: 4rem;
-  font-weight: bold;
+  font-size: 5rem;
+  font-weight: 800;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  font-family: 'Geist', sans-serif;
+  line-height: 1;
+  transition: transform 0.1s;
 }
-.result-message {
-  font-size: 1.5rem;
-  margin-top: 10px;
+
+.result-status {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-top: 10px;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+
+.result-payout {
+    font-size: 1.5rem;
+    margin-top: 5px;
+    animation: slideUpFade 0.5s ease-out 0.2s backwards;
+}
+
+/* Animations */
+.crashed-anim {
+    color: #ef4444 !important;
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    text-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+}
+
+.won-anim {
+    color: #22c55e !important;
+    animation: pulse-green 1s infinite;
+    text-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+@keyframes pulse-green {
+    0% { transform: scale(1); text-shadow: 0 0 20px rgba(34, 197, 94, 0.6); }
+    50% { transform: scale(1.1); text-shadow: 0 0 40px rgba(34, 197, 94, 0.9); }
+    100% { transform: scale(1); text-shadow: 0 0 20px rgba(34, 197, 94, 0.6); }
+}
+
+@keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounceIn {
+  0% { opacity: 0; transform: scale(0.3); }
+  50% { opacity: 1; transform: scale(1.05); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+.status-overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.6);
+    padding: 20px;
+    border-radius: 16px;
+    backdrop-filter: blur(4px);
+}
+
 .status-message {
   font-size: 1rem;
   color: #aaa;
@@ -961,34 +1189,62 @@ canvas {
 }
 
 .control-group label {
-  color: #888;
-  margin-bottom: 5px;
+  color: var(--text-2);
+  margin-bottom: 4px; /* Reduced from 8px */
   display: block;
+  font-size: 14px;
 }
 .balance-text {
   font-size: 0.8rem;
-  color: #666;
+  color: var(--text-2);
+  opacity: 0.7;
   text-align: right;
-  margin-top: 4px;
+  margin-top: 4px; /* Reduced from 6px */
 }
 .win-chance {
   font-size: 0.8rem;
   color: #666;
-  margin-top: 4px;
+  margin-top: 2px; /* Reduced from 4px */
 }
 
-/* Ensure input group append items stay inline */
+/* Input Styling */
+.input-group {
+    background-color: #0c0c0e;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    transition: border-color 0.3s;
+}
+.input-group:focus-within {
+    border-color: var(--primary);
+}
+
+.input-group .form-control {
+    border: none !important;
+    background: transparent !important;
+    padding: 10px 15px !important;
+    color: var(--white) !important;
+    height: auto !important;
+    box-shadow: none !important;
+    font-size: 16px;
+}
+
+/* Append Buttons */
 .input-group-append {
   display: flex;
+  gap: 6px;
+  padding-right: 6px;
 }
 
-/* Fix for invisible text in buttons */
 .append-btn {
-  background: #333;
-  color: #fff;
-  border: 1px solid #444;
-  width: 42px; /* Fixed width for consistency */
-  height: 46px; /* Match input height if standard is ~45-46px */
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-2);
+  border: 1px solid var(--line);
+  width: 42px; 
+  height: 38px; 
+  border-radius: 10px;
   padding: 0;
   font-weight: 600;
   cursor: pointer;
@@ -996,31 +1252,30 @@ canvas {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  font-size: 12px;
 }
 .append-btn:hover {
-  background: #444;
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
 }
 
-/* Ensure input height matches */
-.input-group .form-control {
-    height: 46px;
-}
-
+/* Prediction Arrows */
 .prediction-arrows {
   display: flex;
-  flex-direction: row;
-  height: 46px;
-  border: 1px solid #444;
-  border-left: none;
-  background: #333;
-  width: 126px; /* Match top buttons (42*3) */
+  height: 38px;
+  width: 90px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .arrow-btn {
-  flex: 1; /* Distribute space evenly */
+  flex: 1;
   background: transparent;
   border: none;
-  color: #888;
+  color: var(--text-2);
   padding: 0;
   cursor: pointer;
   display: flex;
@@ -1030,7 +1285,7 @@ canvas {
 }
 
 .arrow-btn:hover:not(:disabled) {
-  background: #444;
+  background: var(--primary);
   color: #fff;
 }
 
@@ -1040,60 +1295,51 @@ canvas {
 }
 
 .arrow-btn.left {
-  border-right: 1px solid #444;
+  border-right: 1px solid var(--line);
 }
 
-/* Fix for action buttons container */
+/* Action Buttons */
 .action-btn-wrapper .tf-button {
-  color: #fff !important; /* Force white text */
+  width: 100%;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  background: linear-gradient(0deg, rgba(20, 20, 21, 0.82), rgba(20, 20, 21, 0.82)),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 100%);
+  border: 1px solid var(--line);
+  box-shadow: 0px 1px 1px 0px #FFFFFF2E inset, 0px 0px 4px 0px #FFFFFF0F inset;
+  color: var(--text-2) !important;
+  font-size: 16px;
+  font-weight: 600;
+  height: 56px !important;
+  border-radius: 999px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
+
+.action-btn-wrapper .tf-button:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary) !important;
+}
+
 .action-btn-wrapper .tf-button.disabled {
-  background: #333 !important;
-  color: #888 !important;
-  border-color: #444 !important;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.btn-bet {
-    font-size: 1.3rem !important;
-    font-weight: 800 !important;
-    height: 56px !important;
-    background: #333 !important;
+/* Primary Action Buttons (Bet, Settle) */
+.btn-bet, .btn-settle {
+    background: var(--primary) !important;
     color: #fff !important;
-    border: 1px solid #444 !important;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-    margin-top: 10px;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
+    border-color: var(--primary) !important;
+    box-shadow: none !important;
 }
 
-.btn-bet:hover:not(:disabled) {
-    background: #444 !important;
+.btn-bet:hover:not(:disabled), .btn-settle:hover {
+    filter: brightness(1.1);
     transform: translateY(-2px);
-}
-
-.btn-settle {
-    font-size: 1.3rem !important;
-    font-weight: 800 !important;
-    height: 56px !important;
-    background: #333 !important;
     color: #fff !important;
-    border: 1px solid #444 !important;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-    margin-top: 10px;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-}
-
-.btn-settle:hover {
-    background: #444 !important;
-    transform: translateY(-2px);
 }
 
 .history-tabs {
@@ -1102,42 +1348,57 @@ canvas {
 .tab-btn {
   background: transparent;
   border: none;
-  color: #666;
+  color: var(--text-2);
   padding: 8px 16px;
   font-size: 1rem;
   cursor: pointer;
   border-bottom: 2px solid transparent;
+  opacity: 0.6;
+  transition: all 0.3s;
+}
+.tab-btn:hover {
+    opacity: 1;
 }
 .tab-btn.active {
   color: #fff;
-  border-bottom-color: #fff;
+  opacity: 1;
+  border-bottom-color: var(--primary);
 }
+
 .history-table-wrapper {
-  background: #111;
-  border-radius: 8px;
-  padding: 15px;
   overflow-x: auto;
+  max-height: 500px;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
 .history-table-wrapper table {
   white-space: nowrap;
   margin-bottom: 0;
-  color: #fff !important;
+  color: var(--text-2) !important;
   background-color: transparent !important;
+  width: 100%;
 }
 
 .history-table-wrapper table th,
 .history-table-wrapper table td {
   background-color: transparent !important;
-  border-color: #333 !important;
-  color: #fff !important;
+  border-color: var(--line) !important;
+  color: var(--text-2) !important;
+  padding: 8px 6px; /* Reduced padding for compact view */
+  font-size: 13px;  /* Slightly smaller font */
 }
 
 .history-table-wrapper table thead th {
-    border-bottom: 2px solid #444 !important;
-    color: #888 !important;
+    border-bottom: 1px solid var(--line) !important;
+    color: var(--text-2) !important;
     font-weight: 600;
+    position: sticky;
+    top: 0;
+    background-color: #141415 !important; 
+    z-index: 1;
+    opacity: 1;
+    padding: 10px 6px; /* Header slightly taller but still compact */
 }
 
 .text-purple {
