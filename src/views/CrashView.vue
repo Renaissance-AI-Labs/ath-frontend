@@ -155,10 +155,11 @@
                         {{ currentMultiplier.toFixed(2) }}x
                       </div>
                       
-                      <!-- Current Payout (Animating) -->
+                      <!-- Current Payout (Animating) - HIDDEN as per request (inaccurate estimate)
                       <div v-if="gameState === 'ANIMATING'" class="current-payout text-highlight-gold" style="font-size: 1.5rem; font-weight: bold; margin-top: 5px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">
                           +{{ (parseFloat(betAmount || 0) * currentMultiplier).toFixed(4) }} ATH
                       </div>
+                      -->
 
                       <!-- Result Status Text -->
                       <div v-if="gameState === 'RESULT'" class="result-status " :class="lastGameWon ? 'text-success' : 'text-danger'">
