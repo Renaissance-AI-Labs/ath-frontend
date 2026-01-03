@@ -35,6 +35,7 @@
                       type="number" 
                       v-model="betAmount" 
                       @blur="handleBetAmountBlur"
+                      @input="(e) => handleInput(e, 'bet', 4)"
                       :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'"
                       :placeholder="`${minBet} - ${maxBet}`" 
                       :min="minBet"
@@ -59,6 +60,7 @@
                       type="number" 
                       v-model="prediction" 
                       @blur="handlePredictionBlur"
+                      @input="(e) => handleInput(e, 'prediction', 2)"
                       :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'"
                       :placeholder="placeholderText" 
                       step="0.01"
@@ -1179,6 +1181,19 @@ export default {
         prediction.value = newVal.toFixed(2);
     };
 
+    const handleInput = (e, type, limit) => {
+        let val = e.target.value;
+        if (val && val.includes('.')) {
+            const parts = val.split('.');
+            if (parts[1] && parts[1].length > limit) {
+                val = parts[0] + '.' + parts[1].substring(0, limit);
+                e.target.value = val;
+                if (type === 'bet') betAmount.value = val;
+                else if (type === 'prediction') prediction.value = val;
+            }
+        }
+    };
+
     const testCrashAnim = () => {
         lastGameWon.value = false;
         startAnimation(1.20); // Crashes at 1.20x
@@ -1240,7 +1255,8 @@ export default {
         testWinAnim,
         currentTimeLabel,
         expirationSeconds,
-        isInsufficientBalance
+        isInsufficientBalance,
+        handleInput
     };
   },
   components: {
