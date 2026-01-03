@@ -107,7 +107,7 @@
                   
                   <!-- Settle -->
                   <div v-else-if="gameState === 'READY_TO_SETTLE'" class="w-100">
-                    <button class="tf-button style-1 w-100 btn-settle" @click="handleSettle" :class="{ 'btn-expired': expirationSeconds === 0 }">
+                    <button class="tf-button style-1 w-100 btn-settle" @click="handleSettle" :class="{ 'btn-expired': expirationSeconds === 0, 'btn-pulse-border': expirationSeconds > 0 }">
                         <span v-if="expirationSeconds > 0">{{ t('crash.clickToSettle') }}</span>
                         <span v-else>{{ t('crash.settleExpired') }}</span>
                         <span v-if="expirationSeconds > 0" class="countdown-timer text-warning" style="margin-left: 8px;">
@@ -133,8 +133,9 @@
                   </button>
                   
                   <!-- <div class="debug-buttons mt-2" style="display: flex; gap: 10px;">
-                    <button class="tf-button style-1 w-50" @click="testCrashAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Crash</button>
-                    <button class="tf-button style-1 w-50" @click="testWinAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Win</button>
+                    <button class="tf-button style-1 w-33" @click="testCrashAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Crash</button>
+                    <button class="tf-button style-1 w-33" @click="testWinAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Win</button>
+                    <button class="tf-button style-1 w-33" @click="testSettle" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Settle</button>
                   </div> -->
                 </div>
               </div>
@@ -1225,6 +1226,12 @@ export default {
         startAnimation(5.00); // Crashes at 5.00x but we won
     };
 
+    const testSettle = () => {
+        gameState.value = 'READY_TO_SETTLE';
+        expirationSeconds.value = 30;
+        startCountdown();
+    };
+
     return {
         t,
         gameState,
@@ -1273,6 +1280,7 @@ export default {
         closeSidebar,
         testCrashAnim,
         testWinAnim,
+        testSettle,
         currentTimeLabel,
         expirationSeconds,
         isInsufficientBalance,
@@ -1635,7 +1643,7 @@ canvas {
     background-image: none !important; /* Ensure no gradient overrides it */
     color: #fff !important;
     border-color: var(--primary) !important;
-    box-shadow: none !important;
+    /* box-shadow: none !important; Removed to allow animation */
 }
 
 .btn-bet:hover:not(:disabled), .btn-settle:hover, .btn-approve-highlight:hover:not(:disabled) {
@@ -1741,5 +1749,32 @@ canvas {
   .crash-canvas-container {
     height: 300px;
   }
+}
+
+@keyframes border-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(200, 229, 241, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 0 7px rgba(255, 157, 2, 0);
+  }
+}
+
+.btn-pulse-border {
+  position: relative;
+  overflow: visible !important; /* Ensure shadow isn't clipped */
+}
+
+.btn-pulse-border::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 999px;
+  animation: border-pulse 2s infinite;
+  pointer-events: none;
+  z-index: 1; /* On top of button content if needed, or adjust */
 }
 </style>
