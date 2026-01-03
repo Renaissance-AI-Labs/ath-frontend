@@ -48,7 +48,7 @@
                     </div>
                   </div>
                   <div class="balance-text " :class="{ 'text-danger': isInsufficientBalance }">
-                    {{ t('crash.balance', { amount: parseFloat(athBalance).toFixed(4) }) }}
+                    {{ t('crash.balance', { amount: formatAmount4(athBalance) }) }}
                   </div>
                 </div>
 
@@ -546,6 +546,14 @@ export default {
     };
 
     const handleBet = async () => {
+        const val = parseFloat(betAmount.value || 0);
+        const bal = parseFloat(athBalance.value || 0);
+        
+        if (val > bal) {
+             showToast(t('crash.insufficientBalance'));
+             return;
+        }
+
         if (!betAmount.value || !prediction.value) {
             showToast(t('crash.inputError'));
             return;
@@ -1048,7 +1056,12 @@ export default {
             showToast(t('crash.insufficientBalance'));
             return;
         }
-        betAmount.value = Math.min(bal, maxBet.value).toFixed(4);
+        
+        if (bal <= maxBet.value) {
+            betAmount.value = formatAmount4(athBalance.value);
+        } else {
+            betAmount.value = maxBet.value.toFixed(4);
+        }
     };
 
     const formatTime = (ts) => {
@@ -1074,11 +1087,23 @@ export default {
     };
 
     const formatAmount4 = (val) => {
-        if (!val) return '0.0000';
-        const num = parseFloat(val);
-        if (isNaN(num)) return '0.0000';
-        // Truncate to 4 decimals
-        return (Math.floor(num * 10000) / 10000).toFixed(4);
+        if (val === undefined || val === null || val === '') return '0.0000';
+        let str = val.toString();
+        
+        // Check for valid number
+        if (isNaN(parseFloat(str))) return '0.0000';
+        
+        // Handle scientific notation
+        if (str.includes('e') || str.includes('E')) {
+            str = parseFloat(val).toFixed(20);
+        }
+
+        const parts = str.split('.');
+        if (parts.length === 1) {
+             return parts[0] + '.0000';
+        }
+        
+        return parts[0] + '.' + parts[1].substring(0, 4).padEnd(4, '0');
     };
 
     const getResultColor = (item) => {

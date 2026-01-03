@@ -276,12 +276,13 @@ export default {
     const lockCountdown = computed(() => {
         const unlockTime = bankerData.value.lastDepositTime + bankerData.value.lockPeriod;
         const diff = unlockTime - now.value;
-        if (diff <= 0) return '00:00:00';
+        if (diff <= 0) return '0日0时0分0秒';
         
-        const h = Math.floor(diff / 3600);
+        const d = Math.floor(diff / 86400);
+        const h = Math.floor((diff % 86400) / 3600);
         const m = Math.floor((diff % 3600) / 60);
         const s = diff % 60;
-        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        return `${d}日${h}时${m}分${s}秒`;
     });
     
     const isApproved = computed(() => {
@@ -383,17 +384,33 @@ export default {
         withdrawShares.value = bankerData.value.shares;
     };
     
-    const formatNumber = (num) => {
-        if (!num) return '0.00';
-        return parseFloat(num).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+    const formatNumber = (val) => {
+        if (val === undefined || val === null || val === '') return '0.0000';
+        let str = val.toString();
+        
+        // Check for valid number
+        if (isNaN(parseFloat(str))) return '0.0000';
+        
+        // Handle scientific notation
+        if (str.includes('e') || str.includes('E')) {
+            str = parseFloat(val).toFixed(20);
+        }
+
+        const parts = str.split('.');
+        if (parts.length === 1) {
+             return parts[0] + '.0000';
+        }
+        
+        return parts[0] + '.' + parts[1].substring(0, 4).padEnd(4, '0');
     };
 
     const formatDuration = (seconds) => {
-        if (!seconds) return '0s';
-        const h = Math.floor(seconds / 3600);
+        if (!seconds) return '0日0时0分0秒';
+        const d = Math.floor(seconds / 86400);
+        const h = Math.floor((seconds % 86400) / 3600);
         const m = Math.floor((seconds % 3600) / 60);
-        if (h > 0) return `${h}h ${m}m`;
-        return `${m}m`;
+        const s = seconds % 60;
+        return `${d}日${h}时${m}分${s}秒`;
     };
 
     return {
