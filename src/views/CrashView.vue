@@ -6,12 +6,23 @@
           <div class="sect-tagline_inner">
             <span class="hafl-plus pst-left_bot wow bounceInScale"></span>
             <span class="hafl-plus pst-right_bot wow bounceInScale"></span>
-            <div class="s-name text-caption ">
+            <div class="s-name text-caption " style="display: flex; flex-direction: column; align-items: center;">
               <div class="breadcrumbs-list" style="font-size: 30px; margin-top: 10px; margin-bottom: 0px;">
                 <!-- <router-link to="/" class="text-white link ">CRASH</router-link>
                 <span> & </span> -->
                 <span class="crash-title no-delay">CRASH</span>
               </div>
+              
+              <!-- Recent Winners Ticker -->
+              <div class="recent-winners-ticker">
+                 <div class="winner-item" 
+                      v-for="(w, idx) in recentWinners" 
+                      :key="idx"
+                      :class="w.prediction > 2 ? 'theme-bg' : 'gray-blue-bg'">
+                    <span class="winner-mult">{{ w.prediction.toFixed(2) }}x</span>
+                 </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -304,6 +315,9 @@ export default {
     const isExpiredSettle = ref(false); // Flag to track if we are settling an expired bet
     const currentTimeLabel = ref(0); // Current elapsed time in seconds for display
 
+    const recentWinners = ref([]);
+    let winnersInterval = null;
+
     // Sidebar State
     const isSidebarOpen = ref(false);
     
@@ -380,12 +394,17 @@ export default {
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
         drawIdleCanvas();
+
+        // Start winners feed
+        fetchRecentWinners();
+        winnersInterval = setInterval(fetchRecentWinners, 4000);
     });
 
     onUnmounted(() => {
         cancelAnimationFrame(animationFrameId);
         clearInterval(blockCheckInterval);
         clearInterval(countdownInterval);
+        clearInterval(winnersInterval);
         window.removeEventListener('resize', resizeCanvas);
     });
 
@@ -411,6 +430,29 @@ export default {
     });
 
     // --- Methods ---
+
+    const fetchRecentWinners = async () => {
+        try {
+            const length = await getGlobalHistoryLength();
+            if (length === 0) return;
+            
+            // Fetch last 50 to find winners
+            const size = 50;
+            const start = Math.max(0, length - size);
+            const raw = await getGlobalHistory(start, size);
+            
+            // Filter winners (won === true)
+            const winners = raw.filter(w => w.won);
+            
+            // Take last 4 (newest)
+            // If fewer than 4, take all
+            const last4 = winners.slice(-4);
+            
+            recentWinners.value = last4;
+        } catch (e) {
+            console.error("Error fetching winners:", e);
+        }
+    };
 
     const initGame = async () => {
         console.log("Initializing game...");
@@ -1285,7 +1327,8 @@ export default {
         expirationSeconds,
         isInsufficientBalance,
         handleInput,
-        switchTab
+        switchTab,
+        recentWinners
     };
   },
   components: {
@@ -1776,5 +1819,50 @@ canvas {
   animation: border-pulse 2s infinite;
   pointer-events: none;
   z-index: 1; /* On top of button content if needed, or adjust */
+}
+
+/* Recent Winners Ticker */
+.recent-winners-ticker {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+    min-height: 32px;
+    flex-wrap: wrap; /* Safety for mobile */
+}
+
+.winner-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-family: 'Geist', sans-serif;
+    color: var(--text-2);
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.winner-item.theme-bg {
+    background-color: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    border: 1px solid transparent; /* Maintain size consistency */
+}
+
+.winner-item.gray-blue-bg {
+    background-color: #4a5568; /* Gray Blue */
+    color: #e2e8f0;
+    border: 1px solid transparent;
+}
+
+.winner-name {
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+.winner-mult {
+    font-weight: 800;
 }
 </style>
