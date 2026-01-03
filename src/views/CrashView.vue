@@ -185,25 +185,24 @@
           <!-- History Section -->
           <div class="col-lg-12">
             <div class="history-tabs">
-              <button class="tab-btn " :class="{ active: activeTab === 'my' }" @click="activeTab = 'my'">{{ t('crash.myBets') }}</button>
-              <button class="tab-btn " :class="{ active: activeTab === 'all' }" @click="activeTab = 'all'">{{ t('crash.allBets') }}</button>
+              <button class="tab-btn " :class="{ active: activeTab === 'my' }" @click="switchTab('my')">{{ t('crash.myBets') }}</button>
+              <button class="tab-btn " :class="{ active: activeTab === 'all' }" @click="switchTab('all')">{{ t('crash.allBets') }}</button>
             </div>
             
             <div class="history-table-wrapper">
               <table class="table  text-white">
                 <thead>
                   <tr>
-                    <th>{{ t('crash.time') }}</th>
                     <th v-if="activeTab === 'all'">{{ t('crash.player') }}</th>
                     <th>{{ t('crash.betCol') }}</th>
                     <th>{{ t('crash.predictionCol') }}</th>
                     <th>{{ t('crash.result') }}</th>
                     <th>{{ t('crash.payout') }}</th>
+                    <th>{{ t('crash.time') }}</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="(item, index) in historyData" :key="index">
-                    <td>{{ formatTime(item.timestamp) }}</td>
                     <td v-if="activeTab === 'all'">{{ formatAddr(item.player) }}</td>
                     <td>{{ formatAmount4(item.amount) }}</td>
                     <td>{{ item.prediction.toFixed(2) }}x</td>
@@ -213,6 +212,7 @@
                     <td :class="{ 'text-success': item.won }">
                       {{ formatAmount4(item.payout) }}
                     </td>
+                    <td>{{ formatTime(item.timestamp) }}</td>
                   </tr>
                   <tr v-if="historyData.length === 0">
                     <td colspan="6" class="text-center">{{ t('crash.noHistory') }}</td>
@@ -1006,13 +1006,33 @@ export default {
         ctx.restore();
     };
 
+    const switchTab = (tab) => {
+        if (gameState.value === 'ANIMATING' || gameState.value === 'SETTLING') return;
+        activeTab.value = tab;
+    };
+
     const endGame = () => {
         gameState.value = 'RESULT';
         refreshBalance();
-        loadHistory();
+        // Don't reload history immediately to avoid spoiler. 
+        // User can reload manually if they want, or wait for next round.
+        // Or reload after a delay? 
+        // Requirement: reload AFTER animation finishes. 
+        // This function IS called when animation finishes (in startAnimation -> animate -> if nextM >= targetPoint -> endGame)
+        // So actually, this IS after animation.
         
-        // Removed auto-reset. User must click Bet to start next round.
-        // Result stays on screen.
+        // Wait, "开奖后" means when we get the result from backend/contract?
+        // Ah, handleSettle calls startAnimation. At that point we know the result.
+        // We should NOT reload history in handleSettle.
+        // We should reload history HERE in endGame.
+        
+        // However, if the user switches tabs, requestAnimationFrame pauses.
+        // If we reload history here, it will only happen when animation finishes (tab active).
+        // BUT, if we reload history in handleSettle, the user sees it immediately.
+        
+        // So: Ensure loadHistory is NOT called in handleSettle.
+        // And ensure it IS called here.
+        loadHistory();
     };
 
     // --- Helper UI Methods ---
@@ -1256,7 +1276,8 @@ export default {
         currentTimeLabel,
         expirationSeconds,
         isInsufficientBalance,
-        handleInput
+        handleInput,
+        switchTab
     };
   },
   components: {
