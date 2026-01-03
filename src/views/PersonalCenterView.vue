@@ -82,7 +82,7 @@
                </div>
                
                <div v-else class="text-center py-4">
-                 <p class="text-linear h4 font-3">Congratulations! You are at the top!</p>
+                 <p class="text-linear h4 font-3">{{ t('personal.maxLevelDesc') }}</p>
                </div>
             </div>
 
@@ -119,6 +119,7 @@ import { ref, onMounted, watch, computed } from 'vue';
 import HomeRightSidebar from '../components/HomeRightSidebar.vue';
 import { walletState } from '../services/wallet';
 import { getPersonalCenterData } from '../services/gameLevel';
+import { t } from '../i18n';
 
 export default {
   name: 'PersonalCenterView',
@@ -244,7 +245,8 @@ export default {
       remainingToNextLevel,
       isSidebarOpen,
       openSidebar,
-      closeSidebar
+      closeSidebar,
+      t
     };
   }
 };

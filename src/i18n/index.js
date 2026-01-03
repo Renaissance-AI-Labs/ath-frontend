@@ -210,7 +210,7 @@ const languagePacks = {
     'crash.allBets': '全网投注',
     'crash.time': '时间',
     'crash.player': '玩家',
-    'crash.betCol': '马上投注',
+    'crash.betCol': '投注',
     'crash.predictionCol': '预测',
     'crash.result': '结果',
     'crash.payout': '奖金',
@@ -219,6 +219,10 @@ const languagePacks = {
     'crash.betExpired': '投注已超时 (资金不退)',
     'crash.comingSoon': 'Crash 游戏即将推出',
     'crash.waitingForNextRound': '等待下一轮开始...',
+    'crash.resultWon': '大获全胜！',
+    'crash.resultLost': '爆了',
+    'sidebar.crashGame': '爆点',
+    'personal.maxLevelDesc': '恭喜！您已登顶！',
     
     // Common
     'common.loading': 'Loading...',
@@ -236,7 +240,7 @@ const languagePacks = {
     'banker.processing': '处理中...',
     'banker.harvest': '领取',
     'banker.depositTitle': '成为股东',
-    'banker.depositDesc': '提供流动性以赚取分红及玩家亏损的收益。',
+    'banker.depositDesc': '提供流动性以赚取分红及玩家预测失败的收益。',
     'banker.lockWarning': '* 资金存入后将被锁定 {duration}。',
     'banker.amountLabel': '金额 (ATH)',
     'banker.balanceLabel': '余额: {amount} ATH',
@@ -460,6 +464,10 @@ const languagePacks = {
     'crash.betExpired': '投注已超時 (資金不退)',
     'crash.comingSoon': 'Crash 遊戲即將推出',
     'crash.waitingForNextRound': '等待下一輪開始...',
+    'crash.resultWon': '大獲全勝！',
+    'crash.resultLost': '爆了',
+    'sidebar.crashGame': '爆點',
+    'personal.maxLevelDesc': '恭喜！您已達到最高等級！',
     
     // Common
     'common.loading': 'Loading...',
@@ -699,6 +707,10 @@ const languagePacks = {
     'crash.betExpired': 'Bet Expired (Timeout). Funds not returned.',
     'crash.comingSoon': 'Crash Game Coming Soon',
     'crash.waitingForNextRound': 'Waiting for next round...',
+    'crash.resultWon': 'YOU WON',
+    'crash.resultLost': 'CRASHED',
+    'sidebar.crashGame': 'Blast',
+    'personal.maxLevelDesc': 'Congratulations! You are at the top!',
     
     // Common
     'common.loading': 'Loading...',
@@ -939,6 +951,10 @@ const languagePacks = {
     'crash.betExpired': 'ベット期限切れ（タイムアウト）。資金は返還されません。',
     'crash.comingSoon': 'クラッシュゲーム近日公開',
     'crash.waitingForNextRound': '次のラウンドを待機中...',
+    'crash.resultWon': 'YOU WON',
+    'crash.resultLost': 'CRASHED',
+    'sidebar.crashGame': 'Blast',
+    'personal.maxLevelDesc': 'Congratulations! You are at the top!',
     
     // Common
     'common.loading': 'Loading...',
@@ -1180,6 +1196,10 @@ const languagePacks = {
     'crash.betExpired': '베팅 만료 (시간 초과). 자금은 반환되지 않습니다.',
     'crash.comingSoon': '크래시 게임 곧 출시',
     'crash.waitingForNextRound': '다음 라운드 대기 중',
+    'crash.resultWon': 'YOU WON',
+    'crash.resultLost': 'CRASHED',
+    'sidebar.crashGame': 'Blast',
+    'personal.maxLevelDesc': 'Congratulations! You are at the top!',
     
     // Common
     'common.loading': 'Loading...',

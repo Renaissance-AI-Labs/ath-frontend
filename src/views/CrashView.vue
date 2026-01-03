@@ -106,7 +106,7 @@
                   <!-- Settle -->
                   <div v-else-if="gameState === 'READY_TO_SETTLE'" class="w-100">
                     <button class="tf-button style-1 w-100 btn-settle" @click="handleSettle" :class="{ 'btn-expired': expirationSeconds === 0 }">
-                        <span v-if="expirationSeconds > 0">即刻开奖</span>
+                        <span v-if="expirationSeconds > 0">点击开奖</span>
                         <span v-else>已过开奖时间，点击开启下一局</span>
                         <span v-if="expirationSeconds > 0" class="countdown-timer text-warning" style="margin-left: 8px;">
                             {{ expirationSeconds }}s
@@ -163,7 +163,7 @@
 
                       <!-- Result Status Text -->
                       <div v-if="gameState === 'RESULT'" class="result-status " :class="lastGameWon ? 'text-success' : 'text-danger'">
-                        {{ lastGameWon ? 'YOU WON' : 'CRASHED' }}
+                        {{ lastGameWon ? t('crash.resultWon') : t('crash.resultLost') }}
                       </div>
                       
                       <div v-if="gameState === 'RESULT' && lastGameWon" class="result-payout  text-success">

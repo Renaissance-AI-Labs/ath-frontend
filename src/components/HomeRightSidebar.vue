@@ -38,7 +38,7 @@
               <ul class="sb-category">
                 <li>
                   <router-link to="/crash" class="text-body-1" @click="$emit('close')">
-                    Crash
+                    {{ t('sidebar.crashGame') }}
                     <i class="icon icon-ArrowUpRight"></i>
                   </router-link>
                 </li>
@@ -164,6 +164,8 @@
 </template>
 
 <script>
+import { t } from '../i18n';
+
 export default {
   name: 'HomeRightSidebar',
   props: {
@@ -172,7 +174,10 @@ export default {
       default: false
     }
   },
-  emits: ['close']
+  emits: ['close'],
+  setup() {
+    return { t };
+  }
 };
 </script>
 
