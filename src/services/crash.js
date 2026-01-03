@@ -7,6 +7,7 @@ import { t } from '../i18n';
 
 // Constants
 export const BLOCK_LIMIT = 255;
+export const DEFAULT_PREDICTION = 2.00;
 
 /**
  * Gets the current ATH balance for the user.

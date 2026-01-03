@@ -47,7 +47,7 @@
                       <button class=" append-btn" @click="setMaxAmount" :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'">Max</button>
                     </div>
                   </div>
-                  <div class="balance-text ">
+                  <div class="balance-text " :class="{ 'text-danger': isInsufficientBalance }">
                     {{ t('crash.balance', { amount: parseFloat(athBalance).toFixed(4) }) }}
                   </div>
                 </div>
@@ -89,7 +89,7 @@
                   </button>
                   
                   <!-- Approve -->
-                  <button v-else-if="needsApproval" class="tf-button style-1 w-100" @click="handleApprove" :disabled="isApproving">
+                  <button v-else-if="needsApproval" class="tf-button style-1 w-100 btn-approve-highlight" @click="handleApprove" :disabled="isApproving">
                     {{ isApproving ? t('crash.approving') : t('crash.approve') }}
                   </button>
                   
@@ -106,22 +106,22 @@
                   <!-- Settle -->
                   <div v-else-if="gameState === 'READY_TO_SETTLE'" class="w-100">
                     <button class="tf-button style-1 w-100 btn-settle" @click="handleSettle" :class="{ 'btn-expired': expirationSeconds === 0 }">
-                        <span v-if="expirationSeconds > 0">点击开奖</span>
-                        <span v-else>已过开奖时间，点击开启下一局</span>
+                        <span v-if="expirationSeconds > 0">{{ t('crash.clickToSettle') }}</span>
+                        <span v-else>{{ t('crash.settleExpired') }}</span>
                         <span v-if="expirationSeconds > 0" class="countdown-timer text-warning" style="margin-left: 8px;">
                             {{ expirationSeconds }}s
                         </span>
                     </button>
                     <div class="settle-tip mt-2 text-warning" style="font-size: 11px; line-height: 1.4;">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px; display: inline-block; vertical-align: middle;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                        <span v-if="expirationSeconds > 0">请在倒计时结束前点击开奖，倒计时结束后开奖将无法获得奖金。</span>
-                        <span v-else>倒计时结束后未开奖，需再次点击按钮与合约交互开启下一局。</span>
+                        <span v-if="expirationSeconds > 0">{{ t('crash.settleTip1') }}</span>
+                        <span v-else>{{ t('crash.settleTip2') }}</span>
                     </div>
                   </div>
 
                    <!-- Settling -->
                   <button v-else-if="gameState === 'SETTLING'" class="tf-button style-1 w-100 disabled" disabled>
-                    <span v-if="isExpiredSettle">正在准备下一轮</span>
+                    <span v-if="isExpiredSettle">{{ t('crash.preparingNextRound') }}</span>
                     <span v-else>{{ t('crash.settling') }}</span>
                   </button>
                   
@@ -257,7 +257,8 @@ import {
   getUserHistoryLength,
   getGlobalHistory,
   getGlobalHistoryLength,
-  getGameConfig
+  getGameConfig,
+  DEFAULT_PREDICTION
 } from '../services/crash';
 import { walletState, connectWallet as walletConnect } from '../services/wallet';
 import { showToast } from '../services/notification';
@@ -269,7 +270,7 @@ export default {
     // --- State ---
     const gameState = ref('IDLE'); // IDLE, BETTING, WAITING_BLOCK, READY_TO_SETTLE, SETTLING, ANIMATING, RESULT
     const betAmount = ref('');
-    const prediction = ref('');
+    const prediction = ref(DEFAULT_PREDICTION.toFixed(2));
     const athBalance = ref('0');
     const athAllowance = ref('0');
     
@@ -336,6 +337,16 @@ export default {
              return t('crash.betExpired'); 
         }
         return t('crash.settle');
+    });
+
+    const isInsufficientBalance = computed(() => {
+        const bal = parseFloat(athBalance.value || 0);
+        const amount = parseFloat(betAmount.value || 0);
+        // 如果余额为0，显示红色
+        if (bal === 0) return true;
+        // 如果输入了金额且金额大于余额，显示红色
+        if (amount > 0 && amount > bal) return true;
+        return false;
     });
 
     const needsApproval = computed(() => {
@@ -998,6 +1009,12 @@ export default {
     const setAmountPercent = (p) => {
         if (!athBalance.value) return;
         const bal = parseFloat(athBalance.value);
+        
+        if (bal <= 0) {
+            showToast(t('crash.insufficientBalance'));
+            return;
+        }
+
         let current = parseFloat(betAmount.value || 0);
         
         // If current input is 0 or empty, try to set a base value if user clicks modifier
@@ -1027,6 +1044,10 @@ export default {
     
     const setMaxAmount = () => {
         const bal = parseFloat(athBalance.value);
+        if (bal <= 0) {
+            showToast(t('crash.insufficientBalance'));
+            return;
+        }
         betAmount.value = Math.min(bal, maxBet.value).toFixed(4);
     };
 
@@ -1193,7 +1214,8 @@ export default {
         testCrashAnim,
         testWinAnim,
         currentTimeLabel,
-        expirationSeconds
+        expirationSeconds,
+        isInsufficientBalance
     };
   },
   components: {
@@ -1546,14 +1568,15 @@ canvas {
 }
 
 /* Primary Action Buttons (Bet, Settle) */
-.btn-bet, .btn-settle {
+.btn-bet, .btn-settle, .btn-approve-highlight {
     background: var(--primary) !important;
+    background-image: none !important; /* Ensure no gradient overrides it */
     color: #fff !important;
     border-color: var(--primary) !important;
     box-shadow: none !important;
 }
 
-.btn-bet:hover:not(:disabled), .btn-settle:hover {
+.btn-bet:hover:not(:disabled), .btn-settle:hover, .btn-approve-highlight:hover:not(:disabled) {
     filter: brightness(1.1);
     transform: translateY(-2px);
     color: #fff !important;
