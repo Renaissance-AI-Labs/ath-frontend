@@ -207,17 +207,16 @@
               <table class="table  text-white">
                 <thead>
                   <tr>
-                    <th v-if="activeTab === 'all'">{{ t('crash.player') }}</th>
                     <th>{{ t('crash.betCol') }}</th>
                     <th>{{ t('crash.predictionCol') }}</th>
                     <th>{{ t('crash.result') }}</th>
                     <th>{{ t('crash.payout') }}</th>
+                    <th v-if="activeTab === 'all'">{{ t('crash.player') }}</th>
                     <th>{{ t('crash.time') }}</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="(item, index) in historyData" :key="index">
-                    <td v-if="activeTab === 'all'">{{ formatAddr(item.player) }}</td>
                     <td>{{ formatAmount4(item.amount) }}</td>
                     <td>{{ item.prediction.toFixed(2) }}x</td>
                     <td :class="getResultColor(item)">
@@ -226,6 +225,7 @@
                     <td :class="{ 'text-success': item.won }">
                       {{ formatAmount4(item.payout) }}
                     </td>
+                    <td v-if="activeTab === 'all'">{{ formatAddr(item.player) }}</td>
                     <td>{{ formatTime(item.timestamp) }}</td>
                   </tr>
                   <tr v-if="historyData.length === 0">
