@@ -14,13 +14,15 @@
               </div>
               
               <!-- Recent Winners Ticker -->
-              <div class="recent-winners-ticker">
-                 <div class="winner-item" 
-                      v-for="(w, idx) in recentWinners" 
-                      :key="idx"
-                      :class="w.prediction > 2 ? 'theme-bg' : 'gray-blue-bg'">
-                    <span class="winner-mult">{{ w.prediction.toFixed(2) }}x</span>
-                 </div>
+              <div class="recent-winners-ticker-container">
+                  <TransitionGroup name="list" tag="div" class="recent-winners-ticker" ref="tickerRef">
+                     <div class="winner-item" 
+                          v-for="w in visibleWinners" 
+                          :key="w.id"
+                          :class="w.displayValue >= 2 ? 'theme-bg' : 'gray-blue-bg'">
+                        <span class="winner-mult">{{ w.displayValue.toFixed(2) }}x</span>
+                     </div>
+                  </TransitionGroup>
               </div>
 
             </div>
@@ -306,8 +308,8 @@ export default {
     let blockCheckInterval = null;
     let countdownInterval = null; // Separate interval for smooth countdown
 
-    const minBet = ref(1);
-    const maxBet = ref(2000);
+    const minBet = ref(0.01);
+    const maxBet = ref(100);
     const minPrediction = ref(1.01);
     const maxPrediction = ref(100);
 
@@ -315,8 +317,11 @@ export default {
     const isExpiredSettle = ref(false); // Flag to track if we are settling an expired bet
     const currentTimeLabel = ref(0); // Current elapsed time in seconds for display
 
-    const recentWinners = ref([]);
+    const recentWinners = ref([]); // Pool of winners to show
+    const visibleWinners = ref([]); // Currently visible winners
     let winnersInterval = null;
+    let tickerInterval = null;
+    const tickerRef = ref(null);
 
     // Sidebar State
     const isSidebarOpen = ref(false);
@@ -398,6 +403,7 @@ export default {
         // Start winners feed
         fetchRecentWinners();
         winnersInterval = setInterval(fetchRecentWinners, 4000);
+        startTicker();
     });
 
     onUnmounted(() => {
@@ -405,6 +411,7 @@ export default {
         clearInterval(blockCheckInterval);
         clearInterval(countdownInterval);
         clearInterval(winnersInterval);
+        clearInterval(tickerInterval);
         window.removeEventListener('resize', resizeCanvas);
     });
 
@@ -442,16 +449,91 @@ export default {
             const raw = await getGlobalHistory(start, size);
             
             // Filter winners (won === true)
-            const winners = raw.filter(w => w.won);
+            // Sort by timestamp or block number ascending (oldest first)
+            const winners = raw.filter(w => w.won).sort((a, b) => a.timestamp - b.timestamp);
             
-            // Take last 4 (newest)
-            // If fewer than 4, take all
-            const last4 = winners.slice(-4);
+            // Update pool of potential winners to show
+            // Add unique ID to facilitate keying
+            // Use crashPoint (result) instead of prediction
+            const newPool = winners.map(w => ({
+                ...w,
+                displayValue: w.crashPoint, 
+                id: `${w.betBlock}-${w.player}-${w.crashPoint}`
+            }));
             
-            recentWinners.value = last4;
+            // If we have no visible winners (initial load), fill it up with latest 4
+            // But user wants "one by one" rolling effect. 
+            // So we don't initialize visibleWinners directly. 
+            // We just update recentWinners, and let the ticker handle the "rolling in".
+            
+            // However, to avoid showing 100 items rolling in, we should ensure recentWinners 
+            // only contains the items we WANT to eventually show (or close to it).
+            // But recentWinners is also our history cache.
+            
+            // Logic update: recentWinners is the SOURCE. Ticker moves items from Source to Visible.
+            // If visible is empty, Ticker should start picking from (Source.length - 4).
+            
+            recentWinners.value = newPool;
         } catch (e) {
             console.error("Error fetching winners:", e);
         }
+    };
+
+    // Ticker logic: Adds one item from recentWinners to visibleWinners every few seconds
+    // shifting the oldest out if length > 4
+    const startTicker = () => {
+         // Clear existing
+         if (tickerInterval) clearInterval(tickerInterval);
+         
+         tickerInterval = setInterval(() => {
+             // Find next item to show
+             // We want to show the next item from recentWinners that is NOT in visibleWinners
+             // Assuming recentWinners is sorted Old -> New.
+             
+             if (recentWinners.value.length === 0) return;
+             
+             // Initial fill logic: if empty, start from the last 4 items
+             if (visibleWinners.value.length === 0) {
+                 const startIndex = Math.max(0, recentWinners.value.length - 4);
+                 // Push the first one
+                 visibleWinners.value.push(recentWinners.value[startIndex]);
+                 return;
+             }
+             
+             // Get the last item in visible
+             const lastVisible = visibleWinners.value[visibleWinners.value.length - 1];
+             
+             // Find index of lastVisible in recentWinners
+             const idx = recentWinners.value.findIndex(w => w.id === lastVisible.id);
+             
+             let nextItem = null;
+             
+             if (idx !== -1 && idx < recentWinners.value.length - 1) {
+                 // There is a newer item
+                 nextItem = recentWinners.value[idx + 1];
+             } else if (idx === -1) {
+                 // lastVisible not found in recent (maybe list refreshed completely), take latest
+                 // To be safe, if we are completely lost, maybe reset or take (end-3)?
+                 // Let's just take the one after (length-4) if possible to restart the flow
+                 // Or just take the very last one?
+                 nextItem = recentWinners.value[recentWinners.value.length - 1];
+                 
+                 // Prevent duplicates if nextItem is already in visible (e.g. at other position)
+                 if (visibleWinners.value.some(w => w.id === nextItem.id)) {
+                     nextItem = null;
+                 }
+             }
+             
+             if (nextItem) {
+                 // Add next item
+                 visibleWinners.value.push(nextItem);
+                 // remove first if length > 4
+                 if (visibleWinners.value.length > 4) {
+                     visibleWinners.value.shift();
+                 }
+             }
+             
+         }, 2000); // Update every 2 seconds
     };
 
     const initGame = async () => {
@@ -617,6 +699,7 @@ export default {
         if (success) {
             showToast(t('toast.txSuccess'));
             await refreshBalance();
+            fetchRecentWinners(); // Immediate refresh
             // Get current block to wait
             const provider = walletState.signer?.provider;
             const currentBlock = await provider.getBlockNumber();
@@ -1328,7 +1411,9 @@ export default {
         isInsufficientBalance,
         handleInput,
         switchTab,
-        recentWinners
+        recentWinners,
+        visibleWinners,
+        tickerRef
     };
   },
   components: {
@@ -1822,13 +1907,23 @@ canvas {
 }
 
 /* Recent Winners Ticker */
+.recent-winners-ticker-container {
+    width: 100%;
+    overflow: hidden; /* Hide anything spilling out */
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    min-height: 32px;
+}
+
 .recent-winners-ticker {
     display: flex;
     justify-content: center;
     gap: 15px;
-    margin-top: 15px;
-    min-height: 32px;
-    flex-wrap: wrap; /* Safety for mobile */
+    /* transition for smooth sliding not strictly needed if we animate items entering/leaving, 
+       but we can animate the container shift if desired. 
+       For "rolling out", adding item to right and removing left is standard ticker. 
+    */
 }
 
 .winner-item {
@@ -1841,7 +1936,25 @@ canvas {
     font-family: 'Geist', sans-serif;
     color: var(--text-2);
     white-space: nowrap;
-    transition: all 0.3s ease;
+    /* transition handled by list class */
+}
+
+/* Ticker Animations */
+.list-enter-active,
+.list-leave-active,
+.list-move {
+  transition: all 0.5s ease;
+}
+
+.list-enter-from {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
+  position: absolute; /* Essential for smooth list move */
 }
 
 .winner-item.theme-bg {
