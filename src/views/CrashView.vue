@@ -247,7 +247,7 @@
     <!-- Sidebar Trigger Button -->
     <div class="btn-sidebar-mb d-lg-none right">
         <button @click="openSidebar" style="background-color: #111111;">
-            <img src="/asset/images/section/platform.svg" alt="Menu" width="50" height="50">
+            <img src="/asset/images/section/speed.svg" alt="Menu" width="50" height="50" style="transform: rotate(180deg);">
         </button>
     </div>
 
@@ -1171,7 +1171,7 @@ export default {
             if (gameState.value === 'ANIMATING') return; 
 
             fetchRecentWinners();
-            loadHistory();
+        loadHistory();
             isTickerPaused.value = false;
         }, 2000);
     };
