@@ -8,9 +8,9 @@
             <span class="hafl-plus pst-right_bot wow bounceInScale"></span>
             <div class="s-name text-caption " style="display: flex; flex-direction: column; align-items: center;">
               <div class="breadcrumbs-list" style="font-size: 30px; margin-top: 10px; margin-bottom: 0px;">
-                <!-- <router-link to="/" class="text-white link ">CRASH</router-link>
+                <!-- <router-link to="/" class="text-white link ">BLAST</router-link>
                 <span> & </span> -->
-                <span class="crash-title no-delay">CRASH</span>
+                <span class="crash-title no-delay">BLAST</span>
               </div>
               
               <!-- Recent Winners Ticker -->
@@ -322,6 +322,7 @@ export default {
     let winnersInterval = null;
     let tickerInterval = null;
     const tickerRef = ref(null);
+    const isTickerPaused = ref(false); // Controls ticker updates to avoid spoilers
 
     // Sidebar State
     const isSidebarOpen = ref(false);
@@ -391,6 +392,11 @@ export default {
 
     // --- Lifecycle ---
     onMounted(async () => {
+        // Start winners feed immediately to show results ASAP
+        await fetchRecentWinners();
+        startTicker(); // Ticker will auto-fill if visible is empty
+        winnersInterval = setInterval(fetchRecentWinners, 4000);
+
         if (walletState.isConnected && walletState.contractsInitialized) {
             await initGame();
         }
@@ -399,11 +405,6 @@ export default {
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
         drawIdleCanvas();
-
-        // Start winners feed
-        fetchRecentWinners();
-        winnersInterval = setInterval(fetchRecentWinners, 4000);
-        startTicker();
     });
 
     onUnmounted(() => {
@@ -448,14 +449,17 @@ export default {
             const start = Math.max(0, length - size);
             const raw = await getGlobalHistory(start, size);
             
-            // Filter winners (won === true)
+            // Show ALL results (both won and lost/crashed)
             // Sort by timestamp or block number ascending (oldest first)
-            const winners = raw.filter(w => w.won).sort((a, b) => a.timestamp - b.timestamp);
+            // Filter out "Expired" (crashPoint === 0)
+            const allResults = raw
+                .filter(item => item.crashPoint > 0)
+                .sort((a, b) => a.timestamp - b.timestamp);
             
             // Update pool of potential winners to show
             // Add unique ID to facilitate keying
             // Use crashPoint (result) instead of prediction
-            const newPool = winners.map(w => ({
+            const newPool = allResults.map(w => ({
                 ...w,
                 displayValue: w.crashPoint, 
                 id: `${w.betBlock}-${w.player}-${w.crashPoint}`
@@ -486,6 +490,9 @@ export default {
          if (tickerInterval) clearInterval(tickerInterval);
          
          tickerInterval = setInterval(() => {
+             // Pause ticker during animation and shortly after to avoid spoilers
+             if (isTickerPaused.value) return;
+
              // Find next item to show
              // We want to show the next item from recentWinners that is NOT in visibleWinners
              // Assuming recentWinners is sorted Old -> New.
@@ -533,7 +540,7 @@ export default {
                  }
              }
              
-         }, 2000); // Update every 2 seconds
+         }, 1000); // Update every 1 second (faster)
     };
 
     const initGame = async () => {
@@ -619,9 +626,10 @@ export default {
             const provider = walletState.signer?.provider;
             if (!provider) return;
             const current = await provider.getBlockNumber();
-            console.log(`Checking block: ${current} > ${targetBlock}`);
+            console.log(`[区块监听] 当前区块: ${current}, 目标投注区块: ${targetBlock}, 是否满足(当前 > 目标): ${current > targetBlock}`);
             
             if (current > targetBlock) {
+                console.log("[区块监听] 区块条件满足，切换至 READY_TO_SETTLE");
                 // Sync remaining time from chain ONCE
                 const expiryBlock = targetBlock + 255;
                 const remainingBlocks = Math.max(0, expiryBlock - current);
@@ -709,9 +717,24 @@ export default {
             // Wait, placeBet waits for tx.wait(), so the tx is in a block.
             // We need block.number > betBlock.
             // We can call getActiveBet to get the exact betBlock.
-            const bet = await getActiveBet();
+            
+            console.log("投注交易确认，尝试从合约获取 ActiveBet 信息...");
+            // Simple retry loop (3 times) to ensure node has indexed the bet
+            let bet = null;
+            for (let i = 0; i < 3; i++) {
+                bet = await getActiveBet();
+                if (bet && bet.betBlock > 0) break;
+                console.warn(`第 ${i+1} 次获取 ActiveBet 失败，等待 500ms 重试...`);
+                await new Promise(r => setTimeout(r, 500));
+            }
+
+            console.log("最终获取到的 ActiveBet:", bet);
+
             if (bet && bet.betBlock > 0) {
+                console.log(`成功获取 ActiveBet，目标区块: ${bet.betBlock}，启动监听...`);
                 startBlockCheck(bet.betBlock);
+            } else {
+                console.error("多次尝试后仍未获取到 ActiveBet，界面将卡在 WAITING_BLOCK，请检查节点延迟。");
             }
         }
         isBetting.value = false;
@@ -908,6 +931,7 @@ export default {
 
     const startAnimation = (targetPoint) => {
         gameState.value = 'ANIMATING';
+        isTickerPaused.value = true; // Pause ticker during animation
         currentMultiplier.value = 1.00;
         
         const canvas = gameCanvas.value;
@@ -1140,25 +1164,16 @@ export default {
     const endGame = () => {
         gameState.value = 'RESULT';
         refreshBalance();
-        // Don't reload history immediately to avoid spoiler. 
-        // User can reload manually if they want, or wait for next round.
-        // Or reload after a delay? 
-        // Requirement: reload AFTER animation finishes. 
-        // This function IS called when animation finishes (in startAnimation -> animate -> if nextM >= targetPoint -> endGame)
-        // So actually, this IS after animation.
         
-        // Wait, "开奖后" means when we get the result from backend/contract?
-        // Ah, handleSettle calls startAnimation. At that point we know the result.
-        // We should NOT reload history in handleSettle.
-        // We should reload history HERE in endGame.
-        
-        // However, if the user switches tabs, requestAnimationFrame pauses.
-        // If we reload history here, it will only happen when animation finishes (tab active).
-        // BUT, if we reload history in handleSettle, the user sees it immediately.
-        
-        // So: Ensure loadHistory is NOT called in handleSettle.
-        // And ensure it IS called here.
-        loadHistory();
+        // Resume ticker and refresh data after 2 seconds to avoid spoilers
+        setTimeout(() => {
+            // If a new game has started animating, don't unpause/refresh
+            if (gameState.value === 'ANIMATING') return; 
+
+            fetchRecentWinners();
+            loadHistory();
+            isTickerPaused.value = false;
+        }, 2000);
     };
 
     // --- Helper UI Methods ---
