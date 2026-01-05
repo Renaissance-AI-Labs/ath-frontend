@@ -5,6 +5,25 @@ import { showToast } from './notification';
 import { t } from '../i18n';
 import { APP_ENV } from './environment';
 
+/**
+ * Helper to detect if an error is a user rejection
+ */
+const isUserRejection = (error) => {
+    if (!error) return false;
+    // Ethers v6 / v5 / MetaMask codes
+    if (error.code === 4001 || error.code === 'ACTION_REJECTED') return true;
+    if (error.info && (error.info.code === 4001 || error.info.code === 'ACTION_REJECTED')) return true;
+    
+    // Message matching
+    const msg = error.message || '';
+    return (
+        msg.includes('User rejected') || 
+        msg.includes('User denied') ||
+        msg.includes('user rejected') ||
+        msg.includes('User canceled')
+    );
+};
+
 export const getBankerData = async () => {
     // Debug log
     console.log('[BankerData] getBankerData called. Contract:', !!bankerPoolContract, 'Address:', walletState.address);
@@ -117,7 +136,10 @@ export const depositBanker = async (amount) => {
         return true;
     } catch (error) {
         console.error("Deposit failed:", error);
-        showToast(t('toast.txFailed'));
+        if (!isUserRejection(error)) {
+             // Pass reason to translation to avoid displaying literal "{reason}"
+             showToast(t('toast.txFailed', { reason: error.reason || error.message || 'Unknown error' }));
+        }
         return false;
     }
 };
@@ -133,12 +155,15 @@ export const withdrawBanker = async (shareAmount) => {
     } catch (error) {
         console.error("Withdraw failed:", error);
         
+        if (isUserRejection(error)) {
+            return false;
+        }
+
         // Check for specific revert reason if possible, mainly lock period
-        // But usually error.reason or error.message contains it
-        if (error.message.includes("Lock period not over")) {
+        if (error.message && error.message.includes("Lock period not over")) {
             showToast("Lock period not over");
         } else {
-            showToast(t('toast.txFailed'));
+            showToast(t('toast.txFailed', { reason: error.reason || error.message || 'Unknown error' }));
         }
         return false;
     }
@@ -153,10 +178,9 @@ export const harvestBanker = async () => {
         return true;
     } catch (error) {
         console.error("Harvest failed:", error);
-        showToast(t('toast.claimFailed'));
+        if (!isUserRejection(error)) {
+            showToast(t('toast.claimFailed', { reason: error.reason || error.message || 'Unknown error' }));
+        }
         return false;
     }
 };
-
-
-
