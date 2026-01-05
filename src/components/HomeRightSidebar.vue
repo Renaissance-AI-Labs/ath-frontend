@@ -9,7 +9,7 @@
     <transition name="slide-right">
       <div v-if="isOpen" class="home-right-sidebar">
         <div class="sidebar-header">
-          <h5 class="font-3 text-main-2">活动</h5>
+          <h5 class="font-3 text-main-2">{{ t('sidebar.ecoMatrix') }}</h5>
           <button class="close-btn" @click="$emit('close')">
             <i class="icon icon-close"></i>
           </button>
@@ -33,7 +33,7 @@
 
             <!-- Category -->
             <div class="sidebar-item">
-              <h5 class="sb-title font-3 text-linear">小游戏</h5>
+              <h5 class="sb-title font-3 text-linear">{{ t('sidebar.gameCenter') }}</h5>
               <div class="br-line has-dot"></div>
               <ul class="sb-category">
                 <li>
@@ -66,18 +66,18 @@
             </div>
 
             <div class="sidebar-item">
-              <h5 class="sb-title font-3 text-linear">信息中心</h5>
+              <h5 class="sb-title font-3 text-linear">{{ t('sidebar.equityCenter') }}</h5>
               <div class="br-line has-dot"></div>
               <ul class="sb-category">
                 <li>
                   <router-link to="/personal-center" class="text-body-1" @click="$emit('close')">
-                    个人中心
+                    {{ t('sidebar.personalCenter') }}
                     <i class="icon icon-ArrowUpRight"></i>
                   </router-link>
                 </li>
                 <li>
                   <router-link to="/shareholder" class="text-body-1" @click="$emit('close')">
-                    成为股东
+                    {{ t('sidebar.becomeShareholder') }}
                     <i class="icon icon-ArrowUpRight"></i>
                   </router-link>
                 </li>
