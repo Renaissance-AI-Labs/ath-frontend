@@ -231,7 +231,7 @@ const languagePacks = {
     'sidebar.ecoMatrix': '生态矩阵',
     'sidebar.gameCenter': '游戏中心',
     'sidebar.equityCenter': '权益中心',
-    'sidebar.personalCenter': '个人中心',
+    'sidebar.personalCenter': '我的等级',
     'sidebar.becomeShareholder': '成为股东',
     'personal.maxLevelDesc': '恭喜！您已登顶！',
     
@@ -487,7 +487,7 @@ const languagePacks = {
     'sidebar.ecoMatrix': '生態矩陣',
     'sidebar.gameCenter': '遊戲中心',
     'sidebar.equityCenter': '權益中心',
-    'sidebar.personalCenter': '個人中心',
+    'sidebar.personalCenter': '我的等級',
     'sidebar.becomeShareholder': '成為股東',
     'personal.maxLevelDesc': '恭喜！您已達到最高等級！',
     
@@ -738,7 +738,7 @@ const languagePacks = {
     'sidebar.ecoMatrix': 'Eco Matrix',
     'sidebar.gameCenter': 'Game Center',
     'sidebar.equityCenter': 'Equity Center',
-    'sidebar.personalCenter': 'Personal Center',
+    'sidebar.personalCenter': 'My Level',
     'sidebar.becomeShareholder': 'Become Shareholder',
     'personal.maxLevelDesc': 'Congratulations! You are at the top!',
     
@@ -990,7 +990,7 @@ const languagePacks = {
     'sidebar.ecoMatrix': 'エコシステム・マトリックス',
     'sidebar.gameCenter': 'ゲームセンター',
     'sidebar.equityCenter': '権益センター',
-    'sidebar.personalCenter': 'マイページ',
+    'sidebar.personalCenter': 'マイレベル',
     'sidebar.becomeShareholder': '株主になる',
     'personal.maxLevelDesc': 'Congratulations! You are at the top!',
     
@@ -1243,7 +1243,7 @@ const languagePacks = {
     'sidebar.ecoMatrix': '생태계 매트릭스',
     'sidebar.gameCenter': '게임 센터',
     'sidebar.equityCenter': '권익 센터',
-    'sidebar.personalCenter': '마이페이지',
+    'sidebar.personalCenter': '나의 레벨',
     'sidebar.becomeShareholder': '주주 되기',
     'personal.maxLevelDesc': 'Congratulations! You are at the top!',
     
