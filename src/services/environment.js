@@ -74,3 +74,10 @@ export const DISABLE_CONSOLE_IN_PROD = true;
  * Set to `true` to show the CTA section, `false` to hide it.
  */
 export const ENABLE_XBROKERS_ENTRANCE = false;
+
+/**
+ * Feature flag to enable or disable the Crash game entrance.
+ * Set to `true` to enable the Crash game entrance in production.
+ * In non-production environments (test/dev), it is always enabled regardless of this flag.
+ */
+export const ENABLE_CRASH_GAME = false;
