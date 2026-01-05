@@ -145,11 +145,11 @@
                     {{ t('crash.launching') }}
                   </button>
                   
-                  <div class="debug-buttons mt-2" style="display: flex; gap: 10px;">
+                  <!-- <div class="debug-buttons mt-2" style="display: flex; gap: 10px;">
                     <button class="tf-button style-1 w-33" @click="testCrashAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Crash</button>
                     <button class="tf-button style-1 w-33" @click="testWinAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Win</button>
                     <button class="tf-button style-1 w-33" @click="testSettle" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Settle</button>
-                  </div>
+                  </div> -->
                 </div>
               </div>
 
