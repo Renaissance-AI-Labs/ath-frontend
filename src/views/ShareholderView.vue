@@ -134,7 +134,7 @@
 
                     <!-- Withdraw Content -->
                     <div v-if="activeTab === 'withdraw'">
-                        <p class="text-white-50 mb-4 fs-small text-center">
+                        <p class="text-white-50 mb-4 fs-small text-center" style="margin-bottom: 10px !important;">
                             {{ t('banker.withdrawDesc') }}
                         </p>
                         
