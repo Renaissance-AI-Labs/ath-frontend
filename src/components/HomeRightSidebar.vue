@@ -37,10 +37,14 @@
               <div class="br-line has-dot"></div>
               <ul class="sb-category">
                 <li>
-                  <router-link to="/crash" class="text-body-1" @click="$emit('close')">
+                  <router-link v-if="isCrashEnabled" to="/crash" class="text-body-1" @click="$emit('close')">
                     {{ t('sidebar.crashGame') }}
                     <i class="icon icon-ArrowUpRight"></i>
                   </router-link>
+                  <span v-else class="text-body-1" style="cursor: not-allowed; opacity: 0.6; display: flex; align-items: center; justify-content: space-between;">
+                     {{ t('sidebar.crashGameComingSoon') }}
+                     <!-- <i class="icon icon-ArrowUpRight"></i> -->
+                  </span>
                 </li>
                 <!--
                 <li>
@@ -165,6 +169,7 @@
 
 <script>
 import { t } from '../i18n';
+import { APP_ENV, ENABLE_CRASH_GAME } from '../services/environment';
 
 export default {
   name: 'HomeRightSidebar',
@@ -176,7 +181,8 @@ export default {
   },
   emits: ['close'],
   setup() {
-    return { t };
+    const isCrashEnabled = APP_ENV !== 'PROD' || ENABLE_CRASH_GAME;
+    return { t, isCrashEnabled };
   }
 };
 </script>
@@ -263,4 +269,3 @@ export default {
   transform: translateX(100%);
 }
 </style>
-
