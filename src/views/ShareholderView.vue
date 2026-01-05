@@ -116,10 +116,10 @@
                         <div class="form-group mb-4">
                             <label class="text-white mb-2 fs-small">{{ t('banker.amountLabel') }}</label>
                             <div class="input-container d-flex align-items-center">
-                                <input type="number" v-model="depositAmount" class="form-control custom-input" placeholder="0.0">
+                                <input type="number" v-model="depositAmount" class="form-control custom-input" placeholder="0.0" @input="(e) => handleInput(e, 'deposit')">
                                 <button class="max-btn" type="button" @click="setMaxDeposit">MAX</button>
                             </div>
-                            <small class="text-white-50 fs-extra-small mt-1 d-block">{{ t('banker.balanceLabel', { amount: formatNumber(athBalance) }) }}</small>
+                            <small class="fs-extra-small mt-1 d-block" :class="isInsufficientBalance ? 'text-danger' : 'text-white-50'">{{ t('banker.balanceLabel', { amount: formatNumber(athBalance) }) }}</small>
                         </div>
 
                         <div class="d-flex gap-3">
@@ -145,10 +145,10 @@
                         <div class="form-group mb-4">
                             <label class="text-white mb-2 fs-small">{{ t('banker.withdrawSharesLabel') }}</label>
                             <div class="input-container d-flex align-items-center">
-                                <input type="number" v-model="withdrawShares" class="form-control custom-input" placeholder="0.0">
+                                <input type="number" v-model="withdrawShares" class="form-control custom-input" placeholder="0.0" @input="(e) => handleInput(e, 'withdraw')">
                                 <button class="max-btn" type="button" @click="setMaxWithdraw">MAX</button>
                             </div>
-                            <small class="text-white-50 fs-extra-small mt-1 d-block">{{ t('banker.availableShares', { amount: formatNumber(bankerData.shares) }) }}</small>
+                            <small class="fs-extra-small mt-1 d-block" :class="isInsufficientShares ? 'text-danger' : 'text-white-50'">{{ t('banker.availableShares', { amount: formatNumber(bankerData.shares) }) }}</small>
                         </div>
 
                         <button class="tf-btn w-100" @click="handleWithdraw" :disabled="loading || isLocked || !withdrawShares">
@@ -276,12 +276,13 @@ export default {
     const lockCountdown = computed(() => {
         const unlockTime = bankerData.value.lastDepositTime + bankerData.value.lockPeriod;
         const diff = unlockTime - now.value;
-        if (diff <= 0) return '00:00:00';
+        if (diff <= 0) return '0日0时0分0秒';
         
-        const h = Math.floor(diff / 3600);
+        const d = Math.floor(diff / 86400);
+        const h = Math.floor((diff % 86400) / 3600);
         const m = Math.floor((diff % 3600) / 60);
         const s = diff % 60;
-        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        return `${d}日${h}时${m}分${s}秒`;
     });
     
     const isApproved = computed(() => {
@@ -376,24 +377,65 @@ export default {
     };
 
     const setMaxDeposit = () => {
-        depositAmount.value = athBalance.value;
+        depositAmount.value = formatNumber(athBalance.value);
     };
 
     const setMaxWithdraw = () => {
-        withdrawShares.value = bankerData.value.shares;
+        withdrawShares.value = formatNumber(bankerData.value.shares);
     };
     
-    const formatNumber = (num) => {
-        if (!num) return '0.00';
-        return parseFloat(num).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+    const handleInput = (e, type) => {
+        let val = e.target.value;
+        if (val && val.includes('.')) {
+            const parts = val.split('.');
+            if (parts[1] && parts[1].length > 4) {
+                val = parts[0] + '.' + parts[1].substring(0, 4);
+                e.target.value = val;
+                if (type === 'deposit') depositAmount.value = val;
+                else withdrawShares.value = val;
+            }
+        }
+    };
+
+    const isInsufficientBalance = computed(() => {
+        const inputVal = parseFloat(depositAmount.value || 0);
+        const maxVal = parseFloat(formatNumber(athBalance.value));
+        return inputVal > maxVal;
+    });
+
+    const isInsufficientShares = computed(() => {
+        const inputVal = parseFloat(withdrawShares.value || 0);
+        const maxVal = parseFloat(formatNumber(bankerData.value.shares));
+        return inputVal > maxVal;
+    });
+
+    const formatNumber = (val) => {
+        if (val === undefined || val === null || val === '') return '0.0000';
+        let str = val.toString();
+        
+        // Check for valid number
+        if (isNaN(parseFloat(str))) return '0.0000';
+        
+        // Handle scientific notation
+        if (str.includes('e') || str.includes('E')) {
+            str = parseFloat(val).toFixed(20);
+        }
+
+        const parts = str.split('.');
+        if (parts.length === 1) {
+             return parts[0] + '.0000';
+        }
+        
+        return parts[0] + '.' + parts[1].substring(0, 4).padEnd(4, '0');
     };
 
     const formatDuration = (seconds) => {
-        if (!seconds) return '0s';
-        const h = Math.floor(seconds / 3600);
+        if (!seconds) return '0日0时0分0秒';
+        const d = Math.floor(seconds / 86400);
+        const h = Math.floor((seconds % 86400) / 3600);
         const m = Math.floor((seconds % 3600) / 60);
-        if (h > 0) return `${h}h ${m}m`;
-        return `${m}m`;
+        const s = seconds % 60;
+        return `${d}日${h}时${m}分${s}秒`;
     };
 
     return {
@@ -417,7 +459,10 @@ export default {
         t,
         isSidebarOpen,
         openSidebar,
-        closeSidebar
+        closeSidebar,
+        isInsufficientBalance,
+        isInsufficientShares,
+        handleInput
     };
   }
 };

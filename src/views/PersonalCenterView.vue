@@ -82,7 +82,7 @@
                </div>
                
                <div v-else class="text-center py-4">
-                 <p class="text-linear h4 font-3">Congratulations! You are at the top!</p>
+                 <p class="text-linear h4 font-3">{{ t('personal.maxLevelDesc') }}</p>
                </div>
             </div>
 
@@ -119,6 +119,7 @@ import { ref, onMounted, watch, computed } from 'vue';
 import HomeRightSidebar from '../components/HomeRightSidebar.vue';
 import { walletState } from '../services/wallet';
 import { getPersonalCenterData } from '../services/gameLevel';
+import { t } from '../i18n';
 
 export default {
   name: 'PersonalCenterView',
@@ -218,12 +219,24 @@ export default {
     });
 
     // Helper to format large numbers
-    const formatAmount = (amount) => {
-      if (!amount) return '0';
-      const num = parseFloat(amount);
-      if (num === 0) return '0';
-      // Format with commas and 2 decimal places
-      return num.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+    const formatAmount = (val) => {
+        if (val === undefined || val === null || val === '') return '0.0000';
+        let str = val.toString();
+        
+        // Check for valid number
+        if (isNaN(parseFloat(str))) return '0.0000';
+        
+        // Handle scientific notation
+        if (str.includes('e') || str.includes('E')) {
+            str = parseFloat(val).toFixed(20);
+        }
+
+        const parts = str.split('.');
+        if (parts.length === 1) {
+             return parts[0] + '.0000';
+        }
+        
+        return parts[0] + '.' + parts[1].substring(0, 4).padEnd(4, '0');
     };
 
     const connectWallet = () => {
@@ -244,7 +257,8 @@ export default {
       remainingToNextLevel,
       isSidebarOpen,
       openSidebar,
-      closeSidebar
+      closeSidebar,
+      t
     };
   }
 };

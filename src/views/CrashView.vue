@@ -6,12 +6,25 @@
           <div class="sect-tagline_inner">
             <span class="hafl-plus pst-left_bot wow bounceInScale"></span>
             <span class="hafl-plus pst-right_bot wow bounceInScale"></span>
-            <div class="s-name text-caption ">
+            <div class="s-name text-caption " style="display: flex; flex-direction: column; align-items: center;">
               <div class="breadcrumbs-list" style="font-size: 30px; margin-top: 10px; margin-bottom: 0px;">
-                <!-- <router-link to="/" class="text-white link ">CRASH</router-link>
+                <!-- <router-link to="/" class="text-white link ">BLAST</router-link>
                 <span> & </span> -->
-                <span class="crash-title no-delay">CRASH</span>
+                <span class="crash-title no-delay">BLAST</span>
               </div>
+              
+              <!-- Recent Winners Ticker -->
+              <div class="recent-winners-ticker-container">
+                  <TransitionGroup name="list" tag="div" class="recent-winners-ticker" ref="tickerRef">
+                     <div class="winner-item" 
+                          v-for="w in visibleWinners" 
+                          :key="w.id"
+                          :class="w.displayValue >= 2 ? 'theme-bg' : 'gray-blue-bg'">
+                        <span class="winner-mult">{{ w.displayValue.toFixed(2) }}x</span>
+                     </div>
+                  </TransitionGroup>
+              </div>
+
             </div>
           </div>
         </div>
@@ -35,6 +48,7 @@
                       type="number" 
                       v-model="betAmount" 
                       @blur="handleBetAmountBlur"
+                      @input="(e) => handleInput(e, 'bet', 4)"
                       :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'"
                       :placeholder="`${minBet} - ${maxBet}`" 
                       :min="minBet"
@@ -47,8 +61,8 @@
                       <button class=" append-btn" @click="setMaxAmount" :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'">Max</button>
                     </div>
                   </div>
-                  <div class="balance-text ">
-                    {{ t('crash.balance', { amount: parseFloat(athBalance).toFixed(4) }) }}
+                  <div class="balance-text " :class="{ 'text-danger': isInsufficientBalance }">
+                    {{ t('crash.balance', { amount: formatAmount4(athBalance) }) }}
                   </div>
                 </div>
 
@@ -59,6 +73,7 @@
                       type="number" 
                       v-model="prediction" 
                       @blur="handlePredictionBlur"
+                      @input="(e) => handleInput(e, 'prediction', 2)"
                       :disabled="gameState !== 'IDLE' && gameState !== 'RESULT'"
                       :placeholder="placeholderText" 
                       step="0.01"
@@ -89,7 +104,7 @@
                   </button>
                   
                   <!-- Approve -->
-                  <button v-else-if="needsApproval" class="tf-button style-1 w-100" @click="handleApprove" :disabled="isApproving">
+                  <button v-else-if="needsApproval" class="tf-button style-1 w-100 btn-approve-highlight" @click="handleApprove" :disabled="isApproving">
                     {{ isApproving ? t('crash.approving') : t('crash.approve') }}
                   </button>
                   
@@ -105,23 +120,23 @@
                   
                   <!-- Settle -->
                   <div v-else-if="gameState === 'READY_TO_SETTLE'" class="w-100">
-                    <button class="tf-button style-1 w-100 btn-settle" @click="handleSettle" :class="{ 'btn-expired': expirationSeconds === 0 }">
-                        <span v-if="expirationSeconds > 0">即刻开奖</span>
-                        <span v-else>已过开奖时间，点击开启下一局</span>
+                    <button class="tf-button style-1 w-100 btn-settle" @click="handleSettle" :class="{ 'btn-expired': expirationSeconds === 0, 'btn-pulse-border': expirationSeconds > 0 }">
+                        <span v-if="expirationSeconds > 0">{{ t('crash.clickToSettle') }}</span>
+                        <span v-else>{{ t('crash.settleExpired') }}</span>
                         <span v-if="expirationSeconds > 0" class="countdown-timer text-warning" style="margin-left: 8px;">
                             {{ expirationSeconds }}s
                         </span>
                     </button>
                     <div class="settle-tip mt-2 text-warning" style="font-size: 11px; line-height: 1.4;">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px; display: inline-block; vertical-align: middle;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                        <span v-if="expirationSeconds > 0">请在倒计时结束前点击开奖，倒计时结束后开奖将无法获得奖金。</span>
-                        <span v-else>倒计时结束后未开奖，需再次点击按钮与合约交互开启下一局。</span>
+                        <span v-if="expirationSeconds > 0">{{ t('crash.settleTip1') }}</span>
+                        <span v-else>{{ t('crash.settleTip2') }}</span>
                     </div>
                   </div>
 
                    <!-- Settling -->
                   <button v-else-if="gameState === 'SETTLING'" class="tf-button style-1 w-100 disabled" disabled>
-                    <span v-if="isExpiredSettle">正在准备下一轮</span>
+                    <span v-if="isExpiredSettle">{{ t('crash.preparingNextRound') }}</span>
                     <span v-else>{{ t('crash.settling') }}</span>
                   </button>
                   
@@ -131,8 +146,9 @@
                   </button>
                   
                   <!-- <div class="debug-buttons mt-2" style="display: flex; gap: 10px;">
-                    <button class="tf-button style-1 w-50" @click="testCrashAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Crash</button>
-                    <button class="tf-button style-1 w-50" @click="testWinAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Win</button>
+                    <button class="tf-button style-1 w-33" @click="testCrashAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Crash</button>
+                    <button class="tf-button style-1 w-33" @click="testWinAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Win</button>
+                    <button class="tf-button style-1 w-33" @click="testSettle" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Settle</button>
                   </div> -->
                 </div>
               </div>
@@ -163,7 +179,7 @@
 
                       <!-- Result Status Text -->
                       <div v-if="gameState === 'RESULT'" class="result-status " :class="lastGameWon ? 'text-success' : 'text-danger'">
-                        {{ lastGameWon ? 'YOU WON' : 'CRASHED' }}
+                        {{ lastGameWon ? t('crash.resultWon') : t('crash.resultLost') }}
                       </div>
                       
                       <div v-if="gameState === 'RESULT' && lastGameWon" class="result-payout  text-success">
@@ -183,26 +199,24 @@
           <!-- History Section -->
           <div class="col-lg-12">
             <div class="history-tabs">
-              <button class="tab-btn " :class="{ active: activeTab === 'my' }" @click="activeTab = 'my'">{{ t('crash.myBets') }}</button>
-              <button class="tab-btn " :class="{ active: activeTab === 'all' }" @click="activeTab = 'all'">{{ t('crash.allBets') }}</button>
+              <button class="tab-btn " :class="{ active: activeTab === 'my' }" @click="switchTab('my')">{{ t('crash.myBets') }}</button>
+              <button class="tab-btn " :class="{ active: activeTab === 'all' }" @click="switchTab('all')">{{ t('crash.allBets') }}</button>
             </div>
             
             <div class="history-table-wrapper">
               <table class="table  text-white">
                 <thead>
                   <tr>
-                    <th>{{ t('crash.time') }}</th>
-                    <th v-if="activeTab === 'all'">{{ t('crash.player') }}</th>
                     <th>{{ t('crash.betCol') }}</th>
                     <th>{{ t('crash.predictionCol') }}</th>
                     <th>{{ t('crash.result') }}</th>
                     <th>{{ t('crash.payout') }}</th>
+                    <th v-if="activeTab === 'all'">{{ t('crash.player') }}</th>
+                    <th>{{ t('crash.time') }}</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="(item, index) in historyData" :key="index">
-                    <td>{{ formatTime(item.timestamp) }}</td>
-                    <td v-if="activeTab === 'all'">{{ formatAddr(item.player) }}</td>
                     <td>{{ formatAmount4(item.amount) }}</td>
                     <td>{{ item.prediction.toFixed(2) }}x</td>
                     <td :class="getResultColor(item)">
@@ -211,6 +225,8 @@
                     <td :class="{ 'text-success': item.won }">
                       {{ formatAmount4(item.payout) }}
                     </td>
+                    <td v-if="activeTab === 'all'">{{ formatAddr(item.player) }}</td>
+                    <td>{{ formatTime(item.timestamp) }}</td>
                   </tr>
                   <tr v-if="historyData.length === 0">
                     <td colspan="6" class="text-center">{{ t('crash.noHistory') }}</td>
@@ -231,7 +247,7 @@
     <!-- Sidebar Trigger Button -->
     <div class="btn-sidebar-mb d-lg-none right">
         <button @click="openSidebar" style="background-color: #111111;">
-            <img src="/asset/images/section/platform.svg" alt="Menu" width="50" height="50">
+            <img src="/asset/images/section/speed.svg" alt="Menu" width="50" height="50" style="transform: rotate(180deg);">
         </button>
     </div>
 
@@ -257,7 +273,8 @@ import {
   getUserHistoryLength,
   getGlobalHistory,
   getGlobalHistoryLength,
-  getGameConfig
+  getGameConfig,
+  DEFAULT_PREDICTION
 } from '../services/crash';
 import { walletState, connectWallet as walletConnect } from '../services/wallet';
 import { showToast } from '../services/notification';
@@ -269,7 +286,7 @@ export default {
     // --- State ---
     const gameState = ref('IDLE'); // IDLE, BETTING, WAITING_BLOCK, READY_TO_SETTLE, SETTLING, ANIMATING, RESULT
     const betAmount = ref('');
-    const prediction = ref('');
+    const prediction = ref(DEFAULT_PREDICTION.toFixed(2));
     const athBalance = ref('0');
     const athAllowance = ref('0');
     
@@ -291,14 +308,21 @@ export default {
     let blockCheckInterval = null;
     let countdownInterval = null; // Separate interval for smooth countdown
 
-    const minBet = ref(1);
-    const maxBet = ref(2000);
+    const minBet = ref(0.01);
+    const maxBet = ref(100);
     const minPrediction = ref(1.01);
     const maxPrediction = ref(100);
 
     const expirationSeconds = ref(0); // Seconds until expiration
     const isExpiredSettle = ref(false); // Flag to track if we are settling an expired bet
     const currentTimeLabel = ref(0); // Current elapsed time in seconds for display
+
+    const recentWinners = ref([]); // Pool of winners to show
+    const visibleWinners = ref([]); // Currently visible winners
+    let winnersInterval = null;
+    let tickerInterval = null;
+    const tickerRef = ref(null);
+    const isTickerPaused = ref(false); // Controls ticker updates to avoid spoilers
 
     // Sidebar State
     const isSidebarOpen = ref(false);
@@ -338,6 +362,16 @@ export default {
         return t('crash.settle');
     });
 
+    const isInsufficientBalance = computed(() => {
+        const bal = parseFloat(athBalance.value || 0);
+        const amount = parseFloat(betAmount.value || 0);
+        // 如果余额为0，显示红色
+        if (bal === 0) return true;
+        // 如果输入了金额且金额大于余额，显示红色
+        if (amount > 0 && amount > bal) return true;
+        return false;
+    });
+
     const needsApproval = computed(() => {
         if (!betAmount.value) return false;
         return parseFloat(athAllowance.value) < parseFloat(betAmount.value);
@@ -358,6 +392,11 @@ export default {
 
     // --- Lifecycle ---
     onMounted(async () => {
+        // Start winners feed immediately to show results ASAP
+        await fetchRecentWinners();
+        startTicker(); // Ticker will auto-fill if visible is empty
+        winnersInterval = setInterval(fetchRecentWinners, 4000);
+
         if (walletState.isConnected && walletState.contractsInitialized) {
             await initGame();
         }
@@ -372,6 +411,8 @@ export default {
         cancelAnimationFrame(animationFrameId);
         clearInterval(blockCheckInterval);
         clearInterval(countdownInterval);
+        clearInterval(winnersInterval);
+        clearInterval(tickerInterval);
         window.removeEventListener('resize', resizeCanvas);
     });
 
@@ -397,6 +438,110 @@ export default {
     });
 
     // --- Methods ---
+
+    const fetchRecentWinners = async () => {
+        try {
+            const length = await getGlobalHistoryLength();
+            if (length === 0) return;
+            
+            // Fetch last 50 to find winners
+            const size = 50;
+            const start = Math.max(0, length - size);
+            const raw = await getGlobalHistory(start, size);
+            
+            // Show ALL results (both won and lost/crashed)
+            // Sort by timestamp or block number ascending (oldest first)
+            // Filter out "Expired" (crashPoint === 0)
+            const allResults = raw
+                .filter(item => item.crashPoint > 0)
+                .sort((a, b) => a.timestamp - b.timestamp);
+            
+            // Update pool of potential winners to show
+            // Add unique ID to facilitate keying
+            // Use crashPoint (result) instead of prediction
+            const newPool = allResults.map(w => ({
+                ...w,
+                displayValue: w.crashPoint, 
+                id: `${w.betBlock}-${w.player}-${w.crashPoint}`
+            }));
+            
+            // If we have no visible winners (initial load), fill it up with latest 4
+            // But user wants "one by one" rolling effect. 
+            // So we don't initialize visibleWinners directly. 
+            // We just update recentWinners, and let the ticker handle the "rolling in".
+            
+            // However, to avoid showing 100 items rolling in, we should ensure recentWinners 
+            // only contains the items we WANT to eventually show (or close to it).
+            // But recentWinners is also our history cache.
+            
+            // Logic update: recentWinners is the SOURCE. Ticker moves items from Source to Visible.
+            // If visible is empty, Ticker should start picking from (Source.length - 4).
+            
+            recentWinners.value = newPool;
+        } catch (e) {
+            console.error("Error fetching winners:", e);
+        }
+    };
+
+    // Ticker logic: Adds one item from recentWinners to visibleWinners every few seconds
+    // shifting the oldest out if length > 4
+    const startTicker = () => {
+         // Clear existing
+         if (tickerInterval) clearInterval(tickerInterval);
+         
+         tickerInterval = setInterval(() => {
+             // Pause ticker during animation and shortly after to avoid spoilers
+             if (isTickerPaused.value) return;
+
+             // Find next item to show
+             // We want to show the next item from recentWinners that is NOT in visibleWinners
+             // Assuming recentWinners is sorted Old -> New.
+             
+             if (recentWinners.value.length === 0) return;
+             
+             // Initial fill logic: if empty, start from the last 4 items
+             if (visibleWinners.value.length === 0) {
+                 const startIndex = Math.max(0, recentWinners.value.length - 4);
+                 // Push the first one
+                 visibleWinners.value.push(recentWinners.value[startIndex]);
+                 return;
+             }
+             
+             // Get the last item in visible
+             const lastVisible = visibleWinners.value[visibleWinners.value.length - 1];
+             
+             // Find index of lastVisible in recentWinners
+             const idx = recentWinners.value.findIndex(w => w.id === lastVisible.id);
+             
+             let nextItem = null;
+             
+             if (idx !== -1 && idx < recentWinners.value.length - 1) {
+                 // There is a newer item
+                 nextItem = recentWinners.value[idx + 1];
+             } else if (idx === -1) {
+                 // lastVisible not found in recent (maybe list refreshed completely), take latest
+                 // To be safe, if we are completely lost, maybe reset or take (end-3)?
+                 // Let's just take the one after (length-4) if possible to restart the flow
+                 // Or just take the very last one?
+                 nextItem = recentWinners.value[recentWinners.value.length - 1];
+                 
+                 // Prevent duplicates if nextItem is already in visible (e.g. at other position)
+                 if (visibleWinners.value.some(w => w.id === nextItem.id)) {
+                     nextItem = null;
+                 }
+             }
+             
+             if (nextItem) {
+                 // Add next item
+                 visibleWinners.value.push(nextItem);
+                 // remove first if length > 4
+                 if (visibleWinners.value.length > 4) {
+                     visibleWinners.value.shift();
+                 }
+             }
+             
+         }, 1000); // Update every 1 second (faster)
+    };
 
     const initGame = async () => {
         console.log("Initializing game...");
@@ -481,9 +626,10 @@ export default {
             const provider = walletState.signer?.provider;
             if (!provider) return;
             const current = await provider.getBlockNumber();
-            console.log(`Checking block: ${current} > ${targetBlock}`);
+            console.log(`[区块监听] 当前区块: ${current}, 目标投注区块: ${targetBlock}, 是否满足(当前 > 目标): ${current > targetBlock}`);
             
             if (current > targetBlock) {
+                console.log("[区块监听] 区块条件满足，切换至 READY_TO_SETTLE");
                 // Sync remaining time from chain ONCE
                 const expiryBlock = targetBlock + 255;
                 const remainingBlocks = Math.max(0, expiryBlock - current);
@@ -535,6 +681,14 @@ export default {
     };
 
     const handleBet = async () => {
+        const val = parseFloat(betAmount.value || 0);
+        const bal = parseFloat(athBalance.value || 0);
+        
+        if (val > bal) {
+             showToast(t('crash.insufficientBalance'));
+             return;
+        }
+
         if (!betAmount.value || !prediction.value) {
             showToast(t('crash.inputError'));
             return;
@@ -553,6 +707,7 @@ export default {
         if (success) {
             showToast(t('toast.txSuccess'));
             await refreshBalance();
+            fetchRecentWinners(); // Immediate refresh
             // Get current block to wait
             const provider = walletState.signer?.provider;
             const currentBlock = await provider.getBlockNumber();
@@ -562,9 +717,24 @@ export default {
             // Wait, placeBet waits for tx.wait(), so the tx is in a block.
             // We need block.number > betBlock.
             // We can call getActiveBet to get the exact betBlock.
-            const bet = await getActiveBet();
+            
+            console.log("投注交易确认，尝试从合约获取 ActiveBet 信息...");
+            // Simple retry loop (3 times) to ensure node has indexed the bet
+            let bet = null;
+            for (let i = 0; i < 3; i++) {
+                bet = await getActiveBet();
+                if (bet && bet.betBlock > 0) break;
+                console.warn(`第 ${i+1} 次获取 ActiveBet 失败，等待 500ms 重试...`);
+                await new Promise(r => setTimeout(r, 500));
+            }
+
+            console.log("最终获取到的 ActiveBet:", bet);
+
             if (bet && bet.betBlock > 0) {
+                console.log(`成功获取 ActiveBet，目标区块: ${bet.betBlock}，启动监听...`);
                 startBlockCheck(bet.betBlock);
+            } else {
+                console.error("多次尝试后仍未获取到 ActiveBet，界面将卡在 WAITING_BLOCK，请检查节点延迟。");
             }
         }
         isBetting.value = false;
@@ -761,6 +931,7 @@ export default {
 
     const startAnimation = (targetPoint) => {
         gameState.value = 'ANIMATING';
+        isTickerPaused.value = true; // Pause ticker during animation
         currentMultiplier.value = 1.00;
         
         const canvas = gameCanvas.value;
@@ -985,19 +1156,36 @@ export default {
         ctx.restore();
     };
 
+    const switchTab = (tab) => {
+        if (gameState.value === 'ANIMATING' || gameState.value === 'SETTLING') return;
+        activeTab.value = tab;
+    };
+
     const endGame = () => {
         gameState.value = 'RESULT';
         refreshBalance();
-        loadHistory();
         
-        // Removed auto-reset. User must click Bet to start next round.
-        // Result stays on screen.
+        // Resume ticker and refresh data after 2 seconds to avoid spoilers
+        setTimeout(() => {
+            // If a new game has started animating, don't unpause/refresh
+            if (gameState.value === 'ANIMATING') return; 
+
+            fetchRecentWinners();
+        loadHistory();
+            isTickerPaused.value = false;
+        }, 2000);
     };
 
     // --- Helper UI Methods ---
     const setAmountPercent = (p) => {
         if (!athBalance.value) return;
         const bal = parseFloat(athBalance.value);
+        
+        if (bal <= 0) {
+            showToast(t('crash.insufficientBalance'));
+            return;
+        }
+
         let current = parseFloat(betAmount.value || 0);
         
         // If current input is 0 or empty, try to set a base value if user clicks modifier
@@ -1027,7 +1215,16 @@ export default {
     
     const setMaxAmount = () => {
         const bal = parseFloat(athBalance.value);
-        betAmount.value = Math.min(bal, maxBet.value).toFixed(4);
+        if (bal <= 0) {
+            showToast(t('crash.insufficientBalance'));
+            return;
+        }
+        
+        if (bal <= maxBet.value) {
+            betAmount.value = formatAmount4(athBalance.value);
+        } else {
+            betAmount.value = maxBet.value.toFixed(4);
+        }
     };
 
     const formatTime = (ts) => {
@@ -1053,11 +1250,23 @@ export default {
     };
 
     const formatAmount4 = (val) => {
-        if (!val) return '0.0000';
-        const num = parseFloat(val);
-        if (isNaN(num)) return '0.0000';
-        // Truncate to 4 decimals
-        return (Math.floor(num * 10000) / 10000).toFixed(4);
+        if (val === undefined || val === null || val === '') return '0.0000';
+        let str = val.toString();
+        
+        // Check for valid number
+        if (isNaN(parseFloat(str))) return '0.0000';
+        
+        // Handle scientific notation
+        if (str.includes('e') || str.includes('E')) {
+            str = parseFloat(val).toFixed(20);
+        }
+
+        const parts = str.split('.');
+        if (parts.length === 1) {
+             return parts[0] + '.0000';
+        }
+        
+        return parts[0] + '.' + parts[1].substring(0, 4).padEnd(4, '0');
     };
 
     const getResultColor = (item) => {
@@ -1133,6 +1342,19 @@ export default {
         prediction.value = newVal.toFixed(2);
     };
 
+    const handleInput = (e, type, limit) => {
+        let val = e.target.value;
+        if (val && val.includes('.')) {
+            const parts = val.split('.');
+            if (parts[1] && parts[1].length > limit) {
+                val = parts[0] + '.' + parts[1].substring(0, limit);
+                e.target.value = val;
+                if (type === 'bet') betAmount.value = val;
+                else if (type === 'prediction') prediction.value = val;
+            }
+        }
+    };
+
     const testCrashAnim = () => {
         lastGameWon.value = false;
         startAnimation(1.20); // Crashes at 1.20x
@@ -1142,6 +1364,12 @@ export default {
         lastGameWon.value = true;
         lastPayout.value = '100'; // Fake payout
         startAnimation(5.00); // Crashes at 5.00x but we won
+    };
+
+    const testSettle = () => {
+        gameState.value = 'READY_TO_SETTLE';
+        expirationSeconds.value = 30;
+        startCountdown();
     };
 
     return {
@@ -1192,8 +1420,15 @@ export default {
         closeSidebar,
         testCrashAnim,
         testWinAnim,
+        testSettle,
         currentTimeLabel,
-        expirationSeconds
+        expirationSeconds,
+        isInsufficientBalance,
+        handleInput,
+        switchTab,
+        recentWinners,
+        visibleWinners,
+        tickerRef
     };
   },
   components: {
@@ -1546,14 +1781,15 @@ canvas {
 }
 
 /* Primary Action Buttons (Bet, Settle) */
-.btn-bet, .btn-settle {
+.btn-bet, .btn-settle, .btn-approve-highlight {
     background: var(--primary) !important;
+    background-image: none !important; /* Ensure no gradient overrides it */
     color: #fff !important;
     border-color: var(--primary) !important;
-    box-shadow: none !important;
+    /* box-shadow: none !important; Removed to allow animation */
 }
 
-.btn-bet:hover:not(:disabled), .btn-settle:hover {
+.btn-bet:hover:not(:disabled), .btn-settle:hover, .btn-approve-highlight:hover:not(:disabled) {
     filter: brightness(1.1);
     transform: translateY(-2px);
     color: #fff !important;
@@ -1656,5 +1892,105 @@ canvas {
   .crash-canvas-container {
     height: 300px;
   }
+}
+
+@keyframes border-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(200, 229, 241, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 0 7px rgba(255, 157, 2, 0);
+  }
+}
+
+.btn-pulse-border {
+  position: relative;
+  overflow: visible !important; /* Ensure shadow isn't clipped */
+}
+
+.btn-pulse-border::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 999px;
+  animation: border-pulse 2s infinite;
+  pointer-events: none;
+  z-index: 1; /* On top of button content if needed, or adjust */
+}
+
+/* Recent Winners Ticker */
+.recent-winners-ticker-container {
+    width: 100%;
+    overflow: hidden; /* Hide anything spilling out */
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    min-height: 32px;
+}
+
+.recent-winners-ticker {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    /* transition for smooth sliding not strictly needed if we animate items entering/leaving, 
+       but we can animate the container shift if desired. 
+       For "rolling out", adding item to right and removing left is standard ticker. 
+    */
+}
+
+.winner-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-family: 'Geist', sans-serif;
+    color: var(--text-2);
+    white-space: nowrap;
+    /* transition handled by list class */
+}
+
+/* Ticker Animations */
+.list-enter-active,
+.list-leave-active,
+.list-move {
+  transition: all 0.5s ease;
+}
+
+.list-enter-from {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
+  position: absolute; /* Essential for smooth list move */
+}
+
+.winner-item.theme-bg {
+    background-color: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    border: 1px solid transparent; /* Maintain size consistency */
+}
+
+.winner-item.gray-blue-bg {
+    background-color: #4a5568; /* Gray Blue */
+    color: #e2e8f0;
+    border: 1px solid transparent;
+}
+
+.winner-name {
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+.winner-mult {
+    font-weight: 800;
 }
 </style>

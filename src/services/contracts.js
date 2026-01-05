@@ -99,15 +99,15 @@ export const contractAddresses = {
     development: '0x3F4E253D329C767293F0B50670882Eb3761a6989',
   },
   crash: {
-    production: '',
+    production: '0x896A036F2Ef9699322b20C1E9Eb529F5486b79eF',
     development: '0x58Ad6227c74D9000d0d6014682bD990aAB217eE0',
   },
   bankerPool: {
-    production: '',
+    production: '0xe98944fE9E52143a213Bd14bEbFFA9790466c777',
     development: '0x1a6Ce0091075a3C81bcad078cDc59A55668F12a4',
   },
   gameLevel: {
-    production: '',
+    production: '0x9233205Be82a858d9a6Db6Cd3fA589716474c925',
     development: '0xdBB653bA08987a6Ec630909fCb62d938cdF3cE9B',
   }
 };
