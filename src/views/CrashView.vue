@@ -145,11 +145,11 @@
                     {{ t('crash.launching') }}
                   </button>
                   
-                  <!-- <div class="debug-buttons mt-2" style="display: flex; gap: 10px;">
+                  <div class="debug-buttons mt-2" style="display: flex; gap: 10px;">
                     <button class="tf-button style-1 w-33" @click="testCrashAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Crash</button>
                     <button class="tf-button style-1 w-33" @click="testWinAnim" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Win</button>
                     <button class="tf-button style-1 w-33" @click="testSettle" style="height: 40px !important; font-size: 12px; background: #333; border: 1px solid #555;">Test Settle</button>
-                  </div> -->
+                  </div>
                 </div>
               </div>
 
@@ -1440,18 +1440,22 @@ export default {
 <style scoped>
 .crash-title {
   font-family: 'Geist', sans-serif;
-  font-size: 60px;
-  font-weight: 800;
+  font-size: 80px;
+  font-weight: 900;
+  font-style: italic;
   text-transform: uppercase;
-  color: #e0e0e0;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-  animation: breathing 3s ease-in-out infinite alternate;
-  letter-spacing: 2px;
+  background: linear-gradient(180deg, #FFFFFF 20%, #9ca3af 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
+  animation: title-pulse 3s ease-in-out infinite alternate;
+  letter-spacing: -2px;
   position: relative;
-  overflow: hidden;
   display: inline-block;
-  padding: 0 10px; /* Add padding to prevent clipping */
-  line-height: 1.2; /* Ensure enough height */
+  padding: 0 10px;
+  line-height: 1;
 }
 
 .crash-title::after {
@@ -1464,7 +1468,7 @@ export default {
   background: linear-gradient(
     to right,
     transparent 0%,
-    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0.4) 50%,
     transparent 100%
   );
   transform: skewX(-25deg);
@@ -1472,30 +1476,14 @@ export default {
   pointer-events: none;
 }
 
-@keyframes shine {
-  0%, 80% {
-    left: -100%;
-    opacity: 0;
-  }
-  85% {
-    opacity: 1;
-  }
-  100% {
-    left: 200%;
-    opacity: 0;
-  }
-}
-
-@keyframes breathing {
+@keyframes title-pulse {
   0% {
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
-    opacity: 0.85;
     transform: scale(1);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
   }
   100% {
-    text-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 0 0 10px rgba(224, 224, 224, 0.6);
-    opacity: 1;
-    transform: scale(1.02);
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.6));
   }
 }
 
@@ -1567,17 +1555,40 @@ canvas {
 }
 
 .result-status {
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: 900;
+    font-style: italic;
     margin-top: 10px;
-    letter-spacing: 2px;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-    animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    letter-spacing: -1px;
+    text-transform: uppercase;
+    animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.text-success.result-status {
+    background-image: linear-gradient(180deg, #4ade80 0%, #22c55e 100%);
+    filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.6));
+}
+
+.text-danger.result-status {
+    background-image: linear-gradient(180deg, #f87171 0%, #ef4444 100%);
+    filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.6));
 }
 
 .result-payout {
     font-size: 1.5rem;
+    font-weight: 900;
+    font-style: italic;
     margin-top: 5px;
+    background-image: linear-gradient(180deg, #4ade80 0%, #22c55e 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.6));
     animation: slideUpFade 0.5s ease-out 0.2s backwards;
 }
 
