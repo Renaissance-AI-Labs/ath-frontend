@@ -6,8 +6,8 @@
           <div class="sect-tagline_inner">
             <span class="hafl-plus pst-left_bot wow bounceInScale"></span>
             <span class="hafl-plus pst-right_bot wow bounceInScale"></span>
-            <div class="s-name text-caption " style="display: flex; flex-direction: column; align-items: center;">
-              <div class="breadcrumbs-list" style="font-size: 30px; margin-top: 10px; margin-bottom: 0px;">
+            <div class="s-name text-caption " style="display: flex; flex-direction: column; align-items: center; padding-bottom: 10px !important;">
+              <div class="breadcrumbs-list" style="font-size: 30px; margin-top: 0px; margin-bottom: 0px;">
                 <!-- <router-link to="/" class="text-white link ">BLAST</router-link>
                 <span> & </span> -->
                 <span class="crash-title no-delay">BLAST</span>
@@ -20,7 +20,7 @@
                           v-for="w in visibleWinners" 
                           :key="w.id"
                           :class="w.displayValue >= 2 ? 'theme-bg' : 'gray-blue-bg'">
-                        <span class="winner-mult">{{ w.displayValue.toFixed(2) }}x</span>
+                        <span class="winner-mult">{{ (w.displayValue < 1.01 ? 1.00 : w.displayValue).toFixed(2) }}x</span>
                      </div>
                   </TransitionGroup>
               </div>
@@ -66,7 +66,7 @@
                   </div>
                 </div>
 
-                <div class="control-group mt-2">
+                <div class="control-group mt-1">
                   <label class="">{{ t('crash.prediction') }}</label>
                   <div class="input-group">
                     <input 
@@ -97,7 +97,7 @@
                   </div> -->
                 </div>
 
-                <div class="action-btn-wrapper mt-3">
+                <div class="action-btn-wrapper mt-2">
                   <!-- Connect Wallet -->
                   <button v-if="!walletState.isConnected" class="tf-button style-1 w-100" @click="connectWallet">
                     {{ t('crash.connectWallet') }}
@@ -1496,7 +1496,7 @@ export default {
   border: 1px solid var(--line);
   border-radius: 28px;
   backdrop-filter: blur(16px);
-  padding: 30px 10px;
+  padding: 20px 10px;
   margin-bottom: 30px;
 }
 
@@ -1511,7 +1511,7 @@ export default {
 
 .crash-game-wrapper {
   display: flex;
-  gap: 30px;
+  gap: 10px;
   min-height: 500px;
 }
 
@@ -1657,7 +1657,7 @@ canvas {
   color: var(--text-2);
   opacity: 0.7;
   text-align: right;
-  margin-top: 4px; /* Reduced from 6px */
+  margin-top: 0px; /* Reduced from 6px */
 }
 .win-chance {
   font-size: 0.8rem;
@@ -1938,7 +1938,7 @@ canvas {
     overflow: hidden; /* Hide anything spilling out */
     display: flex;
     justify-content: center;
-    margin-top: 15px;
+    margin-top: 5px;
     min-height: 32px;
 }
 
