@@ -228,6 +228,11 @@ const languagePacks = {
     'crash.settleTip2': '倒计时结束后未开奖，需再次点击按钮与合约交互开启下一局。',
     'crash.preparingNextRound': '正在准备下一轮',
     'sidebar.crashGame': '爆点',
+    'sidebar.ecoMatrix': '生态矩阵',
+    'sidebar.gameCenter': '游戏中心',
+    'sidebar.equityCenter': '权益中心',
+    'sidebar.personalCenter': '个人中心',
+    'sidebar.becomeShareholder': '成为股东',
     'personal.maxLevelDesc': '恭喜！您已登顶！',
     
     // Common
@@ -479,6 +484,11 @@ const languagePacks = {
     'crash.settleTip2': '倒計時結束後未開獎，需再次點擊按鈕與合約交互開啟下一局。',
     'crash.preparingNextRound': '正在準備下一輪',
     'sidebar.crashGame': '爆點',
+    'sidebar.ecoMatrix': '生態矩陣',
+    'sidebar.gameCenter': '遊戲中心',
+    'sidebar.equityCenter': '權益中心',
+    'sidebar.personalCenter': '個人中心',
+    'sidebar.becomeShareholder': '成為股東',
     'personal.maxLevelDesc': '恭喜！您已達到最高等級！',
     
     // Common
@@ -725,6 +735,11 @@ const languagePacks = {
     'crash.resultLost': 'CRASHED',
     'crash.insufficientBalance': 'Insufficient ATH balance',
     'sidebar.crashGame': 'Blast',
+    'sidebar.ecoMatrix': 'Eco Matrix',
+    'sidebar.gameCenter': 'Game Center',
+    'sidebar.equityCenter': 'Equity Center',
+    'sidebar.personalCenter': 'Personal Center',
+    'sidebar.becomeShareholder': 'Become Shareholder',
     'personal.maxLevelDesc': 'Congratulations! You are at the top!',
     
     // Common
@@ -972,6 +987,11 @@ const languagePacks = {
     'crash.resultLost': 'CRASHED',
     'crash.insufficientBalance': 'ATH残高不足',
     'sidebar.crashGame': 'Blast',
+    'sidebar.ecoMatrix': 'エコシステム・マトリックス',
+    'sidebar.gameCenter': 'ゲームセンター',
+    'sidebar.equityCenter': '権益センター',
+    'sidebar.personalCenter': 'マイページ',
+    'sidebar.becomeShareholder': '株主になる',
     'personal.maxLevelDesc': 'Congratulations! You are at the top!',
     
     // Common
@@ -1220,6 +1240,11 @@ const languagePacks = {
     'crash.resultLost': 'CRASHED',
     'crash.insufficientBalance': 'ATH 잔액 부족',
     'sidebar.crashGame': 'Blast',
+    'sidebar.ecoMatrix': '생태계 매트릭스',
+    'sidebar.gameCenter': '게임 센터',
+    'sidebar.equityCenter': '권익 센터',
+    'sidebar.personalCenter': '마이페이지',
+    'sidebar.becomeShareholder': '주주 되기',
     'personal.maxLevelDesc': 'Congratulations! You are at the top!',
     
     // Common
