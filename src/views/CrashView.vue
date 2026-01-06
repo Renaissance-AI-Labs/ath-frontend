@@ -217,6 +217,7 @@
                     <th>{{ t('crash.predictionCol') }}</th>
                     <th>{{ t('crash.result') }}</th>
                     <th>{{ t('crash.payout') }}</th>
+                    <th>{{ t('crash.block') }}</th>
                     <th v-if="activeTab === 'all'">{{ t('crash.player') }}</th>
                     <th>{{ t('crash.time') }}</th>
                   </tr>
@@ -231,11 +232,16 @@
                     <td :class="{ 'text-success': item.won }">
                       {{ formatAmount4(item.payout) }}
                     </td>
+                    <td>
+                        <a :href="`${explorerBaseUrl}/block/${item.betBlock}`" target="_blank" class="text-primary" style="text-decoration: none; font-family: monospace;">
+                            {{ item.betBlock }}
+                        </a>
+                    </td>
                     <td v-if="activeTab === 'all'">{{ formatAddr(item.player) }}</td>
                     <td>{{ formatTime(item.timestamp) }}</td>
                   </tr>
                   <tr v-if="historyData.length === 0">
-                    <td colspan="6" class="text-center">{{ t('crash.noHistory') }}</td>
+                    <td colspan="7" class="text-center">{{ t('crash.noHistory') }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -256,9 +262,69 @@
 
             <!-- Fairness Content -->
             <div class="history-table-wrapper text-white p-4" v-if="activeTab === 'fairness'">
-                <h4 class="mb-3">{{ t('crash.fairness') }}</h4>
-                <div style="white-space: pre-line; line-height: 1.6; color: var(--text-2);">
+                <h4 class="mb-4 text-highlight-gold" style="font-family: 'Geist', sans-serif;">{{ t('crash.fairness') }}</h4>
+                <p class="mb-4" style="color: var(--text-2); line-height: 1.6;">
                      {{ t('crash.fairnessContent') }}
+                </p>
+
+                <!-- Steps -->
+                <div class="fairness-steps">
+                    <div class="step-item mb-4">
+                        <h5 class="text-white mb-2" style="font-size: 1.1rem;">{{ t('crash.fairness.step1') }}</h5>
+                        <p class="small" style="color: var(--text-2);">{{ t('crash.fairness.step1Desc') }}</p>
+                    </div>
+                    <div class="step-item mb-4">
+                        <h5 class="text-white mb-2" style="font-size: 1.1rem;">{{ t('crash.fairness.step2') }}</h5>
+                        <p class="small" style="color: var(--text-2);">{{ t('crash.fairness.step2Desc') }}</p>
+                    </div>
+                    <div class="step-item mb-4">
+                        <h5 class="text-white mb-2" style="font-size: 1.1rem;">{{ t('crash.fairness.step3') }}</h5>
+                        <p class="small" style="color: var(--text-2);">{{ t('crash.fairness.step3Desc') }}</p>
+                    </div>
+                </div>
+
+                <!-- Calculator -->
+                <div class="verification-calculator p-4" style="background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid var(--line);">
+                    <h5 class="mb-3 text-white">{{ t('crash.fairness.calcTitle') }}</h5>
+                    
+                    <div class="form-group mb-3">
+                        <label class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.addrLabel') }}</label>
+                        <input type="text" v-model="verifyAddress" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="0x...">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.blockLabel') }}</label>
+                            <input type="number" v-model="verifyBlock" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="12345678">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                             <label class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.edgeLabel') }}</label>
+                             <input type="number" v-model="verifyEdge" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="10">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mb-4">
+                        <label class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.hashLabel') }}</label>
+                        <input type="text" v-model="verifyHash" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="0x...">
+                    </div>
+                    
+                    <button class="tf-button style-1 w-100 mb-3 btn-bet" @click="verifyFairness">
+                        {{ t('crash.fairness.verifyBtn') }}
+                    </button>
+                    
+                    <!-- Result -->
+                    <div v-if="verifyResult" class="result-box text-center p-3" style="background: rgba(255,255,255,0.1); border-radius: 12px;">
+                        <div class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.resultLabel') }}</div>
+                        <div class="h2 mb-0" :class="verifyResult === 'Error' ? 'text-danger' : 'text-success'">
+                            {{ verifyResult }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Why Block Hash -->
+                <div class="mt-5">
+                    <h5 class="text-white mb-2" style="font-size: 1.1rem;">{{ t('crash.fairness.whyHash') }}</h5>
+                    <p class="small" style="line-height: 1.6; color: var(--text-2);">{{ t('crash.fairness.whyHashDesc') }}</p>
                 </div>
             </div>
           </div>
@@ -283,6 +349,7 @@
 
 <script>
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue';
+import { solidityPackedKeccak256 } from 'ethers';
 import HomeRightSidebar from '../components/HomeRightSidebar.vue';
 import { 
   getAthBalance, 
@@ -299,6 +366,7 @@ import {
   DEFAULT_PREDICTION
 } from '../services/crash';
 import { walletState, connectWallet as walletConnect } from '../services/wallet';
+import { APP_ENV } from '../services/environment';
 import { showToast } from '../services/notification';
 import { t } from '../i18n';
 
@@ -346,6 +414,77 @@ export default {
     const tickerRef = ref(null);
     const isTickerPaused = ref(false); // Controls ticker updates to avoid spoilers
 
+    // Fairness Calculator State
+    const verifyAddress = ref('');
+    const verifyBlock = ref('');
+    const verifyHash = ref('');
+    const verifyEdge = ref(10);
+    const verifyResult = ref(null);
+    const verifyStatus = ref(''); 
+
+    watch(() => walletState.address, (addr) => {
+        if (addr && !verifyAddress.value) verifyAddress.value = addr;
+    }, { immediate: true });
+
+    const verifyFairness = () => {
+        try {
+            verifyStatus.value = '';
+            verifyResult.value = null;
+
+            if (!verifyAddress.value || !verifyBlock.value || !verifyHash.value) {
+                 showToast(t('crash.inputError'));
+                 return;
+            }
+
+            // Clean inputs
+            const addr = verifyAddress.value.trim();
+            const blockNum = verifyBlock.value.toString().trim();
+            const hash = verifyHash.value.trim();
+            const edge = parseInt(verifyEdge.value);
+
+            // Calculate Seed: keccak256(abi.encodePacked(blockHash, player, betBlock))
+            // Note: Order matters! Contract: keccak256(abi.encodePacked(blockHash, msg.sender, b.betBlock))
+            // Ethers v6 solidityPackedKeccak256 expects (types, values)
+            const seed = solidityPackedKeccak256(
+                ['bytes32', 'address', 'uint256'],
+                [hash, addr, blockNum]
+            );
+
+            // Calculate Crash Point
+            // h = seed % 10000
+            const seedBig = BigInt(seed);
+            const h = seedBig % 10000n;
+            
+            // multiplier = (10000 - edge*100) * 100 / (10000 - h)
+            const houseEdgeVal = BigInt(edge);
+            const numerator = (10000n - houseEdgeVal * 100n) * 100n;
+            const denominator = 10000n - h;
+            
+            if (denominator === 0n) {
+                verifyResult.value = 'Infinity'; 
+                return;
+            }
+
+            // We do integer division first as per solidity, then convert to float for display
+            // But to display decimals accurately we can just do float division here
+            // Contract uses integer division.
+            // Example: 900000 / 10000 = 90.
+            // 900000 / 9000 = 100.
+            
+            const crashPointBig = numerator / denominator;
+            const resultDisplay = Number(crashPointBig) / 100;
+            
+            verifyResult.value = resultDisplay.toFixed(2) + 'x';
+            verifyStatus.value = 'match'; 
+            
+        } catch (e) {
+            console.error("Verification error:", e);
+            verifyStatus.value = 'mismatch'; 
+            verifyResult.value = "Error";
+            showToast("Verification failed: " + e.message);
+        }
+    };
+
     // Sidebar State
     const isSidebarOpen = ref(false);
     
@@ -361,6 +500,10 @@ export default {
         const min = typeof minPrediction.value === 'number' ? minPrediction.value : 1.01;
         const max = typeof maxPrediction.value === 'number' ? maxPrediction.value : 100;
         return `${min.toFixed(2)} - ${max.toFixed(2)}`;
+    });
+
+    const explorerBaseUrl = computed(() => {
+        return APP_ENV === 'PROD' ? 'https://bscscan.com' : 'https://testnet.bscscan.com';
     });
 
     // --- Computed ---
@@ -1452,7 +1595,15 @@ export default {
         switchTab,
         recentWinners,
         visibleWinners,
-        tickerRef
+        tickerRef,
+        verifyAddress,
+        verifyBlock,
+        verifyHash,
+        verifyEdge,
+        verifyResult,
+        verifyStatus,
+        verifyFairness,
+        explorerBaseUrl
     };
   },
   components: {
@@ -2027,5 +2178,22 @@ canvas {
 
 .winner-mult {
     font-weight: 800;
+}
+
+.verify-input::placeholder {
+    color: rgba(255, 255, 255, 0.7) !important;
+    opacity: 1;
+}
+
+.verification-calculator .tf-button {
+    height: 56px !important;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 </style>
