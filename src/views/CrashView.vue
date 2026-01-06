@@ -198,12 +198,18 @@
 
           <!-- History Section -->
           <div class="col-lg-12">
-            <div class="history-tabs">
-              <button class="tab-btn " :class="{ active: activeTab === 'my' }" @click="switchTab('my')">{{ t('crash.myBets') }}</button>
-              <button class="tab-btn " :class="{ active: activeTab === 'all' }" @click="switchTab('all')">{{ t('crash.allBets') }}</button>
+            <div class="history-tabs d-flex justify-content-between align-items-center">
+              <div class="left-tabs" style="display: flex;">
+                <button class="tab-btn " :class="{ active: activeTab === 'my' }" @click="switchTab('my')">{{ t('crash.myBets') }}</button>
+                <button class="tab-btn " :class="{ active: activeTab === 'all' }" @click="switchTab('all')">{{ t('crash.allBets') }}</button>
+              </div>
+              <div class="right-tabs" style="display: flex;">
+                <button class="tab-btn " :class="{ active: activeTab === 'rules' }" @click="switchTab('rules')">{{ t('crash.rules') }}</button>
+                <button class="tab-btn " :class="{ active: activeTab === 'fairness' }" @click="switchTab('fairness')">{{ t('crash.fairness') }}</button>
+              </div>
             </div>
             
-            <div class="history-table-wrapper">
+            <div class="history-table-wrapper" v-if="activeTab === 'my' || activeTab === 'all'">
               <table class="table  text-white">
                 <thead>
                   <tr>
@@ -238,6 +244,22 @@
               <div class="pagination-controls mt-3 text-center" v-if="hasMoreHistory">
                 <button class="btn-sm btn-outline-light" @click="loadMoreHistory">{{ t('crash.loadMore') }}</button>
               </div>
+            </div>
+
+            <!-- Rules Content -->
+            <div class="history-table-wrapper text-white p-4" v-if="activeTab === 'rules'">
+                <h4 class="mb-3">{{ t('crash.rules') }}</h4>
+                <div style="white-space: pre-line; line-height: 1.6; color: var(--text-2);">
+                    {{ t('crash.rulesContent') }}
+                </div>
+            </div>
+
+            <!-- Fairness Content -->
+            <div class="history-table-wrapper text-white p-4" v-if="activeTab === 'fairness'">
+                <h4 class="mb-3">{{ t('crash.fairness') }}</h4>
+                <div style="white-space: pre-line; line-height: 1.6; color: var(--text-2);">
+                     {{ t('crash.fairnessContent') }}
+                </div>
             </div>
           </div>
         </div>
@@ -1278,6 +1300,8 @@ export default {
     };
 
     const loadHistory = async () => {
+        if (activeTab.value === 'rules' || activeTab.value === 'fairness') return;
+
         if (activeTab.value === 'my') {
             const length = await getUserHistoryLength();
             const start = Math.max(0, length - 50);
@@ -1819,7 +1843,7 @@ canvas {
   background: transparent;
   border: none;
   color: var(--text-2);
-  padding: 8px 16px;
+  padding: 8px 10px;
   font-size: 1rem;
   cursor: pointer;
   border-bottom: 2px solid transparent;
