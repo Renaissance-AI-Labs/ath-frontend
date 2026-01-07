@@ -318,6 +318,9 @@
                         <div class="h2 mb-0" :class="verifyResult === 'Error' ? 'text-danger' : 'text-success'">
                             {{ verifyResult }}
                         </div>
+                        <div v-if="verifyResult === 'Error'" class="text-danger small mt-2">
+                            {{ t('crash.fairness.inputContentError') }}
+                        </div>
                         <div v-if="verifyRemark" class="text-warning small mt-2">
                             {{ verifyRemark }}
                         </div>
