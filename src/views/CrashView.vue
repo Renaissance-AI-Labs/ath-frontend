@@ -473,7 +473,7 @@
                             <label class="mb-2 text-white" style="font-size: 14px; font-weight: bold;">{{ t('crash.fairness.tp_step3Title') }}</label>
                             <p class="small mb-3" style="color: var(--text-2); line-height: 1.5;" v-html="t('crash.fairness.tp_step3Desc')"></p>
                             
-                            <a href="https://www.binaryhexconverter.com/hex-to-decimal-converter" target="_blank" class="d-block">
+                            <a href="https://www.prepostseo.com/tool/hex-to-decimal" target="_blank" class="d-block">
                                 <button class="btn btn-sm btn-outline-light w-100" style="text-align: left; display: flex; justify-content: space-between; align-items: center;">
                                     <span>{{ t('crash.fairness.step4Tool') }}</span>
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
