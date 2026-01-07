@@ -84,3 +84,20 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Custom classes for Crash Game verification */
+.example-text {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.9em;
+  display: block;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.text-muted-small {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85em;
+  display: block;
+  margin-top: 5px;
+  line-height: 1.4;
+}
