@@ -295,7 +295,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                              <label class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.edgeLabel') }}</label>
-                             <input type="number" v-model="verifyEdge" readonly class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="10">
+                             <input type="number" v-model="verifyEdge" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="10">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.blockLabel') }}</label>
@@ -318,6 +318,9 @@
                         <div class="h2 mb-0" :class="verifyResult === 'Error' ? 'text-danger' : 'text-success'">
                             {{ verifyResult }}
                         </div>
+                        <div v-if="verifyRemark" class="text-warning small mt-2">
+                            {{ verifyRemark }}
+                        </div>
                     </div>
                 </div>
 
@@ -328,7 +331,12 @@
 
                     <!-- Formula Section -->
                     <div class="formula-section p-4" style="background: rgba(0,0,0,0.4); border: 1px solid var(--line); border-radius: 12px;">
-                        <h6 class="text-white mb-4" style="font-family: 'Times New Roman', Times, serif; font-size: 1.1rem; font-style: italic; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">{{ t('crash.fairness.formulaTitle') }}</h6>
+                        <div class="d-flex justify-content-between align-items-center mb-4" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                            <h6 class="text-white mb-0" style="font-family: 'Times New Roman', Times, serif; font-size: 1.1rem; font-style: italic;">{{ t('crash.fairness.formulaTitle') }}</h6>
+                            <a href="https://bscscan.com/address/0xc3ce7819785f8e0a637b4ca409a3b38e121c9820#code" target="_blank" class="text-primary small" style="text-decoration: none;">
+                                {{ t('crash.fairness.contractLink') }} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            </a>
+                        </div>
                         
                         <div class="math-content mb-4" style="font-family: 'Times New Roman', Times, serif; color: #e2e8f0; font-size: 1.2rem; line-height: 1.8;">
                             <!-- Seed Formula -->
@@ -397,13 +405,13 @@
                     </div>
 
                     <!-- Third-Party Verification -->
-                    <div v-if="verifyInputHex" class="third-party-verify p-4 mt-4" style="border: 1px dashed var(--line); border-radius: 12px; background: rgba(255, 255, 255, 0.02);">
-                        <h6 class="text-white mb-2" style="font-family: 'Times New Roman', Times, serif; font-style: italic;">{{ t('crash.fairness.thirdPartyTitle') }}</h6>
+                    <div class="third-party-verify p-4 mt-4" style="border: 1px dashed var(--line); border-radius: 12px; background: rgba(255, 255, 255, 0.02);">
+                        <h6 class="text-white mb-3" style="font-size: 16px; font-weight: bold;">{{ t('crash.fairness.thirdPartyTitle') }}</h6>
                         <p class="small mb-3" style="color: var(--text-2);">{{ t('crash.fairness.thirdPartyDesc') }}</p>
                         
                         <!-- Data Composition Breakdown -->
                         <div class="mb-4">
-                            <label class="small mb-2 text-white" style="font-weight: 600;">{{ t('crash.fairness.dataComposition') }}</label>
+                            <label class="mb-2 text-white" style="font-size: 14px; font-weight: bold;">{{ t('crash.fairness.dataComposition') }}</label>
                             <p class="small mb-2" style="color: var(--text-2); font-size: 11px;" v-html="t('crash.fairness.dataCompositionDesc')"></p>
                             
                             <div class="composition-box p-3" style="background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
@@ -412,27 +420,21 @@
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <span class="small" style="color: #a0aec0; font-size: 11px;">1. {{ t('crash.fairness.hashLabel') }} (bytes32)</span>
                                     </div>
-                                    <div class="text-break text-monospace" style="color: #e2e8f0; font-family: monospace; font-size: 11px; word-break: break-all;">
-                                        {{ verifyInputPartHash }}
-                                    </div>
+                                    <input type="text" v-model="verifyInputPartHash" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line); font-family: monospace; font-size: 11px; height: auto; padding: 8px;" placeholder="e.g. 0xabcdef..." />
                                 </div>
                                 <!-- Address -->
                                 <div class="mb-2">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <span class="small" style="color: #a0aec0; font-size: 11px;">2. {{ t('crash.fairness.addrLabel') }} (address)</span>
                                     </div>
-                                    <div class="text-break text-monospace" style="color: #e2e8f0; font-family: monospace; font-size: 11px; word-break: break-all;">
-                                        {{ verifyInputPartAddr }}
-                                    </div>
+                                    <input type="text" v-model="verifyInputPartAddr" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line); font-family: monospace; font-size: 11px; height: auto; padding: 8px;" placeholder="e.g. 0x1234..." />
                                 </div>
                                 <!-- Block -->
                                 <div class="mb-1">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <span class="small" style="color: #a0aec0; font-size: 11px;">3. {{ t('crash.fairness.blockLabel') }} (uint256)</span>
                                     </div>
-                                    <div class="text-break text-monospace" style="color: #e2e8f0; font-family: monospace; font-size: 11px; word-break: break-all;">
-                                        {{ verifyBlock }}
-                                    </div>
+                                    <input type="text" v-model="verifyInputPartBlock" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line); font-family: monospace; font-size: 11px; height: auto; padding: 8px;" placeholder="e.g. 12345" />
                                 </div>
                             </div>
                             <div class="text-center my-2">
@@ -442,9 +444,9 @@
 
                         <!-- Step 1 -->
                         <div class="mb-3">
-                            <label class="small mb-1 text-white">{{ t('crash.fairness.copyInput') }}</label>
+                            <label class="mb-2 text-white" style="font-size: 14px; font-weight: bold;">{{ t('crash.fairness.copyInput') }}</label>
                             <div class="input-group">
-                                <textarea class="form-control" :value="verifyInputHex" readonly rows="3" style="font-family: monospace; font-size: 12px; background: rgba(0,0,0,0.2) !important; color: #a855f7 !important; resize: vertical;"></textarea>
+                                <textarea class="form-control text-white verify-input" :value="computedSplicedHex" readonly rows="3" style="background: rgba(255,255,255,0.05); border-color: var(--line); font-family: monospace; font-size: 12px; color: var(--primary) !important; resize: vertical;" :placeholder="t('crash.fairness.splicedPlaceholder')"></textarea>
                                 <button class="btn btn-outline-secondary" type="button" @click="copyHexInput" style="height: auto;">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                 </button>
@@ -453,7 +455,7 @@
 
                         <!-- Step 2 -->
                         <div class="mb-3 mt-4 pt-3" style="border-top: 1px dashed rgba(255,255,255,0.1);">
-                            <label class="small mb-2 text-white">{{ t('crash.fairness.tp_step2Title') }}</label>
+                            <label class="mb-2 text-white" style="font-size: 14px; font-weight: bold;">{{ t('crash.fairness.tp_step2Title') }}</label>
                             <p class="small mb-3" style="color: var(--text-2); line-height: 1.5;" v-html="t('crash.fairness.tp_step2Desc')"></p>
                             <a href="https://emn178.github.io/online-tools/keccak_256.html" target="_blank" class="d-block">
                                 <button class="btn btn-sm btn-outline-light w-100" style="text-align: left; display: flex; justify-content: space-between; align-items: center;">
@@ -464,8 +466,8 @@
                         </div>
                         
                         <!-- Step 3: Hex to Decimal -->
-                        <div class="mb-3 mt-4 pt-3" style="border-top: 1px dashed rgba(255,255,255,0.1);" v-if="verifySeedHex">
-                            <label class="small mb-2 text-white">{{ t('crash.fairness.tp_step3Title') }}</label>
+                        <div class="mb-3 mt-4 pt-3" style="border-top: 1px dashed rgba(255,255,255,0.1);">
+                            <label class="mb-2 text-white" style="font-size: 14px; font-weight: bold;">{{ t('crash.fairness.tp_step3Title') }}</label>
                             <p class="small mb-3" style="color: var(--text-2); line-height: 1.5;" v-html="t('crash.fairness.tp_step3Desc')"></p>
                             
                             <a href="https://www.binaryhexconverter.com/hex-to-decimal-converter" target="_blank" class="d-block">
@@ -477,8 +479,8 @@
                         </div>
 
                         <!-- Step 4: Final Calculation -->
-                        <div class="mb-3 mt-4 pt-3" style="border-top: 1px dashed rgba(255,255,255,0.1);" v-if="verifySeedHex">
-                            <label class="small mb-2 text-white">{{ t('crash.fairness.tp_step4Title') }}</label>
+                        <div class="mb-3 mt-4 pt-3" style="border-top: 1px dashed rgba(255,255,255,0.1);">
+                            <label class="mb-2 text-white" style="font-size: 14px; font-weight: bold;">{{ t('crash.fairness.tp_step4Title') }}</label>
                             <p class="small mb-0" style="color: var(--text-2); line-height: 1.6; white-space: pre-line;" v-html="t('crash.fairness.tp_step4Desc')"></p>
                         </div>
                     </div>
@@ -583,6 +585,40 @@ export default {
     const verifyInputPartHash = ref('');
     const verifyInputPartAddr = ref('');
     const verifyInputPartBlock = ref('');
+    const verifyRemark = ref('');
+
+    const computedSplicedHex = computed(() => {
+        // If verifyInputHex (auto-generated) exists, we still want to prioritize manual inputs if they are being edited.
+        // But verifying if the user is "editing" is hard. 
+        // Simplification: Always generate from the 3 parts if they exist.
+        // verifyInputHex was only a cache from verifyFairness. 
+        // Since verifyFairness ALSO sets the 3 parts, we can just rely on the parts.
+        
+        if (verifyInputPartHash.value && verifyInputPartAddr.value && verifyInputPartBlock.value) {
+             const h = verifyInputPartHash.value.trim().replace(/^0x/i, '');
+             const a = verifyInputPartAddr.value.trim().replace(/^0x/i, '');
+             let b = verifyInputPartBlock.value.trim();
+             
+             // Check if block input is decimal (not hex)
+             // If it doesn't start with 0x and is shorter than 64 chars, assume decimal and pad it
+             if (!b.startsWith('0x') && b.length < 60) { // arbitrary threshold for "short" decimal
+                 try {
+                     b = BigInt(b).toString(16).padStart(64, '0');
+                 } catch (e) {
+                     // ignore parse error, use as is
+                 }
+             } else {
+                 b = b.replace(/^0x/i, '');
+             }
+             
+             return h + a + b;
+        }
+        
+        // Fallback: if parts are missing, maybe use the cache?
+        // But if parts are missing, splicing is impossible/incomplete.
+        // So just return what we have (or empty).
+        return verifyInputHex.value || ''; 
+    });
 
     watch(() => walletState.address, (addr) => {
         if (addr && !verifyAddress.value) verifyAddress.value = addr;
@@ -597,6 +633,7 @@ export default {
         try {
             verifyStatus.value = '';
             verifyResult.value = null;
+            verifyRemark.value = '';
 
             if (!verifyAddress.value || !verifyBlock.value || !verifyHash.value) {
                  showToast(t('crash.fairness.inputError'));
@@ -622,7 +659,7 @@ export default {
             // The input to Keccak256 is the packed bytes of the arguments
             verifyInputPartHash.value = hash;
             verifyInputPartAddr.value = addr;
-            verifyInputPartBlock.value = solidityPacked(['uint256'], [blockNum]);
+            verifyInputPartBlock.value = blockNum; // Display decimal for user readability in manual section
             
             // For simple concatenation: Hash + Address (raw) + Block (raw 32 bytes)
             // solidityPacked handles this correctly.
@@ -632,7 +669,12 @@ export default {
             
             // User requested direct splicing: Hash + Address + Block(hex)
             // Also remove leading 0x from hash
-            verifyInputHex.value = hash.replace(/^0x/i, '') + addr.replace(/^0x/i, '') + BigInt(blockNum).toString(16).padStart(64, '0');
+            // If the user inputs decimal block number manually, we should convert it here for consistency if needed.
+            // But verifyBlock is used here which is the raw input.
+            // The auto-verifier uses verifyBlock (decimal string).
+            
+            const blockHex = BigInt(blockNum).toString(16).padStart(64, '0');
+            verifyInputHex.value = hash.replace(/^0x/i, '') + addr.replace(/^0x/i, '') + blockHex;
 
             // Calculate Crash Point
             // h = seed % 10000
@@ -658,20 +700,25 @@ export default {
             const crashPointBig = numerator / denominator;
             const resultDisplay = Number(crashPointBig) / 100;
             
-            verifyResult.value = resultDisplay.toFixed(2) + 'x';
+            if (resultDisplay < 1.00) {
+                 verifyResult.value = '1.00x';
+                 verifyRemark.value = t('crash.fairness.instantCrashRemark');
+            } else {
+                 verifyResult.value = resultDisplay.toFixed(2) + 'x';
+            }
             verifyStatus.value = 'match'; 
             
         } catch (e) {
             console.error("Verification error:", e);
             verifyStatus.value = 'mismatch'; 
             verifyResult.value = "Error";
-            showToast("Verification failed: " + e.message);
+            // Removed toast as requested
         }
     };
 
     const copyHexInput = async () => {
-        if (!verifyInputHex.value) return;
-        copyToClipboard(verifyInputHex.value);
+        if (!computedSplicedHex.value) return;
+        copyToClipboard(computedSplicedHex.value);
     };
 
     const copySeedHex = async () => {
@@ -1823,11 +1870,13 @@ export default {
         verifyInputPartHash,
         verifyInputPartAddr,
         verifyInputPartBlock,
+        verifyRemark,
         verifySeedHex,
         copySeedHex,
         verifyFairness,
         copyHexInput,
-        explorerBaseUrl
+        explorerBaseUrl,
+        computedSplicedHex
     };
   },
   components: {
