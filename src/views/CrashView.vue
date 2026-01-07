@@ -294,12 +294,12 @@
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.blockLabel') }}</label>
-                            <input type="number" v-model="verifyBlock" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="12345678">
-                        </div>
-                        <div class="col-md-6 mb-3">
                              <label class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.edgeLabel') }}</label>
                              <input type="number" v-model="verifyEdge" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="10">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.blockLabel') }}</label>
+                            <input type="number" v-model="verifyBlock" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="12345678">
                         </div>
                     </div>
                     
@@ -324,7 +324,146 @@
                 <!-- Why Block Hash -->
                 <div class="mt-5">
                     <h5 class="text-white mb-2" style="font-size: 1.1rem;">{{ t('crash.fairness.whyHash') }}</h5>
-                    <p class="small" style="line-height: 1.6; color: var(--text-2);">{{ t('crash.fairness.whyHashDesc') }}</p>
+                    <p class="small mb-4" style="line-height: 1.6; color: var(--text-2);">{{ t('crash.fairness.whyHashDesc') }}</p>
+
+                    <!-- Formula Section -->
+                    <div class="formula-section p-4" style="background: rgba(0,0,0,0.4); border: 1px solid var(--line); border-radius: 12px;">
+                        <h6 class="text-white mb-4" style="font-family: 'Times New Roman', Times, serif; font-size: 1.1rem; font-style: italic; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">{{ t('crash.fairness.formulaTitle') }}</h6>
+                        
+                        <div class="math-content mb-4" style="font-family: 'Times New Roman', Times, serif; color: #e2e8f0; font-size: 1.2rem; line-height: 1.8;">
+                            <!-- Seed Formula -->
+                            <div class="equation mb-3 d-flex align-items-center justify-content-center">
+                                <span class="var">S</span>
+                                <span class="mx-2">=</span>
+                                <span class="func">Keccak256</span>
+                                <span>(</span>
+                                <span class="var-highlight">H</span>
+                                <span class="mx-1">,</span>
+                                <span class="var-highlight">A</span>
+                                <span class="mx-1">,</span>
+                                <span class="var-highlight">B</span>
+                                <span>)</span>
+                            </div>
+
+                            <!-- Random Value Formula -->
+                            <div class="equation mb-3 d-flex align-items-center justify-content-center">
+                                <span class="var">R</span>
+                                <span class="mx-2">=</span>
+                                <span class="var">S</span>
+                                <span class="mx-2 math-op">mod</span>
+                                <span>10000</span>
+                            </div>
+
+                            <!-- Multiplier Formula -->
+                            <div class="equation mb-2 d-flex align-items-center justify-content-center">
+                                <span class="var">Multiplier</span>
+                                <span class="mx-2">=</span>
+                                <div class="fraction d-inline-flex flex-column align-items-center" style="vertical-align: middle;">
+                                    <span class="numerator" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 2px;">10000 <span class="math-op">&times;</span> (1 <span class="math-op">&minus;</span> <span class="var-highlight">E</span>)</span>
+                                    <span class="denominator" style="padding-top: 2px;">10000 <span class="math-op">&minus;</span> <span class="var">R</span></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Legend -->
+                        <div class="legend small pt-3" style="border-top: 1px solid rgba(255,255,255,0.1);">
+                            <div class="row g-2">
+                                <div class="col-6 mb-1">
+                                    <span class="var-highlight me-2">H</span> = {{ t('crash.fairness.hashLabel') }}
+                                </div>
+                                <div class="col-6 mb-1">
+                                    <span class="var-highlight me-2">A</span> = {{ t('crash.fairness.addrLabel') }}
+                                </div>
+                                <div class="col-6 mb-1">
+                                    <span class="var-highlight me-2">B</span> = {{ t('crash.fairness.blockLabel') }}
+                                </div>
+                                <div class="col-6 mb-1">
+                                    <span class="var-highlight me-2">E</span> = {{ t('crash.fairness.edgeLabel') }}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Formula Annotations -->
+                        <div class="mt-4 pt-3" style="border-top: 1px solid rgba(255,255,255,0.1); color: var(--text-2); font-size: 0.9rem;">
+                            <div class="mb-2">
+                                <span class="func fw-bold text-white">Keccak256:</span> {{ t('crash.fairness.formula.keccak') }}
+                            </div>
+                            <div class="mb-2">
+                                <span class="math-op fw-bold text-white">mod:</span> {{ t('crash.fairness.formula.mod') }}
+                            </div>
+                            <div class="mb-0">
+                                <span class="var fw-bold text-white">Multiplier:</span> {{ t('crash.fairness.formula.multiplier') }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Third-Party Verification -->
+                    <div v-if="verifyInputHex" class="third-party-verify p-4 mt-4" style="border: 1px dashed var(--line); border-radius: 12px; background: rgba(255, 255, 255, 0.02);">
+                        <h6 class="text-white mb-2" style="font-family: 'Times New Roman', Times, serif; font-style: italic;">{{ t('crash.fairness.thirdPartyTitle') }}</h6>
+                        <p class="small mb-3" style="color: var(--text-2);">{{ t('crash.fairness.thirdPartyDesc') }}</p>
+                        
+                        <!-- Data Composition Breakdown -->
+                        <div class="mb-4">
+                            <label class="small mb-2 text-white" style="font-weight: 600;">{{ t('crash.fairness.dataComposition') }}</label>
+                            <p class="small mb-2" style="color: var(--text-2); font-size: 11px;">{{ t('crash.fairness.dataCompositionDesc') }}</p>
+                            
+                            <div class="composition-box p-3" style="background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                                <!-- Hash -->
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="small text-muted" style="font-size: 11px;">1. {{ t('crash.fairness.hashLabel') }} (bytes32)</span>
+                                    </div>
+                                    <div class="text-break text-monospace" style="color: #e2e8f0; font-family: monospace; font-size: 11px; word-break: break-all;">
+                                        {{ verifyInputPartHash }}
+                                    </div>
+                                </div>
+                                <!-- Address -->
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="small text-muted" style="font-size: 11px;">2. {{ t('crash.fairness.addrLabel') }} (address)</span>
+                                    </div>
+                                    <div class="text-break text-monospace" style="color: #e2e8f0; font-family: monospace; font-size: 11px; word-break: break-all;">
+                                        {{ verifyInputPartAddr }}
+                                    </div>
+                                </div>
+                                <!-- Block -->
+                                <div class="mb-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="small text-muted" style="font-size: 11px;">3. {{ t('crash.fairness.blockLabel') }} (uint256)</span>
+                                    </div>
+                                    <div class="text-break text-monospace" style="color: #e2e8f0; font-family: monospace; font-size: 11px; word-break: break-all;">
+                                        {{ verifyBlock }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center my-2">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small mb-1 text-white">{{ t('crash.fairness.copyInput') }}</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" :value="verifyInputHex" readonly style="font-family: monospace; font-size: 12px; background: rgba(0,0,0,0.2) !important; color: #a855f7 !important;">
+                                <button class="btn btn-outline-secondary" type="button" @click="copyHexInput">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="small mb-1 text-white">{{ t('crash.fairness.openTool') }}</label>
+                            <a href="https://emn178.github.io/online-tools/keccak_256.html" target="_blank" class="d-block">
+                                <button class="btn btn-sm btn-outline-light w-100" style="text-align: left; display: flex; justify-content: space-between; align-items: center;">
+                                    <span>{{ t('crash.fairness.toolLinkText') }} (GitHub Pages)</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                </button>
+                            </a>
+                        </div>
+                        
+                        <div class="small mt-2" style="color: #fbbf24;">
+                            <i class="bi bi-info-circle me-1"></i> {{ t('crash.fairness.verifyInst') }}
+                        </div>
+                    </div>
                 </div>
             </div>
           </div>
@@ -349,7 +488,7 @@
 
 <script>
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue';
-import { solidityPackedKeccak256 } from 'ethers';
+import { solidityPackedKeccak256, solidityPacked } from 'ethers';
 import HomeRightSidebar from '../components/HomeRightSidebar.vue';
 import { 
   getAthBalance, 
@@ -421,6 +560,10 @@ export default {
     const verifyEdge = ref(10);
     const verifyResult = ref(null);
     const verifyStatus = ref(''); 
+    const verifyInputHex = ref('');
+    const verifyInputPartHash = ref('');
+    const verifyInputPartAddr = ref('');
+    const verifyInputPartBlock = ref('');
 
     watch(() => walletState.address, (addr) => {
         if (addr && !verifyAddress.value) verifyAddress.value = addr;
@@ -449,6 +592,22 @@ export default {
                 ['bytes32', 'address', 'uint256'],
                 [hash, addr, blockNum]
             );
+
+            // Generate raw hex for third-party verification
+            // The input to Keccak256 is the packed bytes of the arguments
+            verifyInputPartHash.value = hash;
+            verifyInputPartAddr.value = addr;
+            verifyInputPartBlock.value = solidityPacked(['uint256'], [blockNum]);
+            
+            // For simple concatenation: Hash + Address (raw) + Block (raw 32 bytes)
+            // solidityPacked handles this correctly.
+            // Removing 0x prefix if user prefers manual copy without it?
+            // But usually hex tools handle 0x.
+            // If the user says "Spliced data is wrong", maybe they mean the VISUAL "+" signs.
+            
+            // User requested direct splicing: Hash + Address + Block(hex)
+            // Also remove leading 0x from hash
+            verifyInputHex.value = hash.replace(/^0x/i, '') + addr.replace(/^0x/i, '') + BigInt(blockNum).toString(16);
 
             // Calculate Crash Point
             // h = seed % 10000
@@ -482,6 +641,30 @@ export default {
             verifyStatus.value = 'mismatch'; 
             verifyResult.value = "Error";
             showToast("Verification failed: " + e.message);
+        }
+    };
+
+    const copyHexInput = async () => {
+        if (!verifyInputHex.value) return;
+        try {
+            await navigator.clipboard.writeText(verifyInputHex.value);
+            showToast(t('toast.copied'));
+        } catch (err) {
+            // Fallback for non-secure contexts
+            const textArea = document.createElement("textarea");
+            textArea.value = verifyInputHex.value;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast(t('toast.copied'));
+            } catch (e) {
+                showToast(t('toast.copyFailed'));
+            }
+            document.body.removeChild(textArea);
         }
     };
 
@@ -1602,7 +1785,12 @@ export default {
         verifyEdge,
         verifyResult,
         verifyStatus,
+        verifyInputHex,
+        verifyInputPartHash,
+        verifyInputPartAddr,
+        verifyInputPartBlock,
         verifyFairness,
+        copyHexInput,
         explorerBaseUrl
     };
   },
@@ -2195,5 +2383,26 @@ canvas {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.var {
+    font-style: italic;
+    font-weight: bold;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.var-highlight {
+    font-style: italic;
+    font-weight: bold;
+    color: var(--primary);
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.func {
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.math-op {
+    font-family: 'Times New Roman', Times, serif;
 }
 </style>
