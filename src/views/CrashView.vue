@@ -457,7 +457,7 @@
                             <p class="small mb-3" style="color: var(--text-2); line-height: 1.5;" v-html="t('crash.fairness.tp_step2Desc')"></p>
                             <a href="https://emn178.github.io/online-tools/keccak_256.html" target="_blank" class="d-block">
                                 <button class="btn btn-sm btn-outline-light w-100" style="text-align: left; display: flex; justify-content: space-between; align-items: center;">
-                                    <span>{{ t('crash.fairness.toolLinkText') }} (GitHub Pages)</span>
+                                    <span>{{ t('crash.fairness.toolLinkText') }}</span>
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                                 </button>
                             </a>
@@ -589,12 +589,17 @@ export default {
     }, { immediate: true });
 
     const verifyFairness = () => {
+        if (!walletState.isConnected) {
+            showToast(t('toast.connectWalletFirst'));
+            return;
+        }
+
         try {
             verifyStatus.value = '';
             verifyResult.value = null;
 
             if (!verifyAddress.value || !verifyBlock.value || !verifyHash.value) {
-                 showToast(t('crash.inputError'));
+                 showToast(t('crash.fairness.inputError'));
                  return;
             }
 
