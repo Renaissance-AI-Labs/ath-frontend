@@ -406,12 +406,12 @@
 
                     <!-- Third-Party Verification -->
                     <div class="third-party-verify p-4 mt-4" style="border: 1px dashed var(--line); border-radius: 12px; background: rgba(255, 255, 255, 0.02);">
-                        <h6 class="text-white mb-2" style="font-family: 'Times New Roman', Times, serif; font-style: italic;">{{ t('crash.fairness.thirdPartyTitle') }}</h6>
+                        <h6 class="text-white mb-3" style="font-size: 16px; font-weight: bold;">{{ t('crash.fairness.thirdPartyTitle') }}</h6>
                         <p class="small mb-3" style="color: var(--text-2);">{{ t('crash.fairness.thirdPartyDesc') }}</p>
                         
                         <!-- Data Composition Breakdown -->
                         <div class="mb-4">
-                            <label class="small mb-2 text-white" style="font-weight: 600;">{{ t('crash.fairness.dataComposition') }}</label>
+                            <label class="mb-2 text-white" style="font-size: 14px; font-weight: bold;">{{ t('crash.fairness.dataComposition') }}</label>
                             <p class="small mb-2" style="color: var(--text-2); font-size: 11px;" v-html="t('crash.fairness.dataCompositionDesc')"></p>
                             
                             <div class="composition-box p-3" style="background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
@@ -444,7 +444,7 @@
 
                         <!-- Step 1 -->
                         <div class="mb-3">
-                            <label class="small mb-1 text-white">{{ t('crash.fairness.copyInput') }}</label>
+                            <label class="mb-2 text-white" style="font-size: 14px; font-weight: bold;">{{ t('crash.fairness.copyInput') }}</label>
                             <div class="input-group">
                                 <textarea class="form-control text-white verify-input" :value="computedSplicedHex" readonly rows="3" style="background: rgba(255,255,255,0.05); border-color: var(--line); font-family: monospace; font-size: 12px; color: var(--primary) !important; resize: vertical;" :placeholder="t('crash.fairness.splicedPlaceholder')"></textarea>
                                 <button class="btn btn-outline-secondary" type="button" @click="copyHexInput" style="height: auto;">
@@ -455,7 +455,7 @@
 
                         <!-- Step 2 -->
                         <div class="mb-3 mt-4 pt-3" style="border-top: 1px dashed rgba(255,255,255,0.1);">
-                            <label class="small mb-2 text-white">{{ t('crash.fairness.tp_step2Title') }}</label>
+                            <label class="mb-2 text-white" style="font-size: 14px; font-weight: bold;">{{ t('crash.fairness.tp_step2Title') }}</label>
                             <p class="small mb-3" style="color: var(--text-2); line-height: 1.5;" v-html="t('crash.fairness.tp_step2Desc')"></p>
                             <a href="https://emn178.github.io/online-tools/keccak_256.html" target="_blank" class="d-block">
                                 <button class="btn btn-sm btn-outline-light w-100" style="text-align: left; display: flex; justify-content: space-between; align-items: center;">
@@ -467,7 +467,7 @@
                         
                         <!-- Step 3: Hex to Decimal -->
                         <div class="mb-3 mt-4 pt-3" style="border-top: 1px dashed rgba(255,255,255,0.1);">
-                            <label class="small mb-2 text-white">{{ t('crash.fairness.tp_step3Title') }}</label>
+                            <label class="mb-2 text-white" style="font-size: 14px; font-weight: bold;">{{ t('crash.fairness.tp_step3Title') }}</label>
                             <p class="small mb-3" style="color: var(--text-2); line-height: 1.5;" v-html="t('crash.fairness.tp_step3Desc')"></p>
                             
                             <a href="https://www.binaryhexconverter.com/hex-to-decimal-converter" target="_blank" class="d-block">
@@ -480,7 +480,7 @@
 
                         <!-- Step 4: Final Calculation -->
                         <div class="mb-3 mt-4 pt-3" style="border-top: 1px dashed rgba(255,255,255,0.1);">
-                            <label class="small mb-2 text-white">{{ t('crash.fairness.tp_step4Title') }}</label>
+                            <label class="mb-2 text-white" style="font-size: 14px; font-weight: bold;">{{ t('crash.fairness.tp_step4Title') }}</label>
                             <p class="small mb-0" style="color: var(--text-2); line-height: 1.6; white-space: pre-line;" v-html="t('crash.fairness.tp_step4Desc')"></p>
                         </div>
                     </div>
