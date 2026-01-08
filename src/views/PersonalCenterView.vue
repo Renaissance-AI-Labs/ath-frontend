@@ -39,7 +39,7 @@
             <!-- User Stats Section -->
             <div class="stats-grid mb-5">
               <div class="row align-items-center">
-                <div class="col-6 border-end border-white-10">
+                <div class="col-12 mb-4">
                   <div class="stat-item text-center">
                     <h5 class="font-2 text-white opacity-75 mb-2 text-uppercase spacing-1">当前等级</h5>
                     <div class="stat-value">
@@ -48,7 +48,7 @@
                   </div>
                 </div>
                 
-                <div class="col-6">
+                <div class="col-12">
                   <div class="stat-item text-center">
                     <h5 class="font-2 text-white opacity-75 mb-2 text-uppercase spacing-1">团队累计赢奖</h5>
                     <div class="stat-value">
@@ -61,7 +61,7 @@
             </div>
 
             <!-- Level Up Progress Bar -->
-            <div class="progress-section px-3 px-md-5">
+            <div class="progress-section px-4 px-md-5">
                <div class="d-flex justify-content-between align-items-end mb-3">
                  <h4 class="font-3 text-white mb-0 h5">
                    {{ isMaxLevel ? '已达到最高等级' : '下一等级进度' }}
