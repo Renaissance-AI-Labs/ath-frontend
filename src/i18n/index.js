@@ -237,7 +237,7 @@ const languagePacks = {
     'crash.fairness.step2': '第二步：获取区块哈希',
     'crash.fairness.step2Desc': '在 BscScan 区块详情页，点击底部的 "Click to show more"，在展开的内容中找到 Hash 字段，复制该内容。',
     'crash.fairness.step3': '第三步：验证计算',
-    'crash.fairness.step3Desc': '将获取到的信息填入下方的验证计算器中，点击验证按钮。系统将模拟智能合约的算法计算出爆点结果。您可以将此结果与游戏记录中的结果进行比对。',
+    'crash.fairness.step3Desc': '将获取到的信息（注意玩家地址默认填入当前连接地址）填入下方的验证计算器中，点击验证按钮。系统将模拟智能合约的算法计算出爆点结果。您可以将此结果与游戏记录中的结果进行比对。',
     'crash.fairness.calcTitle': '自动验证计算器',
     'crash.fairness.addrLabel': '玩家地址 (User Address)',
     'crash.fairness.blockLabel': '投注区块号 (Bet Block Number)',
