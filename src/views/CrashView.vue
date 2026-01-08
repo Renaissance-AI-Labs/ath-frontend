@@ -289,23 +289,23 @@
                     
                     <div class="form-group mb-3">
                         <label class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.addrLabel') }}</label>
-                        <input type="text" v-model="verifyAddress" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="0x...">
+                        <input type="text" v-model="verifyAddress" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="e.g. 0x4d5e6f...">
                     </div>
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
                              <label class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.edgeLabel') }}</label>
-                             <input type="number" v-model="verifyEdge" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="10">
+                             <input type="number" v-model="verifyEdge" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="e.g. 10">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.blockLabel') }}</label>
-                            <input type="number" v-model="verifyBlock" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="12345678">
+                            <input type="number" v-model="verifyBlock" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="e.g. 12345678">
                         </div>
                     </div>
                     
                     <div class="form-group mb-4">
                         <label class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.hashLabel') }}</label>
-                        <input type="text" v-model="verifyHash" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="0x...">
+                        <input type="text" v-model="verifyHash" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="e.g. 0x1a2b3c...">
                     </div>
                     
                     <button class="tf-button style-1 w-100 mb-3 btn-bet" @click="verifyFairness">
@@ -2457,7 +2457,7 @@ canvas {
 }
 
 .verify-input::placeholder {
-    color: rgba(255, 255, 255, 0.7) !important;
+    color: rgba(255, 255, 255, 0.3) !important;
     opacity: 1;
 }
 
