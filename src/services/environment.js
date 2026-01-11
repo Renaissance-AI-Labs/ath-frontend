@@ -80,4 +80,4 @@ export const ENABLE_XBROKERS_ENTRANCE = false;
  * Set to `true` to enable the Crash game entrance in production.
  * In non-production environments (test/dev), it is always enabled regardless of this flag.
  */
-export const ENABLE_CRASH_GAME = false;
+export const ENABLE_CRASH_GAME = true;
