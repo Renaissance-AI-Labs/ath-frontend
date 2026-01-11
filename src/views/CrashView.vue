@@ -1966,7 +1966,7 @@ export default {
   border: 1px solid var(--line);
   border-radius: 28px;
   backdrop-filter: blur(16px);
-  padding: 10px;
+  padding: 0 10px 10px 10px;
   margin-bottom: 30px;
 }
 
