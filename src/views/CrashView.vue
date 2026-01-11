@@ -2259,21 +2259,30 @@ canvas {
     background-image: none !important; /* Ensure no gradient overrides it */
     color: #fff !important;
     border-color: var(--primary) !important;
+    transition: none !important; /* Remove transition to prevent stuck states */
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 /* Apply hover effects only on devices that support hover (non-touch) */
 @media (hover: hover) {
     .btn-main-action:hover:not(:disabled) {
         filter: brightness(1.1);
-        transform: translateY(-2px);
         color: #fff !important;
     }
 }
 
-/* Ensure active (pressed) state looks good on mobile */
-.btn-main-action:active:not(:disabled) {
-    filter: brightness(0.9);
-    transform: translateY(1px);
+/* Completely disable active/focus effects to prevent "stuck" look on mobile */
+.btn-main-action:active,
+.btn-main-action:focus,
+.btn-main-action:active:focus {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #fff !important;
+    transform: none !important;
+    filter: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 .btn-main-action:disabled, .btn-main-action.disabled {
@@ -2282,6 +2291,9 @@ canvas {
     background: var(--primary) !important; /* Enforce primary color */
     border-color: var(--primary) !important;
     color: rgba(255, 255, 255, 0.8) !important;
+    /* Ensure disabled state also has no transform/filter */
+    transform: none !important;
+    filter: none !important;
 }
 
 .btn-expired {
