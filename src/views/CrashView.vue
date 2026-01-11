@@ -198,12 +198,18 @@
 
           <!-- History Section -->
           <div class="col-lg-12">
-            <div class="history-tabs">
-              <button class="tab-btn " :class="{ active: activeTab === 'my' }" @click="switchTab('my')">{{ t('crash.myBets') }}</button>
-              <button class="tab-btn " :class="{ active: activeTab === 'all' }" @click="switchTab('all')">{{ t('crash.allBets') }}</button>
+            <div class="history-tabs d-flex justify-content-between align-items-center">
+              <div class="left-tabs" style="display: flex;">
+                <button class="tab-btn " :class="{ active: activeTab === 'my' }" @click="switchTab('my')">{{ t('crash.myBets') }}</button>
+                <button class="tab-btn " :class="{ active: activeTab === 'all' }" @click="switchTab('all')">{{ t('crash.allBets') }}</button>
+              </div>
+              <div class="right-tabs" style="display: flex;">
+                <button class="tab-btn " :class="{ active: activeTab === 'rules' }" @click="switchTab('rules')">{{ t('crash.rules') }}</button>
+                <button class="tab-btn " :class="{ active: activeTab === 'fairness' }" @click="switchTab('fairness')">{{ t('crash.fairness') }}</button>
+              </div>
             </div>
             
-            <div class="history-table-wrapper">
+            <div class="history-table-wrapper" v-if="activeTab === 'my' || activeTab === 'all'">
               <table class="table  text-white">
                 <thead>
                   <tr>
@@ -211,6 +217,7 @@
                     <th>{{ t('crash.predictionCol') }}</th>
                     <th>{{ t('crash.result') }}</th>
                     <th>{{ t('crash.payout') }}</th>
+                    <th>{{ t('crash.block') }}</th>
                     <th v-if="activeTab === 'all'">{{ t('crash.player') }}</th>
                     <th>{{ t('crash.time') }}</th>
                   </tr>
@@ -225,11 +232,21 @@
                     <td :class="{ 'text-success': item.won }">
                       {{ formatAmount4(item.payout) }}
                     </td>
-                    <td v-if="activeTab === 'all'">{{ formatAddr(item.player) }}</td>
+                    <td>
+                        <a :href="`${explorerBaseUrl}/block/${item.betBlock}`" target="_blank" class="text-primary" style="text-decoration: none; font-family: monospace;">
+                            {{ item.betBlock }}
+                        </a>
+                    </td>
+                    <td v-if="activeTab === 'all'">
+                        {{ formatAddr(item.player) }}
+                        <button class="btn btn-link p-0 ms-2 text-white-50" @click="copyToClipboard(item.player)" title="Copy Address">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                    </td>
                     <td>{{ formatTime(item.timestamp) }}</td>
                   </tr>
                   <tr v-if="historyData.length === 0">
-                    <td colspan="6" class="text-center">{{ t('crash.noHistory') }}</td>
+                    <td colspan="7" class="text-center">{{ t('crash.noHistory') }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -238,6 +255,244 @@
               <div class="pagination-controls mt-3 text-center" v-if="hasMoreHistory">
                 <button class="btn-sm btn-outline-light" @click="loadMoreHistory">{{ t('crash.loadMore') }}</button>
               </div>
+            </div>
+
+            <!-- Rules Content -->
+            <div class="history-table-wrapper text-white p-4" v-if="activeTab === 'rules'">
+                <h4 class="mb-3">{{ t('crash.rules') }}</h4>
+                <div style="white-space: pre-line; line-height: 1.6; color: var(--text-2);">
+                    {{ t('crash.rulesContent') }}
+                </div>
+            </div>
+
+            <!-- Fairness Content -->
+            <div class="history-table-wrapper text-white p-4" v-if="activeTab === 'fairness'">
+                <h4 class="mb-4 text-highlight-gold" style="font-family: 'Geist', sans-serif;">{{ t('crash.fairness') }}</h4>
+                <p class="mb-4" style="color: var(--text-2); line-height: 1.6;">
+                     {{ t('crash.fairnessContent') }}
+                </p>
+
+                <!-- Steps -->
+                <div class="fairness-steps">
+                    <div class="step-item mb-4">
+                        <h5 class="text-white mb-2" style="font-size: 1.1rem;">{{ t('crash.fairness.step1') }}</h5>
+                        <p class="small" style="color: var(--text-2);">{{ t('crash.fairness.step1Desc') }}</p>
+                    </div>
+                    <div class="step-item mb-4">
+                        <h5 class="text-white mb-2" style="font-size: 1.1rem;">{{ t('crash.fairness.step2') }}</h5>
+                        <p class="small" style="color: var(--text-2);">{{ t('crash.fairness.step2Desc') }}</p>
+                    </div>
+                    <div class="step-item mb-4">
+                        <h5 class="text-white mb-2" style="font-size: 1.1rem;">{{ t('crash.fairness.step3') }}</h5>
+                        <p class="small" style="color: var(--text-2);">{{ t('crash.fairness.step3Desc') }}</p>
+                    </div>
+                </div>
+
+                <!-- Calculator -->
+                <div class="verification-calculator p-4" style="background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid var(--line);">
+                    <h5 class="mb-3 text-white">{{ t('crash.fairness.calcTitle') }}</h5>
+                    
+                    <div class="form-group mb-3">
+                        <label class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.addrLabel') }}</label>
+                        <input type="text" v-model="verifyAddress" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="e.g. 0x4d5e6f...">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                             <label class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.edgeLabel') }}</label>
+                             <input type="number" v-model="verifyEdge" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="e.g. 10">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.blockLabel') }}</label>
+                            <input type="number" v-model="verifyBlock" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="e.g. 12345678">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mb-4">
+                        <label class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.hashLabel') }}</label>
+                        <input type="text" v-model="verifyHash" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="e.g. 0x1a2b3c...">
+                    </div>
+                    
+                    <button class="tf-button style-1 w-100 mb-3 btn-bet" @click="verifyFairness">
+                        {{ t('crash.fairness.verifyBtn') }}
+                    </button>
+                    
+                    <!-- Result -->
+                    <div v-if="verifyResult" class="result-box text-center p-3" style="background: rgba(255,255,255,0.1); border-radius: 12px;">
+                        <div class="small mb-1" style="color: var(--text-2);">{{ t('crash.fairness.resultLabel') }}</div>
+                        <div class="h2 mb-0" :class="verifyResult === 'Error' ? 'text-danger' : 'text-success'">
+                            {{ verifyResult }}
+                        </div>
+                        <div v-if="verifyResult === 'Error'" class="text-danger small mt-2">
+                            {{ t('crash.fairness.inputContentError') }}
+                        </div>
+                        <div v-if="verifyRemark" class="text-warning small mt-2">
+                            {{ verifyRemark }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Why Block Hash -->
+                <div class="mt-5">
+                    <h5 class="text-white mb-2" style="font-size: 1.1rem;">{{ t('crash.fairness.whyHash') }}</h5>
+                    <p class="small mb-4" style="line-height: 1.6; color: var(--text-2);">{{ t('crash.fairness.whyHashDesc') }}</p>
+
+                    <!-- Formula Section -->
+                    <div class="formula-section p-4" style="background: rgba(0,0,0,0.4); border: 1px solid var(--line); border-radius: 12px;">
+                        <div class="d-flex justify-content-between align-items-center mb-4" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                            <h6 class="text-white mb-0" style="font-family: 'Times New Roman', Times, serif; font-size: 1.1rem; font-style: italic;">{{ t('crash.fairness.formulaTitle') }}</h6>
+                            <a href="https://bscscan.com/address/0xc3ce7819785f8e0a637b4ca409a3b38e121c9820#code" target="_blank" class="text-primary small" style="text-decoration: none;">
+                                {{ t('crash.fairness.contractLink') }} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            </a>
+                        </div>
+                        
+                        <div class="math-content mb-4" style="font-family: 'Times New Roman', Times, serif; color: #e2e8f0; font-size: 1.2rem; line-height: 1.8;">
+                            <!-- Seed Formula -->
+                            <div class="equation mb-3 d-flex align-items-center justify-content-center">
+                                <span class="var">S</span>
+                                <span class="mx-2">=</span>
+                                <span class="func">Keccak256</span>
+                                <span>(</span>
+                                <span class="var-highlight">H</span>
+                                <span class="mx-1">,</span>
+                                <span class="var-highlight">A</span>
+                                <span class="mx-1">,</span>
+                                <span class="var-highlight">B</span>
+                                <span>)</span>
+                            </div>
+
+                            <!-- Random Value Formula -->
+                            <div class="equation mb-3 d-flex align-items-center justify-content-center">
+                                <span class="var">R</span>
+                                <span class="mx-2">=</span>
+                                <span class="var">S</span>
+                                <span class="mx-2 math-op">mod</span>
+                                <span>10000</span>
+                            </div>
+
+                            <!-- Multiplier Formula -->
+                            <div class="equation mb-2 d-flex align-items-center justify-content-center">
+                                <span class="var">Multiplier</span>
+                                <span class="mx-2">=</span>
+                                <div class="fraction d-inline-flex flex-column align-items-center" style="vertical-align: middle;">
+                                    <span class="numerator" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 2px;">10000 <span class="math-op">&times;</span> (1 <span class="math-op">&minus;</span> <span class="var-highlight">E</span>)</span>
+                                    <span class="denominator" style="padding-top: 2px;">10000 <span class="math-op">&minus;</span> <span class="var">R</span></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Legend -->
+                        <div class="legend small pt-3" style="border-top: 1px solid rgba(255,255,255,0.1);">
+                            <div class="row g-2">
+                                <div class="col-6 mb-1">
+                                    <span class="var-highlight me-2">H</span> = {{ t('crash.fairness.hashLabel') }}
+                                </div>
+                                <div class="col-6 mb-1">
+                                    <span class="var-highlight me-2">A</span> = {{ t('crash.fairness.addrLabel') }}
+                                </div>
+                                <div class="col-6 mb-1">
+                                    <span class="var-highlight me-2">B</span> = {{ t('crash.fairness.blockLabel') }}
+                                </div>
+                                <div class="col-6 mb-1">
+                                    <span class="var-highlight me-2">E</span> = {{ t('crash.fairness.edgeLabel') }}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Formula Annotations -->
+                        <div class="mt-4 pt-3" style="border-top: 1px solid rgba(255,255,255,0.1); color: var(--text-2); font-size: 0.9rem;">
+                            <div class="mb-2">
+                                <span class="func fw-bold text-white">Keccak256:</span> {{ t('crash.fairness.formula.keccak') }}
+                            </div>
+                            <div class="mb-2">
+                                <span class="math-op fw-bold text-white">mod:</span> {{ t('crash.fairness.formula.mod') }}
+                            </div>
+                            <div class="mb-0">
+                                <span class="var fw-bold text-white">Multiplier:</span> {{ t('crash.fairness.formula.multiplier') }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Third-Party Verification -->
+                    <div class="third-party-verify p-4 mt-4" style="border: 1px dashed var(--line); border-radius: 12px; background: rgba(255, 255, 255, 0.02);">
+                        <h6 class="text-white mb-3" style="font-size: 16px; font-weight: bold;">{{ t('crash.fairness.thirdPartyTitle') }}</h6>
+                        <p class="small mb-3" style="color: var(--text-2);">{{ t('crash.fairness.thirdPartyDesc') }}</p>
+                        
+                        <!-- Data Composition Breakdown -->
+                        <div class="mb-4">
+                            <label class="mb-2 text-white" style="font-size: 14px; font-weight: bold;">{{ t('crash.fairness.dataComposition') }}</label>
+                            <p class="small mb-2" style="color: var(--text-2); font-size: 11px;" v-html="t('crash.fairness.dataCompositionDesc')"></p>
+                            
+                            <div class="composition-box p-3" style="background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                                <!-- Hash -->
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="small" style="color: #a0aec0; font-size: 11px;">1. {{ t('crash.fairness.hashLabel') }} (bytes32)</span>
+                                    </div>
+                                    <input type="text" v-model="verifyInputPartHash" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line); font-family: monospace; font-size: 11px; height: auto; padding: 8px;" placeholder="e.g. 0xabcdef..." />
+                                </div>
+                                <!-- Address -->
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="small" style="color: #a0aec0; font-size: 11px;">2. {{ t('crash.fairness.addrLabel') }} (address)</span>
+                                    </div>
+                                    <input type="text" v-model="verifyInputPartAddr" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line); font-family: monospace; font-size: 11px; height: auto; padding: 8px;" placeholder="e.g. 0x1234..." />
+                                </div>
+                                <!-- Block -->
+                                <div class="mb-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="small" style="color: #a0aec0; font-size: 11px;">3. {{ t('crash.fairness.blockLabel') }} (uint256)</span>
+                                    </div>
+                                    <input type="text" v-model="verifyInputPartBlock" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line); font-family: monospace; font-size: 11px; height: auto; padding: 8px;" placeholder="e.g. 12345" />
+                                </div>
+                            </div>
+                            <div class="text-center my-2">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                            </div>
+                        </div>
+
+                        <!-- Step 1 -->
+                        <div class="mb-3">
+                            <label class="mb-2 text-white" style="font-size: 14px; font-weight: bold;">{{ t('crash.fairness.copyInput') }}</label>
+                            <div class="input-group">
+                                <textarea class="form-control text-white verify-input" :value="computedSplicedHex" readonly rows="3" style="background: rgba(255,255,255,0.05); border-color: var(--line); font-family: monospace; font-size: 12px; color: var(--primary) !important; resize: vertical;" :placeholder="t('crash.fairness.splicedPlaceholder')"></textarea>
+                                <button class="btn btn-outline-secondary" type="button" @click="copyHexInput" style="height: auto;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="mb-3 mt-4 pt-3" style="border-top: 1px dashed rgba(255,255,255,0.1);">
+                            <label class="mb-2 text-white" style="font-size: 14px; font-weight: bold;">{{ t('crash.fairness.tp_step2Title') }}</label>
+                            <p class="small mb-3" style="color: var(--text-2); line-height: 1.5;" v-html="t('crash.fairness.tp_step2Desc')"></p>
+                            <a href="https://emn178.github.io/online-tools/keccak_256.html" target="_blank" class="d-block">
+                                <button class="btn btn-sm btn-outline-light w-100" style="text-align: left; display: flex; justify-content: space-between; align-items: center;">
+                                    <span>{{ t('crash.fairness.toolLinkText') }}</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                </button>
+                            </a>
+                        </div>
+                        
+                        <!-- Step 3: Hex to Decimal -->
+                        <div class="mb-3 mt-4 pt-3" style="border-top: 1px dashed rgba(255,255,255,0.1);">
+                            <label class="mb-2 text-white" style="font-size: 14px; font-weight: bold;">{{ t('crash.fairness.tp_step3Title') }}</label>
+                            <p class="small mb-3" style="color: var(--text-2); line-height: 1.5;" v-html="t('crash.fairness.tp_step3Desc')"></p>
+                            
+                            <a href="https://www.prepostseo.com/tool/hex-to-decimal" target="_blank" class="d-block">
+                                <button class="btn btn-sm btn-outline-light w-100" style="text-align: left; display: flex; justify-content: space-between; align-items: center;">
+                                    <span>{{ t('crash.fairness.step4Tool') }}</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                </button>
+                            </a>
+                        </div>
+
+                        <!-- Step 4: Final Calculation -->
+                        <div class="mb-3 mt-4 pt-3" style="border-top: 1px dashed rgba(255,255,255,0.1);">
+                            <label class="mb-2 text-white" style="font-size: 14px; font-weight: bold;">{{ t('crash.fairness.tp_step4Title') }}</label>
+                            <p class="small mb-0" style="color: var(--text-2); line-height: 1.6; white-space: pre-line;" v-html="t('crash.fairness.tp_step4Desc')"></p>
+                        </div>
+                    </div>
+                </div>
             </div>
           </div>
         </div>
@@ -261,6 +516,7 @@
 
 <script>
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue';
+import { solidityPackedKeccak256, solidityPacked } from 'ethers';
 import HomeRightSidebar from '../components/HomeRightSidebar.vue';
 import { 
   getAthBalance, 
@@ -277,6 +533,7 @@ import {
   DEFAULT_PREDICTION
 } from '../services/crash';
 import { walletState, connectWallet as walletConnect } from '../services/wallet';
+import { APP_ENV } from '../services/environment';
 import { showToast } from '../services/notification';
 import { t } from '../i18n';
 
@@ -324,6 +581,182 @@ export default {
     const tickerRef = ref(null);
     const isTickerPaused = ref(false); // Controls ticker updates to avoid spoilers
 
+    // Fairness Calculator State
+    const verifyAddress = ref('');
+    const verifyBlock = ref('');
+    const verifyHash = ref('');
+    const verifyEdge = ref(10);
+    const verifyResult = ref(null);
+    const verifyStatus = ref(''); 
+    const verifyInputHex = ref('');
+    const verifySeedHex = ref('');
+    const verifyInputPartHash = ref('');
+    const verifyInputPartAddr = ref('');
+    const verifyInputPartBlock = ref('');
+    const verifyRemark = ref('');
+
+    const computedSplicedHex = computed(() => {
+        // If verifyInputHex (auto-generated) exists, we still want to prioritize manual inputs if they are being edited.
+        // But verifying if the user is "editing" is hard. 
+        // Simplification: Always generate from the 3 parts if they exist.
+        // verifyInputHex was only a cache from verifyFairness. 
+        // Since verifyFairness ALSO sets the 3 parts, we can just rely on the parts.
+        
+        if (verifyInputPartHash.value && verifyInputPartAddr.value && verifyInputPartBlock.value) {
+             const h = verifyInputPartHash.value.trim().replace(/^0x/i, '');
+             const a = verifyInputPartAddr.value.trim().replace(/^0x/i, '');
+             let b = verifyInputPartBlock.value.trim();
+             
+             // Check if block input is decimal (not hex)
+             // If it doesn't start with 0x and is shorter than 64 chars, assume decimal and pad it
+             if (!b.startsWith('0x') && b.length < 60) { // arbitrary threshold for "short" decimal
+                 try {
+                     b = BigInt(b).toString(16).padStart(64, '0');
+                 } catch (e) {
+                     // ignore parse error, use as is
+                 }
+             } else {
+                 b = b.replace(/^0x/i, '');
+             }
+             
+             return h + a + b;
+        }
+        
+        // Fallback: if parts are missing, maybe use the cache?
+        // But if parts are missing, splicing is impossible/incomplete.
+        // So just return what we have (or empty).
+        return verifyInputHex.value || ''; 
+    });
+
+    watch(() => walletState.address, (addr) => {
+        if (addr && !verifyAddress.value) verifyAddress.value = addr;
+    }, { immediate: true });
+
+    const verifyFairness = () => {
+        if (!walletState.isConnected) {
+            showToast(t('toast.connectWalletFirst'));
+            return;
+        }
+
+        try {
+            verifyStatus.value = '';
+            verifyResult.value = null;
+            verifyRemark.value = '';
+
+            if (!verifyAddress.value || !verifyBlock.value || !verifyHash.value) {
+                 showToast(t('crash.fairness.inputError'));
+                 return;
+            }
+
+            // Clean inputs
+            const addr = verifyAddress.value.trim();
+            const blockNum = verifyBlock.value.toString().trim();
+            const hash = verifyHash.value.trim();
+            const edge = parseInt(verifyEdge.value);
+
+            // Calculate Seed: keccak256(abi.encodePacked(blockHash, player, betBlock))
+            // Note: Order matters! Contract: keccak256(abi.encodePacked(blockHash, msg.sender, b.betBlock))
+            // Ethers v6 solidityPackedKeccak256 expects (types, values)
+            const seed = solidityPackedKeccak256(
+                ['bytes32', 'address', 'uint256'],
+                [hash, addr, blockNum]
+            );
+            verifySeedHex.value = seed;
+
+            // Generate raw hex for third-party verification
+            // The input to Keccak256 is the packed bytes of the arguments
+            verifyInputPartHash.value = hash;
+            verifyInputPartAddr.value = addr;
+            verifyInputPartBlock.value = blockNum; // Display decimal for user readability in manual section
+            
+            // For simple concatenation: Hash + Address (raw) + Block (raw 32 bytes)
+            // solidityPacked handles this correctly.
+            // Removing 0x prefix if user prefers manual copy without it?
+            // But usually hex tools handle 0x.
+            // If the user says "Spliced data is wrong", maybe they mean the VISUAL "+" signs.
+            
+            // User requested direct splicing: Hash + Address + Block(hex)
+            // Also remove leading 0x from hash
+            // If the user inputs decimal block number manually, we should convert it here for consistency if needed.
+            // But verifyBlock is used here which is the raw input.
+            // The auto-verifier uses verifyBlock (decimal string).
+            
+            const blockHex = BigInt(blockNum).toString(16).padStart(64, '0');
+            verifyInputHex.value = hash.replace(/^0x/i, '') + addr.replace(/^0x/i, '') + blockHex;
+
+            // Calculate Crash Point
+            // h = seed % 10000
+            const seedBig = BigInt(seed);
+            const h = seedBig % 10000n;
+            
+            // multiplier = (10000 - edge*100) * 100 / (10000 - h)
+            const houseEdgeVal = BigInt(edge);
+            const numerator = (10000n - houseEdgeVal * 100n) * 100n;
+            const denominator = 10000n - h;
+            
+            if (denominator === 0n) {
+                verifyResult.value = 'Infinity'; 
+                return;
+            }
+
+            // We do integer division first as per solidity, then convert to float for display
+            // But to display decimals accurately we can just do float division here
+            // Contract uses integer division.
+            // Example: 900000 / 10000 = 90.
+            // 900000 / 9000 = 100.
+            
+            const crashPointBig = numerator / denominator;
+            const resultDisplay = Number(crashPointBig) / 100;
+            
+            if (resultDisplay < 1.00) {
+                 verifyResult.value = '1.00x';
+                 verifyRemark.value = t('crash.fairness.instantCrashRemark');
+            } else {
+                 verifyResult.value = resultDisplay.toFixed(2) + 'x';
+            }
+            verifyStatus.value = 'match'; 
+            
+        } catch (e) {
+            console.error("Verification error:", e);
+            verifyStatus.value = 'mismatch'; 
+            verifyResult.value = "Error";
+            // Removed toast as requested
+        }
+    };
+
+    const copyHexInput = async () => {
+        if (!computedSplicedHex.value) return;
+        copyToClipboard(computedSplicedHex.value);
+    };
+
+    const copySeedHex = async () => {
+        if (!verifySeedHex.value) return;
+        copyToClipboard(verifySeedHex.value);
+    };
+
+    const copyToClipboard = async (text) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            showToast(t('toast.copied'));
+        } catch (err) {
+            // Fallback for non-secure contexts
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast(t('toast.copied'));
+            } catch (e) {
+                showToast(t('toast.copyFailed'));
+            }
+            document.body.removeChild(textArea);
+        }
+    };
+
     // Sidebar State
     const isSidebarOpen = ref(false);
     
@@ -339,6 +772,10 @@ export default {
         const min = typeof minPrediction.value === 'number' ? minPrediction.value : 1.01;
         const max = typeof maxPrediction.value === 'number' ? maxPrediction.value : 100;
         return `${min.toFixed(2)} - ${max.toFixed(2)}`;
+    });
+
+    const explorerBaseUrl = computed(() => {
+        return APP_ENV === 'PROD' ? 'https://bscscan.com' : 'https://testnet.bscscan.com';
     });
 
     // --- Computed ---
@@ -1278,6 +1715,8 @@ export default {
     };
 
     const loadHistory = async () => {
+        if (activeTab.value === 'rules' || activeTab.value === 'fairness') return;
+
         if (activeTab.value === 'my') {
             const length = await getUserHistoryLength();
             const start = Math.max(0, length - 50);
@@ -1428,7 +1867,25 @@ export default {
         switchTab,
         recentWinners,
         visibleWinners,
-        tickerRef
+        tickerRef,
+        verifyAddress,
+        verifyBlock,
+        verifyHash,
+        verifyEdge,
+        verifyResult,
+        verifyStatus,
+        verifyInputHex,
+        verifyInputPartHash,
+        verifyInputPartAddr,
+        verifyInputPartBlock,
+        verifyRemark,
+        verifySeedHex,
+        copySeedHex,
+        copyToClipboard,
+        verifyFairness,
+        copyHexInput,
+        explorerBaseUrl,
+        computedSplicedHex
     };
   },
   components: {
@@ -1819,7 +2276,7 @@ canvas {
   background: transparent;
   border: none;
   color: var(--text-2);
-  padding: 8px 16px;
+  padding: 8px 10px;
   font-size: 1rem;
   cursor: pointer;
   border-bottom: 2px solid transparent;
@@ -2003,5 +2460,43 @@ canvas {
 
 .winner-mult {
     font-weight: 800;
+}
+
+.verify-input::placeholder {
+    color: rgba(255, 255, 255, 0.3) !important;
+    opacity: 1;
+}
+
+.verification-calculator .tf-button {
+    height: 56px !important;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.var {
+    font-style: italic;
+    font-weight: bold;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.var-highlight {
+    font-style: italic;
+    font-weight: bold;
+    color: var(--primary);
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.func {
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.math-op {
+    font-family: 'Times New Roman', Times, serif;
 }
 </style>
