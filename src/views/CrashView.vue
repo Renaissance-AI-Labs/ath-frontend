@@ -313,7 +313,7 @@
                         <input type="text" v-model="verifyHash" class="form-control text-white verify-input" style="background: rgba(255,255,255,0.05); border-color: var(--line);" placeholder="e.g. 0x1a2b3c...">
                     </div>
                     
-                    <button class="tf-button style-1 w-100 mb-3 btn-bet" @click="verifyFairness">
+                    <button class="tf-button style-1 w-100 mb-3 btn-main-action" @click="verifyFairness">
                         {{ t('crash.fairness.verifyBtn') }}
                     </button>
                     
