@@ -2259,7 +2259,7 @@ canvas {
     background-image: none !important; /* Ensure no gradient overrides it */
     color: #fff !important;
     border-color: var(--primary) !important;
-    transition: none !important; /* Remove transition to prevent stuck states */
+    transition: none !important; /* Remove transition to prevent stuck states on mobile */
     outline: none !important;
     box-shadow: none !important;
 }
@@ -2268,17 +2268,19 @@ canvas {
 @media (hover: hover) {
     .btn-main-action:hover:not(:disabled) {
         filter: brightness(1.1);
+        transform: translateY(-2px);
         color: #fff !important;
     }
 }
 
-/* Completely disable active/focus effects to prevent "stuck" look on mobile */
+/* Force active/focus states to maintain same colors */
 .btn-main-action:active,
 .btn-main-action:focus,
 .btn-main-action:active:focus {
     background: var(--primary) !important;
     border-color: var(--primary) !important;
     color: #fff !important;
+    /* Reset any transform/filter that might feel "stuck" */
     transform: none !important;
     filter: none !important;
     outline: none !important;
