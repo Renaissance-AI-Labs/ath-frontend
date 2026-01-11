@@ -1197,7 +1197,6 @@ export default {
                 console.log("Settle result:", result);
                 
                 if (result.voided) {
-                    showToast(t('crash.betExpired'));
                     gameState.value = 'IDLE';
                     // Reset to idle canvas
                     drawIdleCanvas();
@@ -2245,7 +2244,7 @@ canvas {
 
 .action-btn-wrapper .tf-button:hover:not(:disabled) {
     border-color: var(--primary);
-    color: var(--primary) !important;
+    /* color: var(--primary) !important; */
 }
 
 .action-btn-wrapper .tf-button.disabled {
@@ -2259,32 +2258,32 @@ canvas {
     background-image: none !important; /* Ensure no gradient overrides it */
     color: #fff !important;
     border-color: var(--primary) !important;
-    transition: none !important; /* Remove transition to prevent stuck states on mobile */
+    /* Prevent sticky hover/focus issues on mobile */
     outline: none !important;
     box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* Apply hover effects only on devices that support hover (non-touch) */
+/* Ensure state changes don't mess up colors */
+.btn-main-action:hover,
+.btn-main-action:focus,
+.btn-main-action:active,
+.btn-main-action:focus-visible,
+.btn-main-action:visited {
+    background: var(--primary) !important;
+    color: #fff !important;
+    border-color: var(--primary) !important;
+    outline: none !important;
+    box-shadow: none !important;
+    opacity: 1;
+}
+
+/* Only add hover movement on non-touch devices */
 @media (hover: hover) {
     .btn-main-action:hover:not(:disabled) {
         filter: brightness(1.1);
         transform: translateY(-2px);
-        color: #fff !important;
     }
-}
-
-/* Force active/focus states to maintain same colors */
-.btn-main-action:active,
-.btn-main-action:focus,
-.btn-main-action:active:focus {
-    background: var(--primary) !important;
-    border-color: var(--primary) !important;
-    color: #fff !important;
-    /* Reset any transform/filter that might feel "stuck" */
-    transform: none !important;
-    filter: none !important;
-    outline: none !important;
-    box-shadow: none !important;
 }
 
 .btn-main-action:disabled, .btn-main-action.disabled {
@@ -2292,10 +2291,7 @@ canvas {
     cursor: not-allowed;
     background: var(--primary) !important; /* Enforce primary color */
     border-color: var(--primary) !important;
-    color: rgba(255, 255, 255, 0.8) !important;
-    /* Ensure disabled state also has no transform/filter */
-    transform: none !important;
-    filter: none !important;
+    color: #fff !important; /* Enforce white text */
 }
 
 .btn-expired {
