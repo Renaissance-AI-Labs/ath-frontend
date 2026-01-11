@@ -99,28 +99,28 @@
 
                 <div class="action-btn-wrapper mt-2">
                   <!-- Connect Wallet -->
-                  <button v-if="!walletState.isConnected" class="tf-button style-1 w-100" @click="connectWallet">
+                  <button v-if="!walletState.isConnected" class="tf-button style-1 w-100 btn-main-action" @click="connectWallet">
                     {{ t('crash.connectWallet') }}
                   </button>
                   
                   <!-- Approve -->
-                  <button v-else-if="needsApproval" class="tf-button style-1 w-100 btn-approve-highlight" @click="handleApprove" :disabled="isApproving">
+                  <button v-else-if="needsApproval" class="tf-button style-1 w-100 btn-main-action" @click="handleApprove" :disabled="isApproving">
                     {{ isApproving ? t('crash.approving') : t('crash.approve') }}
                   </button>
                   
                   <!-- Bet -->
-                  <button v-else-if="gameState === 'IDLE' || gameState === 'RESULT'" class="tf-button style-1 w-100 btn-bet" @click="handleBet" :disabled="isBetting">
+                  <button v-else-if="gameState === 'IDLE' || gameState === 'RESULT'" class="tf-button style-1 w-100 btn-main-action" @click="handleBet" :disabled="isBetting">
                     {{ isBetting ? t('crash.betting') : t('crash.bet') }}
                   </button>
 
                   <!-- Waiting Block -->
-                  <button v-else-if="gameState === 'WAITING_BLOCK'" class="tf-button style-1 w-100 disabled" disabled>
+                  <button v-else-if="gameState === 'WAITING_BLOCK'" class="tf-button style-1 w-100 btn-main-action disabled" disabled>
                     {{ t('crash.waitingBlock') }}
                   </button>
                   
                   <!-- Settle -->
                   <div v-else-if="gameState === 'READY_TO_SETTLE'" class="w-100">
-                    <button class="tf-button style-1 w-100 btn-settle" @click="handleSettle" :class="{ 'btn-expired': expirationSeconds === 0, 'btn-pulse-border': expirationSeconds > 0 }">
+                    <button class="tf-button style-1 w-100 btn-main-action" @click="handleSettle" :class="{ 'btn-expired': expirationSeconds === 0, 'btn-pulse-border': expirationSeconds > 0 }">
                         <span v-if="expirationSeconds > 0">{{ t('crash.clickToSettle') }}</span>
                         <span v-else>{{ t('crash.settleExpired') }}</span>
                         <span v-if="expirationSeconds > 0" class="countdown-timer text-warning" style="margin-left: 8px;">
@@ -135,13 +135,13 @@
                   </div>
 
                    <!-- Settling -->
-                  <button v-else-if="gameState === 'SETTLING'" class="tf-button style-1 w-100 disabled" disabled>
+                  <button v-else-if="gameState === 'SETTLING'" class="tf-button style-1 w-100 btn-main-action disabled" disabled>
                     <span v-if="isExpiredSettle">{{ t('crash.preparingNextRound') }}</span>
                     <span v-else>{{ t('crash.settling') }}</span>
                   </button>
                   
                   <!-- Animating -->
-                  <button v-else-if="gameState === 'ANIMATING'" class="tf-button style-1 w-100 disabled" disabled>
+                  <button v-else-if="gameState === 'ANIMATING'" class="tf-button style-1 w-100 btn-main-action disabled" disabled>
                     {{ t('crash.launching') }}
                   </button>
                   
@@ -2254,24 +2254,39 @@ canvas {
 }
 
 /* Primary Action Buttons (Bet, Settle) */
-.btn-bet, .btn-settle, .btn-approve-highlight {
+.btn-main-action {
     background: var(--primary) !important;
     background-image: none !important; /* Ensure no gradient overrides it */
     color: #fff !important;
     border-color: var(--primary) !important;
-    /* box-shadow: none !important; Removed to allow animation */
 }
 
-.btn-bet:hover:not(:disabled), .btn-settle:hover, .btn-approve-highlight:hover:not(:disabled) {
-    filter: brightness(1.1);
-    transform: translateY(-2px);
-    color: #fff !important;
+/* Apply hover effects only on devices that support hover (non-touch) */
+@media (hover: hover) {
+    .btn-main-action:hover:not(:disabled) {
+        filter: brightness(1.1);
+        transform: translateY(-2px);
+        color: #fff !important;
+    }
+}
+
+/* Ensure active (pressed) state looks good on mobile */
+.btn-main-action:active:not(:disabled) {
+    filter: brightness(0.9);
+    transform: translateY(1px);
+}
+
+.btn-main-action:disabled, .btn-main-action.disabled {
+    opacity: 0.8 !important; /* Keep it visible but slightly faded */
+    cursor: not-allowed;
+    background: var(--primary) !important; /* Enforce primary color */
+    border-color: var(--primary) !important;
+    color: rgba(255, 255, 255, 0.8) !important;
 }
 
 .btn-expired {
-    background: #555 !important;
-    border-color: #555 !important;
-    opacity: 0.8;
+    /* Only change opacity or subtle indicator, keep primary color */
+    opacity: 0.9 !important;
 }
 
 .history-tabs {
