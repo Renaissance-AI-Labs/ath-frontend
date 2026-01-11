@@ -12,12 +12,12 @@
                 <span class="bar_center"></span>
               </span>
               <div class="breadcrumbs-list">
-                <router-link to="/" class="text-white link font-2">
-                  HOME
+                <!-- <router-link to="/" class="text-white link font-2">
+                  {{ t('personal.home') }}
                 </router-link>
-                <span>/</span>
+                <span>/</span> -->
                 <span class="hacker-text_transform no-delay current-page">
-                  PERSONAL CENTER
+                  {{ t('personal.title') }}
                 </span>
               </div>
               <span class="bar-group type-right">
@@ -41,7 +41,7 @@
               <div class="row align-items-center">
                 <div class="col-12 mb-4">
                   <div class="stat-item text-center">
-                    <h5 class="font-2 text-white opacity-75 mb-2 text-uppercase spacing-1">当前等级</h5>
+                    <h5 class="font-2 text-white opacity-75 mb-2 text-uppercase spacing-1">{{ t('personal.currentLevel') }}</h5>
                     <div class="stat-value">
                       <span class="font-3 text-white h1 fw-bold">Lv {{ userLevel }}</span>
                     </div>
@@ -50,10 +50,10 @@
                 
                 <div class="col-12">
                   <div class="stat-item text-center">
-                    <h5 class="font-2 text-white opacity-75 mb-2 text-uppercase spacing-1">团队累计赢奖</h5>
+                    <h5 class="font-2 text-white opacity-75 mb-2 text-uppercase spacing-1">{{ t('personal.teamTotalBet') }}</h5>
                     <div class="stat-value">
                       <span class="font-3 text-linear h2 fw-bold">{{ formatAmount(totalWin) }}</span>
-                      <span class="font-2 text-white opacity-75 ms-2">ATH</span>
+                      <span class="font-2 text-white opacity-75 ms-2">{{ t('common.ath') }}</span>
                     </div>
                   </div>
                 </div>
@@ -64,7 +64,7 @@
             <div class="progress-section px-4 px-md-5">
                <div class="d-flex justify-content-between align-items-end mb-3">
                  <h4 class="font-3 text-white mb-0 h5">
-                   {{ isMaxLevel ? '已达到最高等级' : '下一等级进度' }}
+                   {{ isMaxLevel ? t('personal.maxLevelReached') : t('personal.nextLevelProgress') }}
                  </h4>
                </div>
                
@@ -76,8 +76,8 @@
                  </div>
                  
                  <div class="d-flex justify-content-between text-caption text-white opacity-50 mt-2 font-2">
-                    <span>当前: {{ formatAmount(totalWin) }}</span>
-                    <span>目标: {{ formatAmount(nextLevelTarget) }} (还需 {{ formatAmount(remainingToNextLevel) }} ATH)</span>
+                    <span>{{ t('personal.current') }}: {{ formatAmount(totalWin) }}</span>
+                    <span>{{ t('personal.target') }}: {{ formatAmount(nextLevelTarget) }} ({{ t('personal.need') }} {{ formatAmount(remainingToNextLevel) }} {{ t('common.ath') }})</span>
                  </div>
                </div>
                
@@ -88,9 +88,9 @@
 
             <!-- Loading/Connect Hint -->
             <div v-if="!walletState.isConnected" class="text-center mt-5">
-               <p class="text-white mb-4 opacity-75">请连接钱包查看个人数据</p>
+               <p class="text-white mb-4 opacity-75">{{ t('personal.connectWalletHint') }}</p>
                <a href="#" @click.prevent="connectWallet" class="tf-btn style-2 text-body-3 animate-btn animate-dark px-5">
-                  连接钱包
+                  {{ t('personal.connectWalletBtn') }}
                </a>
             </div>
 

@@ -1184,6 +1184,9 @@ export default {
         // Stop checks temporarily
         stopBlockCheck();
         
+        // Pause ticker immediately to prevent spoilers from polling while waiting for tx
+        isTickerPaused.value = true;
+        
         // Optimistically set settling state
         gameState.value = 'SETTLING';
         
@@ -1211,6 +1214,7 @@ export default {
                  // Failed to settle (e.g. user rejected)
                  // Restore state to allow retry
                  console.log("Settle returned null, restoring state");
+                 isTickerPaused.value = false;
                  
                  // Check if we still have an active bet to be safe
                  const bet = await getActiveBet();
@@ -1237,6 +1241,7 @@ export default {
              console.error("Handle settle error:", e);
              // Restore state on error
              gameState.value = 'READY_TO_SETTLE';
+             isTickerPaused.value = false;
              // Resume countdown if needed (simple resume)
              if (expirationSeconds.value > 0) startCountdown();
         }

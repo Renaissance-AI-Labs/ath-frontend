@@ -283,6 +283,19 @@ const languagePacks = {
     'sidebar.personalCenter': '我的等级',
     'sidebar.becomeShareholder': '成为股东',
     'personal.maxLevelDesc': '恭喜！您已登顶！',
+
+    // Personal Center
+    'personal.home': 'HOME',
+    'personal.title': 'PERSONAL CENTER',
+    'personal.currentLevel': '当前等级',
+    'personal.teamTotalBet': '团队累计投注',
+    'personal.maxLevelReached': '已达到最高等级',
+    'personal.nextLevelProgress': '下一等级进度',
+    'personal.current': '当前',
+    'personal.target': '目标',
+    'personal.need': '还需',
+    'personal.connectWalletHint': '请连接钱包查看个人数据',
+    'personal.connectWalletBtn': '连接钱包',
     
     // Common
     'common.loading': 'Loading...',
@@ -580,6 +593,19 @@ const languagePacks = {
     'sidebar.personalCenter': '我的等級',
     'sidebar.becomeShareholder': '成為股東',
     'personal.maxLevelDesc': '恭喜！您已達到最高等級！',
+
+    // Personal Center
+    'personal.home': 'HOME',
+    'personal.title': 'PERSONAL CENTER',
+    'personal.currentLevel': '當前等級',
+    'personal.teamTotalBet': '團隊累計投注',
+    'personal.maxLevelReached': '已達到最高等級',
+    'personal.nextLevelProgress': '下一等級進度',
+    'personal.current': '當前',
+    'personal.target': '目標',
+    'personal.need': '還需',
+    'personal.connectWalletHint': '請連接錢包查看個人數據',
+    'personal.connectWalletBtn': '連接錢包',
     
     // Common
     'common.loading': 'Loading...',
@@ -879,6 +905,19 @@ const languagePacks = {
     'sidebar.personalCenter': 'My Level',
     'sidebar.becomeShareholder': 'Become Shareholder',
     'personal.maxLevelDesc': 'Congratulations! You are at the top!',
+
+    // Personal Center
+    'personal.home': 'HOME',
+    'personal.title': 'PERSONAL CENTER',
+    'personal.currentLevel': 'Current Level',
+    'personal.teamTotalBet': 'Team Total Bet',
+    'personal.maxLevelReached': 'Max Level Reached',
+    'personal.nextLevelProgress': 'Next Level Progress',
+    'personal.current': 'Current',
+    'personal.target': 'Target',
+    'personal.need': 'Need',
+    'personal.connectWalletHint': 'Please connect wallet to view personal data',
+    'personal.connectWalletBtn': 'Connect Wallet',
     
     // Common
     'common.loading': 'Loading...',
@@ -1172,6 +1211,19 @@ const languagePacks = {
     'sidebar.personalCenter': 'マイレベル',
     'sidebar.becomeShareholder': '株主になる',
     'personal.maxLevelDesc': 'Congratulations! You are at the top!',
+
+    // Personal Center
+    'personal.home': 'HOME',
+    'personal.title': 'PERSONAL CENTER',
+    'personal.currentLevel': '現在のレベル',
+    'personal.teamTotalBet': 'チーム累計ベット',
+    'personal.maxLevelReached': '最高レベルに到達しました',
+    'personal.nextLevelProgress': '次のレベルへの進捗',
+    'personal.current': '現在',
+    'personal.target': '目標',
+    'personal.need': 'あと',
+    'personal.connectWalletHint': '個人データを確認するにはウォレットを接続してください',
+    'personal.connectWalletBtn': 'ウォレット接続',
     
     // Common
     'common.loading': 'Loading...',
@@ -1466,6 +1518,19 @@ const languagePacks = {
     'sidebar.personalCenter': '나의 레벨',
     'sidebar.becomeShareholder': '주주 되기',
     'personal.maxLevelDesc': 'Congratulations! You are at the top!',
+
+    // Personal Center
+    'personal.home': 'HOME',
+    'personal.title': 'PERSONAL CENTER',
+    'personal.currentLevel': '현재 레벨',
+    'personal.teamTotalBet': '팀 누적 베팅',
+    'personal.maxLevelReached': '최고 레벨 도달',
+    'personal.nextLevelProgress': '다음 레벨 진행 상황',
+    'personal.current': '현재',
+    'personal.target': '목표',
+    'personal.need': '필요',
+    'personal.connectWalletHint': '개인 데이터를 보려면 지갑을 연결하세요',
+    'personal.connectWalletBtn': '지갑 연결',
     
     // Common
     'common.loading': 'Loading...',
