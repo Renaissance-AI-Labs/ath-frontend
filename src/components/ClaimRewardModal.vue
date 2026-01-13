@@ -23,7 +23,7 @@
                 <div class="level-reward-section">
                     <div class="level-reward-title">{{ t('claim.levelRewardTitle') }}</div>
                     <div class="hexagon-container">
-                        <div class="hexagon-wrapper">
+                        <!-- <div class="hexagon-wrapper">
                             <div class="hexagon" :class="{ 'is-unlocked': s5_kpiMet }">
                                 <span class="level-text level-s5">S5</span>
                             </div>
@@ -33,7 +33,7 @@
                             <button @click="claim(5)" :disabled="parseFloat(s5_rewards) <= 0 || isClaiming[5]" class="tf-btn text-body-3 style-1 animate-btn animate-dark btn-claim">
                                 {{ isClaiming[5] ? t('claim.claiming') : t('claim.claim') }}
                             </button>
-                        </div>
+                        </div> -->
                         <div class="hexagon-wrapper">
                             <div class="hexagon" :class="{ 'is-unlocked': s6_kpiMet }">
                                 <span class="level-text level-s6">S6</span>
@@ -60,7 +60,7 @@
                 </div>
 
                 <!-- Node Rewards Section -->
-                <div v-if="showNodePointSection" class="node-reward-section">
+                <!-- <div v-if="showNodePointSection" class="node-reward-section">
                     <div class="node-reward-title">{{ t('claim.nodeRewardTitle') }}</div>
                     <div class="node-reward-content">
                         <span class="reward-amount">{{ truncatedNodeRewards }} {{ t('common.ath') }}</span>
@@ -72,10 +72,10 @@
                             {{ isClaimingNodeReward ? t('claim.claiming') : t('claim.claim') }}
                         </button>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Dividend Rewards Section -->
-                <div v-if="showDividendPointSection" class="node-reward-section">
+                <!-- <div v-if="showDividendPointSection" class="node-reward-section">
                     <div class="node-reward-title">{{ t('claim.dividendRewardTitle') }}</div>
                     <div class="node-reward-content">
                         <span class="reward-amount">{{ truncatedDividendRewards }} USDT</span>
@@ -87,7 +87,7 @@
                             {{ isClaimingDividendReward ? t('claim.claiming') : t('claim.claim') }}
                         </button>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
 
