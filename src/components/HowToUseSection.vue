@@ -66,8 +66,8 @@
                             </button>
                         </div>
 
-                        <!-- Temporarily hide lists and show loading state -->
-                        <div class="loading-state" :class="`list-${listMode}`">
+                        <!-- Show loading state if address is not in whitelist -->
+                        <div v-if="!isAddressWhitelisted" class="loading-state" :class="`list-${listMode}`">
                             <div class="stars-bg stars-bg-1">
                                 <div class="stars"></div>
                                 <div class="stars2"></div>
@@ -76,100 +76,100 @@
                             <p>{{ t('howToUse.loadingStakingData') }}</p>
                         </div>
                         
-                        <!-- TEMPORARILY COMMENTED OUT - Uncomment to restore functionality -->
-                        <!--
-                        <div v-if="isLoading" class="loading-state" :class="`list-${listMode}`">
-                            <div class="stars-bg stars-bg-1">
-                                <div class="stars"></div>
-                                <div class="stars2"></div>
-                                <div class="stars3"></div>
-                            </div>
-                            <p>{{ t('howToUse.loadingStakingData') }}</p>
-                        </div>
-                        <div v-else-if="!walletState.isAuthenticated" class="empty-state" :class="`list-${listMode}`">
-                            <div class="stars-bg stars-bg-1">
-                                <div class="stars"></div>
-                                <div class="stars2"></div>
-                                <div class="stars3"></div>
-                            </div>
-                            <p>{{ t('howToUse.connectWalletFirst') }}</p>
-                        </div>
-                        <div v-else-if="!walletState.contractsInitialized" class="empty-state" :class="`list-${listMode}`">
-                            <div class="stars-bg stars-bg-1">
-                                <div class="stars"></div>
-                                <div class="stars2"></div>
-                                <div class="stars3"></div>
-                            </div>
-                            <p>{{ t('howToUse.contractInitFailed') }}</p>
-                        </div>
-                        <div v-else-if="stakingItems.length === 0" class="empty-state" :class="`list-${listMode}`">
-                            <div class="stars-bg stars-bg-1">
-                                <div class="stars"></div>
-                                <div class="stars2"></div>
-                                <div class="stars3"></div>
-                            </div>
-                            <p v-if="activeTab === 'investment'">{{ t('howToUse.noInvestmentOrders') }}</p>
-                            <p v-else>{{ t('howToUse.noRedemptionOrders') }}</p>
-                        </div>
+                        <!-- Show normal lists only for whitelisted addresses -->
                         <template v-else>
-                            <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist" :class="`list-${listMode}`">
-                                <li v-for="(item, index) in stakingItems" :key="item.id" class="nav-tab-item li-style" role="presentation">
-                                    <div class="br-line has-dot"></div>
-                                    <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true" role="tab">
-                                        <div :class="`stars-bg stars-bg-${(index % 3) + 1}`">
-                                            <div class="stars"></div>
-                                            <div class="stars2"></div>
-                                            <div class="stars3"></div>
-                                        </div>
-                                        <div class="card-content">
-                                            <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                                                <h5 class="name h5-list-style" :data-text="`${activeTab === 'investment' ? t('howToUse.staking') : t('howToUse.redeemedStatus')}-CODE-${String(item.id + 1).padStart(2, '0')}`">
-                                                    {{ activeTab === 'investment' ? t('howToUse.staking') : t('howToUse.redeemedStatus') }}-CODE-{{ String(item.id + 1).padStart(2, '0') }}
-                                                </h5>
-                                                <h5 class="name h5-list-style" :data-text="item.stakeDate" style="min-width: 125px;">{{ item.stakeDate }}</h5>
-                                            </div>
-                                            <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                                                <p class="desc p-list-style">{{ t('howToUse.principal') }}$ <span style="margin-left: 0px;">{{ parseFloat(item.principal).toFixed(4) }}</span></p>
-                                                <div class="desc p-list-style" style="display: flex; flex-direction: row; justify-content: space-between; min-width: 125px;">
-                                                    <div style="width: 49%;">{{ t('howToUse.interest') }}$</div>
-                                                    <div style="width: 51%; margin-left: 2px;"><AnimatedNumber :value="parseFloat(item.principal) + parseFloat(item.interest)" :decimals="4" /></div>
-                                                     
-                                                </div>
-                                            </div>
-
-                                            <div class="status-box">
-                                                <CountdownTimer v-if="activeTab === 'investment'" :target-timestamp="item.expiryTimestamp" />
-                                                <span v-else class="desc clock"></span>
-                                                <div class="status-box-button">
-                                                    <button v-if="item.displayStatus === 'redeemable'" 
-                                                            class="tf-btn text-body-3 style-2 animate-btn animate-dark redeem-glow" 
-                                                            :disabled="unstackingStates[item.id]"
-                                                            @click.prevent="handleUnstake(item.id)">
-                                                        <span :class="{ 'redeem-text-glow': !unstackingStates[item.id] }">
-                                                            {{ unstackingStates[item.id] ? t('howToUse.redeeming') : t('howToUse.redeem') }}
-                                                        </span>
-                                                    </button>
-                                                    <button v-else-if="item.displayStatus === 'redeemed'" class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>{{ t('howToUse.redeemed') }}</button>
-                                                    <button v-else class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>{{ t('howToUse.waitingRedeem') }}</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-                            <div v-if="totalPages > 1" class="pagination-list">
-                                <a href="#" class="pagination-item" @click.prevent="prevPage" :class="{ 'disabled': currentPage === 1 }">
-                                    <span class="icon icon-CaretDoubleRight fs-20" style="transform: rotate(180deg);"></span>
-                                </a>
-                                <a v-for="page in displayedPages" :key="page" href="#" class="pagination-item" :class="{ 'active': currentPage === page }" @click.prevent="goToPage(page)">
-                                    <span>{{ page }}</span>
-                                </a>
-                                <a href="#" class="pagination-item" @click.prevent="nextPage" :class="{ 'disabled': currentPage === totalPages }">
-                                    <span class="icon icon-CaretDoubleRight fs-20"></span>
-                                </a>
+                            <div v-if="isLoading" class="loading-state" :class="`list-${listMode}`">
+                                <div class="stars-bg stars-bg-1">
+                                    <div class="stars"></div>
+                                    <div class="stars2"></div>
+                                    <div class="stars3"></div>
+                                </div>
+                                <p>{{ t('howToUse.loadingStakingData') }}</p>
                             </div>
+                            <div v-else-if="!walletState.isAuthenticated" class="empty-state" :class="`list-${listMode}`">
+                                <div class="stars-bg stars-bg-1">
+                                    <div class="stars"></div>
+                                    <div class="stars2"></div>
+                                    <div class="stars3"></div>
+                                </div>
+                                <p>{{ t('howToUse.connectWalletFirst') }}</p>
+                            </div>
+                            <div v-else-if="!walletState.contractsInitialized" class="empty-state" :class="`list-${listMode}`">
+                                <div class="stars-bg stars-bg-1">
+                                    <div class="stars"></div>
+                                    <div class="stars2"></div>
+                                    <div class="stars3"></div>
+                                </div>
+                                <p>{{ t('howToUse.contractInitFailed') }}</p>
+                            </div>
+                            <div v-else-if="stakingItems.length === 0" class="empty-state" :class="`list-${listMode}`">
+                                <div class="stars-bg stars-bg-1">
+                                    <div class="stars"></div>
+                                    <div class="stars2"></div>
+                                    <div class="stars3"></div>
+                                </div>
+                                <p v-if="activeTab === 'investment'">{{ t('howToUse.noInvestmentOrders') }}</p>
+                                <p v-else>{{ t('howToUse.noRedemptionOrders') }}</p>
+                            </div>
+                            <template v-else>
+                                <ul class="tab-how_to position-relative mx-1 wow fadeInUp" role="tablist" :class="`list-${listMode}`">
+                                    <li v-for="(item, index) in stakingItems" :key="item.id" class="nav-tab-item li-style" role="presentation">
+                                        <div class="br-line has-dot"></div>
+                                        <div data-bs-toggle="tab" data-bs-target="#step3" class="btn_tab" aria-selected="true" role="tab">
+                                            <div :class="`stars-bg stars-bg-${(index % 3) + 1}`">
+                                                <div class="stars"></div>
+                                                <div class="stars2"></div>
+                                                <div class="stars3"></div>
+                                            </div>
+                                            <div class="card-content">
+                                                <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                                                    <h5 class="name h5-list-style" :data-text="`${activeTab === 'investment' ? t('howToUse.staking') : t('howToUse.redeemedStatus')}-CODE-${String(item.id + 1).padStart(2, '0')}`">
+                                                        {{ activeTab === 'investment' ? t('howToUse.staking') : t('howToUse.redeemedStatus') }}-CODE-{{ String(item.id + 1).padStart(2, '0') }}
+                                                    </h5>
+                                                    <h5 class="name h5-list-style" :data-text="item.stakeDate" style="min-width: 125px;">{{ item.stakeDate }}</h5>
+                                                </div>
+                                                <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                                                    <p class="desc p-list-style">{{ t('howToUse.principal') }}$ <span style="margin-left: 0px;">{{ parseFloat(item.principal).toFixed(4) }}</span></p>
+                                                    <div class="desc p-list-style" style="display: flex; flex-direction: row; justify-content: space-between; min-width: 125px;">
+                                                        <div style="width: 49%;">{{ t('howToUse.interest') }}$</div>
+                                                        <div style="width: 51%; margin-left: 2px;"><AnimatedNumber :value="parseFloat(item.principal) + parseFloat(item.interest)" :decimals="4" /></div>
+                                                         
+                                                    </div>
+                                                </div>
+
+                                                <div class="status-box">
+                                                    <CountdownTimer v-if="activeTab === 'investment'" :target-timestamp="item.expiryTimestamp" />
+                                                    <span v-else class="desc clock"></span>
+                                                    <div class="status-box-button">
+                                                        <button v-if="item.displayStatus === 'redeemable'" 
+                                                                class="tf-btn text-body-3 style-2 animate-btn animate-dark redeem-glow" 
+                                                                :disabled="unstackingStates[item.id]"
+                                                                @click.prevent="handleUnstake(item.id)">
+                                                            <span :class="{ 'redeem-text-glow': !unstackingStates[item.id] }">
+                                                                {{ unstackingStates[item.id] ? t('howToUse.redeeming') : t('howToUse.redeem') }}
+                                                            </span>
+                                                        </button>
+                                                        <button v-else-if="item.displayStatus === 'redeemed'" class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>{{ t('howToUse.redeemed') }}</button>
+                                                        <button v-else class="tf-btn text-body-3 style-2 animate-btn animate-dark" disabled>{{ t('howToUse.waitingRedeem') }}</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <div v-if="totalPages > 1" class="pagination-list">
+                                    <a href="#" class="pagination-item" @click.prevent="prevPage" :class="{ 'disabled': currentPage === 1 }">
+                                        <span class="icon icon-CaretDoubleRight fs-20" style="transform: rotate(180deg);"></span>
+                                    </a>
+                                    <a v-for="page in displayedPages" :key="page" href="#" class="pagination-item" :class="{ 'active': currentPage === page }" @click.prevent="goToPage(page)">
+                                        <span>{{ page }}</span>
+                                    </a>
+                                    <a href="#" class="pagination-item" @click.prevent="nextPage" :class="{ 'disabled': currentPage === totalPages }">
+                                        <span class="icon icon-CaretDoubleRight fs-20"></span>
+                                    </a>
+                                </div>
+                            </template>
                         </template>
-                        -->
                     </div>
                 </div>
                 <div class="position-relative has-hafl_plus">
@@ -216,6 +216,13 @@ import {
 } from 'ethers';
 import { t } from '@/i18n';
 
+// Whitelist: Only these addresses can view staking lists
+const WHITELIST_ADDRESSES = [
+  "0xe240a616397702bbd790901d4d4d3158e25b9392",
+  "0xa42422a44c68a5eca0ea61a151bd411945045f9b",
+  "0xed1c5f6ea8b738b1fa1e4aa67379fa801ebb67ec"
+].map(addr => addr.toLowerCase());
+
 const stakingItems = ref([]); // Renamed from allStakingItems, now holds only current page data
 const totalItems = ref(0); // New state for total records from contract
 const isLoading = ref(true);
@@ -225,6 +232,12 @@ const itemsPerPage = ref(4);
 const listMode = ref('show');
 let pollingInterval = null;
 const unstackingStates = reactive({});
+
+// Check if current wallet address is in whitelist
+const isAddressWhitelisted = computed(() => {
+  if (!walletState.address) return false;
+  return WHITELIST_ADDRESSES.includes(walletState.address.toLowerCase());
+});
 
 const fetchStakingData = async () => {
     if (!walletState.isAuthenticated || !walletState.contractsInitialized || !stakingContract) {
