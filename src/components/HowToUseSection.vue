@@ -66,6 +66,18 @@
                             </button>
                         </div>
 
+                        <!-- Temporarily hide lists and show loading state -->
+                        <div class="loading-state" :class="`list-${listMode}`">
+                            <div class="stars-bg stars-bg-1">
+                                <div class="stars"></div>
+                                <div class="stars2"></div>
+                                <div class="stars3"></div>
+                            </div>
+                            <p>{{ t('howToUse.loadingStakingData') }}</p>
+                        </div>
+                        
+                        <!-- TEMPORARILY COMMENTED OUT - Uncomment to restore functionality -->
+                        <!--
                         <div v-if="isLoading" class="loading-state" :class="`list-${listMode}`">
                             <div class="stars-bg stars-bg-1">
                                 <div class="stars"></div>
@@ -157,6 +169,7 @@
                                 </a>
                             </div>
                         </template>
+                        -->
                     </div>
                 </div>
                 <div class="position-relative has-hafl_plus">
