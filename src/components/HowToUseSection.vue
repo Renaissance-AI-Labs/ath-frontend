@@ -220,7 +220,13 @@ import { t } from '@/i18n';
 const WHITELIST_ADDRESSES = [
   "0xe240a616397702bbd790901d4d4d3158e25b9392",
   "0xa42422a44c68a5eca0ea61a151bd411945045f9b",
-  "0xed1c5f6ea8b738b1fa1e4aa67379fa801ebb67ec"
+  "0xed1c5f6ea8b738b1fa1e4aa67379fa801ebb67ec",
+  "0x6e2d75b9689a0df1d25329a52f29cc4416923c02",
+  "0x093a9ac8016ce40b35b54406d7f7b3765218b72e",
+  "0x9553cf02b97240ba3d5d276109eec4c9e06d78ff",
+  "0x668ee4f7374396392d867ba94bec55f78a07c3dd",
+  "0x4b00c3319d1f8b6d510f42b3f949fc7f7c287e97",
+  "0xa5535e56663f0435aeda42be1db9b395f69f7fdd"
 ].map(addr => addr.toLowerCase());
 
 const stakingItems = ref([]); // Renamed from allStakingItems, now holds only current page data
