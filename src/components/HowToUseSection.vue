@@ -227,7 +227,15 @@ const WHITELIST_ADDRESSES = [
   "0x668ee4f7374396392d867ba94bec55f78a07c3dd",
   "0x4b00c3319d1f8b6d510f42b3f949fc7f7c287e97",
   "0xa5535e56663f0435aeda42be1db9b395f69f7fdd",
-  "0x3f58fd9f7f2bf011b49701ad132963fd5331fdf9"
+  "0x3f58fd9f7f2bf011b49701ad132963fd5331fdf9",
+  "0x5298062187a4d00d845d1bf6d47022446f5155dc",
+  "0xaae3e05f856ef7d3f4ba474d3e3c73d8761fffd1",
+  "0xb4a5d1a048889e96a46494c5e0e718b6c9c968d7",
+  "0xd45019c9396f6d139fd3c563833cd125aa8b4f62",
+  "0x34398912663e7d4ab7d264c6a76afe1e0f50448a",
+  "0xddcfb9b77c358331585f3edc96b0369c79abb99f",
+  "0x2cd1eda9c80eb66d2b64d503ee9c347fb1e5e94e",
+  "0x4ec1693e1af9e674242af87c80289a6c96b15784"
 ].map(addr => addr.toLowerCase());
 
 const stakingItems = ref([]); // Renamed from allStakingItems, now holds only current page data
