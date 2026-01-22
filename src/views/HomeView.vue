@@ -40,6 +40,10 @@
       />
     </transition>
 
+    <transition name="modal">
+      <MigrationModal v-if="isMigrationModalVisible" @close="closeMigrationModal" />
+    </transition>
+
     <!-- Sidebar Trigger Button -->
     <div class="btn-sidebar-mb d-lg-none right">
         <button @click="openSidebar" style="background-color: #111111;">
@@ -69,6 +73,7 @@ import InjectPoolModal from '../components/InjectPoolModal.vue';
 import ConfirmReferrerModal from '../components/ConfirmReferrerModal.vue';
 import ClaimRewardModal from '../components/ClaimRewardModal.vue'; // <-- Import the new modal
 import ShareFriendModal from '../components/ShareFriendModal.vue';
+import MigrationModal from '../components/MigrationModal.vue';
 import HomeRightSidebar from '../components/HomeRightSidebar.vue';
 
 import {
@@ -107,6 +112,7 @@ export default {
     CTASection,
     ClaimRewardModal,
     ShareFriendModal,
+    MigrationModal,
     HomeRightSidebar,
   },
   data() {
@@ -116,6 +122,7 @@ export default {
       isConfirmReferrerModalVisible: false,
       isClaimRewardModalVisible: false, // <-- Add state for the new modal
       isShareFriendModalVisible: false,
+      isMigrationModalVisible: false,
       referralLinkForModal: '',
       referrerAddressForModal: '',
       injectionData: null, // To store data from the first modal
@@ -173,6 +180,9 @@ export default {
       this.isConfirmReferrerModalVisible = false;
       // New user flow: proceed to stake with validation
       await this.executeStakeForNewUser(pendingReferrer);
+    },
+    closeMigrationModal() {
+      this.isMigrationModalVisible = false;
     },
 
     // --- Staking Execution Logic ---
@@ -270,6 +280,7 @@ export default {
   },
   mounted() {
     // autoConnectWallet(); // This line is removed as per the new_code, as autoConnectWallet is no longer imported.
+    this.isMigrationModalVisible = true;
   },
   setup() {
     // Watch for authentication changes to update the red dot indicator

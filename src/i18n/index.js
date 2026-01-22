@@ -93,6 +93,11 @@ const languagePacks = {
     'referrer.cancel': '取消',
     'referrer.confirm': '确认推荐人并质押',
     
+    // Migration Modal
+    'migration.title': 'Athena X 已上线',
+    'migration.text': '感谢您一直以来的支持！<br>我们已发布全新版本。<br>请前往新版网站体验 Athena X。',
+    'migration.btn': '立即前往',
+    
     // Toast Notifications
     'toast.connectWalletFirst': '请先连接并授权您的钱包',
     'toast.stakeAndBindFirst': '请先质押并绑定推荐人',
@@ -413,6 +418,11 @@ const languagePacks = {
     'referrer.cancel': '取消',
     'referrer.confirm': '確認推薦人並質押',
     
+    // Migration Modal
+    'migration.title': 'Athena X 已上線',
+    'migration.text': '感謝您一直以來的支持！<br>我們已發布全新版本。<br>請前往新版網站體驗 Athena X。',
+    'migration.btn': '立即前往',
+    
     // Testimonial Section
     'testimonial.connectFuture': '連接未來',
     'testimonial.yourselfShapesFuture': 'Yourself shapes the future.',
@@ -722,6 +732,11 @@ const languagePacks = {
     'referrer.loading': 'Loading...',
     'referrer.cancel': 'Cancel',
     'referrer.confirm': 'Confirm Referrer and Stake',
+    
+    // Migration Modal
+    'migration.title': 'Athena X Launched',
+    'migration.text': 'Thank you for your continued support!<br>We have released a new version.<br>Please visit the new website to experience Athena X.',
+    'migration.btn': 'Go Now',
     
     // Testimonial Section
     'testimonial.connectFuture': 'Connect Future',
@@ -1034,6 +1049,11 @@ const languagePacks = {
     'referrer.cancel': 'キャンセル',
     'referrer.confirm': '紹介者を確認してステーキング',
     
+    // Migration Modal
+    'migration.title': 'Athena X リリース',
+    'migration.text': 'いつもご支援ありがとうございます！<br>新バージョン をリリースしました。<br>新しいウェブサイトで Athena X を体験してください。',
+    'migration.btn': '今すぐ行く',
+    
     // Testimonial Section
     'testimonial.connectFuture': '未来を接続',
     'testimonial.yourselfShapesFuture': 'Yourself shapes the future.',
@@ -1340,6 +1360,11 @@ const languagePacks = {
     'referrer.loading': '로딩 중...',
     'referrer.cancel': '취소',
     'referrer.confirm': '추천인 확인 및 스테이킹',
+    
+    // Migration Modal
+    'migration.title': 'Athena X 출시됨',
+    'migration.text': '변함없는 성원에 감사드립니다!<br>새로운 버전인 를 출시했습니다.<br>새로운 웹사이트를 방문하여 Athena X를 경험해 보세요.',
+    'migration.btn': '지금 이동',
     
     // Testimonial Section
     'testimonial.connectFuture': '미래 연결',
