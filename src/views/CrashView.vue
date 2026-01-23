@@ -341,9 +341,6 @@
                     <div class="formula-section p-4" style="background: rgba(0,0,0,0.4); border: 1px solid var(--line); border-radius: 12px;">
                         <div class="d-flex justify-content-between align-items-center mb-4" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
                             <h6 class="text-white mb-0" style="font-family: 'Times New Roman', Times, serif; font-size: 1.1rem; font-style: italic;">{{ t('crash.fairness.formulaTitle') }}</h6>
-                            <a href="https://bscscan.com/address/0xc3ce7819785f8e0a637b4ca409a3b38e121c9820#code" target="_blank" class="text-primary small" style="text-decoration: none;">
-                                {{ t('crash.fairness.contractLink') }} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                            </a>
                         </div>
                         
                         <div class="math-content mb-4" style="font-family: 'Times New Roman', Times, serif; color: #e2e8f0; font-size: 1.2rem; line-height: 1.8;">
