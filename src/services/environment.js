@@ -73,7 +73,7 @@ export const DISABLE_CONSOLE_IN_PROD = true;
  * Feature flag to enable or disable the xBrokers entrance on the homepage.
  * Set to `true` to show the CTA section, `false` to hide it.
  */
-export const ENABLE_XBROKERS_ENTRANCE = false;
+export const ENABLE_XBROKERS_ENTRANCE = true;
 
 /**
  * Feature flag to enable or disable the Crash game entrance.
